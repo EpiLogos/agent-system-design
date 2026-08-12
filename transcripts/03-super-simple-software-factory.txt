@@ -1,0 +1,970 @@
+# My Super Simple Software Factory (For Agentic Engineers)
+# IndyDevDan | 2026-08-03
+# https://youtu.be/haUfb1ievTE
+
+0:00 What's up engineers? Any Dev Dan here.
+0:02 If you're building systems of agents
+0:04 that operate for you, stick around. This
+0:06 is going to be a valuable one for you.
+0:08 If you're mindlessly vibe coding slop,
+0:10 this video is not for you. Click away.
+0:13 Thanks. See you next time. Software
+0:14 factories are massively misunderstood
+0:17 and under appreciated. The key is to
+0:19 understand that they're useful for one
+0:21 reason alone. They give you more
+0:23 leverage on your prompt. That's it. Now,
+0:26 the amount of leverage you can get is
+0:28 determined by the quality of your
+0:30 investment into your software factory.
+0:32 At the lowest levels, you chain together
+0:34 a few agents to do a little more work
+0:36 for you with some minor configuration.
+0:38 At the highest levels, you build a
+0:39 system of agents plus code that operates
+0:43 without you just as well and sometimes
+0:46 even better than you would. In this
+0:48 video, I'll share my super simple
+0:50 software factory to show you how you can
+0:53 begin to unlock this [music] leverage.
+0:55 This factory is a combination of the big
+0:57 ideas we've discussed on the channel and
+0:59 inside TAC, [music] except it's been
+1:01 rebuilt from the ground up for the next
+1:04 phase of agentic engineering. If you
+1:07 understand [music] that agents plus code
+1:09 beats agents alone, and if you want
+1:11 another edge in the age of agents, stick
+1:14 around and let's break [music] down the
+1:16 super simple software factory.
+1:23 There are three key design principles
+1:25 I've embedded in the super simple
+1:27 software factory. It's observable, it's
+1:29 customizable, and it's reusable. All
+1:31 things that are essential to operating
+1:33 in the age of agents. Observability is
+1:35 key. If you can't measure your agents,
+1:37 you can't improve them. We can click
+1:39 into any AI developer workflow here and
+1:41 see exactly what happened in a swim lane
+1:43 view. We have Kimmy K3, Gemini 3.6
+1:46 Flash, GPT 5.6 Terra, GPT 5.6 Luna. We
+1:49 have an abundance of great models to
+1:51 work with at different performance speed
+1:53 cost tradeoff points. And your software
+1:55 factory lets you use all of them
+1:57 together. The best engineers now are
+1:59 building systems of agents. They're not
+2:00 debating which model is the best
+2:02 anymore. It's important, but it's less
+2:04 relevant every single day. Software
+2:06 factories are the system you use to
+2:08 scale your compute, to scale your
+2:09 impact. I've denoted the three actors of
+2:12 value creation. There's me, the
+2:14 engineer, there's the code that actually
+2:16 executes, and then we have our agent.
+2:18 So, this isn't just about running a
+2:20 bunch of agents in parallel or in
+2:22 different team configurations. It's
+2:24 about combining engineers plus code plus
+2:26 agents at the right time to get the best
+2:29 results. Agents plus code beats agents
+2:32 alone. We'll talk about that more later
+2:34 on in this video. We can dial into
+2:35 anything here. Let's check out kmk3's
+2:37 plan. Of course, you can see all the
+2:38 events, and we can see all the
+2:40 configuration. We can see the compiled
+2:41 prompts. So, of course, both the system
+2:43 prompt and the user prompt. Your
+2:45 software factory depends on your ability
+2:47 to prompt engineer, context engineer,
+2:49 and of course, harness engineer. We can
+2:51 go up to the agent config. You can see
+2:53 all the tools. You can see the coding
+2:55 agent we use, and you can see the
+2:56 specific agent harness we used. This is
+2:58 very powerful. This software factory is
+3:00 allowing me to do all the
+3:02 sub-engineering inside of agentic
+3:04 engineering. So, I'm talking about
+3:05 prompt engineering, context engineering,
+3:07 harness engineering, and what's
+3:08 inaccurately called loop engineering,
+3:10 which is really all about managing the
+3:12 software developer life cycle inside
+3:14 your work. Check out the previous video
+3:15 where we dismantle loop engineering.
+3:17 It's a terrible rebrand of the software
+3:19 developer life cycle. I'll link that in
+3:20 the description for you. But, let's
+3:21 actually run our super simple software
+3:23 factory. What does this actually look
+3:24 like to execute? Let's open up the
+3:26 terminal. I'm using Herder as my
+3:28 terminal multiplexer now. I've
+3:30 transitioned away from tmux. Great tool,
+3:32 but Herder gives me everything I need
+3:34 and a little more. It's more
+3:35 customizable. It's more configurable.
+3:37 It's simpler, and it's faster. I'm going
+3:38 to fire up a Pi coding agent. We're
+3:40 going to run the new cracked
+3:42 state-of-the-art Opus 5 model here. So,
+3:44 a key feature of the super simple
+3:46 software factory is that it has agentic
+3:49 access. That means we can move at the
+3:50 agentic speed. I have engineered the
+3:52 system to be operated by, of course, us.
+3:55 So, if we wanted to, we could boot up
+3:56 just commands and we could operate this
+3:58 ourselves, right? You can see we have
+4:00 the plan workflow, plan build, so on and
+4:02 so forth. But, why would we do that when
+4:03 we can move at the agentic speed and
+4:05 have an agent orchestrate the system on
+4:08 our behalf? Let's kick off a workflow.
+4:10 We'll run this prompt, break down what
+4:11 this app is, its features, and suggest
+4:13 three new features to enhance the
+4:14 application. And now our agent is going
+4:16 to get to work understanding lazy
+4:18 loading the remainder of the skills it
+4:21 needs to actually operate this. We're
+4:22 using Opus 5, so you can see it's ultra
+4:24 smart. It's going to write this prompt
+4:25 and it's going to kick off this
+4:26 workflow. I'm going to open up the tool
+4:28 in the background here and you can see
+4:29 it's already started to get to work. So,
+4:31 this is observable in a live way. So,
+4:33 you can see we're running a simple ADW
+4:36 scout workflow. We're going to start
+4:37 simple and progress to a more complex
+4:40 prompt, more complex AI developer
+4:42 workflow inside our software factory.
+4:44 We're running a single scout agent. We
+4:45 can dial into the request. We can see
+4:47 what we, the engineer, inputted into the
+4:49 system through our agent. It has
+4:51 enhanced my prompt to make it even
+4:53 clearer, more concise. And of course, I
+4:55 prompt engineered that into the super
+4:57 simple software factory. And now our
+4:59 scouter agent is just running and it's
+5:00 going to report its results. So, we have
+5:02 a simple two-phase workflow here. The
+5:04 request comes in and then we have a
+5:05 scouter agent. One engineer, one agent.
+5:08 Super simple. We're running the Gemini
+5:09 3.6 flash model, which is a really,
+5:11 really cost-effective model. If we open
+5:13 up my model stack here, which is where
+5:15 I'm tracking all the models, state of
+5:17 the art, we have workhorse and then we
+5:18 have lightweight models that run on your
+5:19 device. Gemini 3.6 flash is our A-tier
+5:22 workhorse model at really cheap prices.
+5:24 You can see here this thing operates at
+5:26 $1.50 in, which is beating out pretty
+5:28 much every model above it, minus Luna.
+5:31 Luna is also another great option from
+5:32 OpenAI. But, you can see here, I'm not
+5:34 really fixating on one model anymore.
+5:36 I'm using the right model at the right
+5:38 cost, at the right speed, at the right
+5:39 price, at the right performance. It's
+5:41 about your model stack now. And again,
+5:43 the software factory is how you get to
+5:45 that. Let's go ahead and open up our
+5:46 agent and you can see it has the results
+5:48 from our workflow. So, an AI developer
+5:51 ran, which is an AI developer workflow,
+5:53 all it did was scout the application.
+5:55 So, this is a really, really simple
+5:57 atomic unit of the software factory.
+6:00 Just scouting, just looking for code,
+6:02 finding information, presenting ideas.
+6:05 So, that prompt was really simple. Break
+6:06 down the application, suggest three new
+6:08 features, and then we have a definition
+6:10 of done. So, that's exactly what my
+6:11 agent did. So, super simple. You can see
+6:13 here we have three proposed features.
+6:15 see that we are building an application
+6:16 called Inkwell, where we can basically
+6:19 just do some writing. So, this is what
+6:20 it looks like. It's a super simple app
+6:22 I'm using as a test, as a prototype to
+6:24 enhance and to build the super simple
+6:25 software factory. We have some nice hot
+6:27 keys. We can go into focus mode. We can
+6:29 zoom in. We can zoom out. And we can
+6:30 create new ideas here whenever we want
+6:32 to. Let's go ahead and run a more
+6:34 advanced AI developer workflow inside of
+6:36 our software factory. I want to really
+6:38 show you how powerful this tool can be.
+6:40 If we scroll back up here, I've prompt
+6:41 engineered this orchestrator agent to
+6:43 present all the workflows this software
+6:45 factory has. So, you can see everything
+6:47 you would expect. The simple prompt, a
+6:48 scout, a plan, a build, quality check,
+6:51 so running our lints, running our
+6:52 formats, our type checks, documentation,
+6:55 and then the composite workflows, the
+6:57 heavy hitters, the workflows that really
+6:59 do the work on your behalf. So, you can
+7:01 see plan, build, test, build, review,
+7:03 build, test. And then of course, ADW
+7:05 simple software developer life cycle,
+7:07 the full deal. Okay, so we're going to
+7:09 work up to this. Let's go ahead and run
+7:10 an intermediate step. If you're a
+7:11 technical agentic coding member, this
+7:13 all looks very familiar to you. You've
+7:16 likely mastered these ideas already.
+7:17 Let's go ahead and kick off a new
+7:19 workflow. And I want a classic light
+7:22 mode. So, I'm just going to paste this
+7:23 in. I'm going to run the ADW plan,
+7:24 build, test. Add light mode to contrast
+7:26 with dark default. Build a design system
+7:28 such that we can add other themes in the
+7:30 future if we want. So, we'll kick that
+7:31 off. And now we're going to get a
+7:32 three-step agentic workflow that
+7:34 combines code and agents. And so, we'll
+7:37 break down the internals of this
+7:38 application a little more in a second,
+7:40 but we can go ahead and see in our
+7:41 observability system this new workflow
+7:44 running. So, now we have a planner and a
+7:45 builder. You can see here we're going to
+7:46 use the ChemK 3. It's a pretty good
+7:48 model. It's definitely not outperforming
+7:51 Opus 4.8, Soul, any of the really big
+7:53 heavy hitters, but it is the first open
+7:55 weights model inside of the
+7:56 state-of-the-art tier, which is an
+7:57 impressive feat. You know, something
+7:59 I've noticed that you likely have too.
+8:00 This model thinks a lot, so it's not
+8:02 actually as fast or as performant as
+8:05 Opus or Soul, but it's still an
+8:06 incredible model. I've been using this
+8:08 model through Fireworks. I've been
+8:10 really enjoying using Fireworks, using
+8:12 ChemK 3 on it. They have put out some
+8:13 really great endpoints. They have a fast
+8:16 and a priority serverless tier, US only
+8:18 serverless endpoints, one of the first
+8:20 to do this, I think. You know, last week
+8:22 we talked about this idea, is Anthropic
+8:24 stealing your data while you pay for it?
+8:26 And we really answered that question in
+8:27 depth. Check out that video, I'll link
+8:28 that in description if you're
+8:29 interested, but Fireworks is responding
+8:31 to this very idea of AI ownership. I'm
+8:34 not sponsored, I don't take on any
+8:36 sponsorships. They're really addressing
+8:37 the need for AI model ownership and for
+8:41 just cheap serverless inference with
+8:43 great optionality without taking all
+8:45 your data. Let's see how our software
+8:46 developer life cycle is doing. So, you
+8:47 can see here we have two agents that
+8:49 completed this workflow. Okay, so we're
+8:51 adding light mode to contrast the
+8:53 default dark mode. So, let's see first
+8:54 off, did our agents build the work? You
+8:56 can imagine they did. So, here we have a
+8:57 light button, we can click it and the
+8:59 color inverted. Fantastic. So, how do we
+9:01 do that? We built a simple software
+9:03 factory that contains a workflow that
+9:05 plans work and builds work, and then we
+9:07 have, you can see here, two code checks
+9:09 that occurred afterward to verify. And
+9:11 you can imagine if these verifications
+9:13 fail, they'll send that work back to the
+9:15 build agent and the build agent will
+9:16 correct the mistakes. Okay? So, simple
+9:18 enough feature. We didn't need a huge
+9:20 workflow for this. We used ChemK 3 just
+9:22 to plan and we used Gemini 3 Flash to
+9:24 actually build out what was implemented
+9:26 in the plan. So, just chain together
+9:28 some agents while understanding that all
+9:30 this doesn't need to be agentic. This is
+9:33 like a really big idea that I think
+9:34 engineers are going to miss and miss
+9:36 pretty seriously. Right now everyone is
+9:38 like very agent pilled. I think that's
+9:41 very cool.
+9:43 You know, I get it. I definitely
+9:44 understand that. But everyone in their
+9:46 AI psychosis has seemed to have gotten
+9:48 that code cost nothing, literally runs
+9:51 at the speed of light, and can be
+9:52 changed in instant. And a big thing
+9:54 people are re-realizing now is that you
+9:56 actually own your code. Whereas we don't
+9:58 actually own any of our AI models. We're
+10:01 renting them. Code is an essential piece
+10:03 for this. You can see I've designed it
+10:04 inside the workflow and I'm treating it
+10:06 as a first-class citizen here in the
+10:08 software factory. I recommend you do the
+10:10 same. By the way, I'm not trying to sell
+10:11 you my tool. This is going to be free
+10:12 for you. Link in the description. This
+10:14 is open-source software I'm building and
+10:16 sharing. I want to paint the picture
+10:17 where things are going because it's not
+10:19 just about your single agent. It's not
+10:20 just about your multi-agent
+10:22 orchestration, your orchestrator. Things
+10:24 have scaled quite a bit far beyond that
+10:26 and they've scaled into these software
+10:28 factories. I'm seeing it in the field.
+10:30 I'm seeing it in my discussion with
+10:31 engineers and in my own work, what I sit
+10:34 down to build now, I'm not thinking at
+10:36 the prompt level anymore. I'm not
+10:38 thinking at the skill level. I'm not
+10:39 even thinking about the teams of agents
+10:41 I need, which is super important. I'm
+10:43 thinking about the full end-to-end
+10:45 developer workflow that I would run to
+10:48 get the work done and then I'm building
+10:50 that with agents. It's an AI developer
+10:52 workflow. And this way I can reproduce
+10:54 the success I want to see in my
+10:56 applications over and over and over. The
+10:59 system is built to be reusable,
+11:00 observable, and customizable. Let's talk
+11:02 more about customizability and
+11:04 reusability. Cuz you can see here full
+11:06 observability. This isn't new.
+11:07 Everyone's got their agent framework
+11:08 that they use to view what's done. But
+11:10 let's go ahead and just like look at the
+11:11 plan. So what happened here? Planning
+11:13 work happened. It has its own detailed
+11:15 system prompt and a user prompt. We can
+11:16 dial into the agent config. But the
+11:18 interesting part here is we're making
+11:20 sure that work was accomplished by
+11:22 adding deterministic gate checks. So
+11:24 this is code, right? Let's be super
+11:26 clear about this. This is code that runs
+11:27 at the end of the plan step. And then we
+11:29 have, of course, a nice cost breakdown
+11:31 for this individual agent phase
+11:32 execution. And then we have the outputs.
+11:35 So, we're handing off contexts by
+11:37 creating a shared directory here. You
+11:39 can see ADW sessions, and we'll look at
+11:41 the code in a second here if you're
+11:42 interested. I am, by the way, still
+11:44 reading the kind of essential pieces of
+11:47 my code base. It's not all of the code,
+11:48 but the essential pieces. You definitely
+11:51 want to read, especially when you're
+11:52 going to be rerunning the code over and
+11:54 over and over. Basically, like the more
+11:55 you're going to productionize something,
+11:56 the more you should dig in and
+11:57 understand what's happening. So, you can
+11:59 see here, we have a nice handoff.
+12:00 There's the plan, created some theme
+12:01 tokens, and then this agent has left a
+12:03 note for the next agent. Kind of a nice
+12:05 way to hand off things. But, this is a
+12:07 deterministic type. So, my agents are
+12:09 outputting JSON, it's getting formatted,
+12:10 it's getting validated. If it fails, the
+12:12 agent must properly output it, okay?
+12:14 Determinism is wired into every one of
+12:17 my agent steps. They must output
+12:18 specific types, specific structures. I'm
+12:20 looking for consistency in my AI
+12:23 developer workflows, in my combination
+12:25 of agents plus code. I'm not doing
+12:27 one-off work here. I need these systems
+12:28 to work reliably over hundreds and
+12:30 thousands of executions without me. And
+12:32 that's the key we're moving toward here.
+12:34 The software factory lets your agents
+12:36 run, if you do it well, without you.
+12:38 That's the key. And then we have the
+12:39 build step. Guess what the build step
+12:40 does? We can go into the compile
+12:41 prompts, go into the user prompt build
+12:43 task. There's the actual prompt, and
+12:45 here's the previous envelope. This is
+12:47 the work that was handed off from the
+12:48 planner. So, it has all the context it
+12:50 needs, it has the task, it has its
+12:52 response report format. If you've been
+12:54 with the channel, you understand this
+12:56 prompt format very well. Instructions,
+12:58 variables, workflow report. itself,
+13:01 again, keeps chaining its output to the
+13:03 next agent or to whatever agent's coming
+13:04 next. Changed files, just tracking what
+13:06 you would want to track in a build
+13:08 agent. Of course, we can see all the
+13:09 tool calls, and we can really understand
+13:11 the system. If you don't measure it, you
+13:13 cannot improve it. That's the super
+13:14 simple software factory. It is quite
+13:16 simple. I'm making a couple key moves
+13:18 here. I'm making sure that we directly
+13:20 address engineer work incoming prompts.
+13:22 I'm making sure that we address our code
+13:24 directly. And then, of course, we can
+13:26 customize the agent as much as we need
+13:28 to to get the work done. So again, code
+13:30 plus agents beats agents alone. A lot of
+13:32 engineers are just going to start
+13:33 throwing everything into skills,
+13:35 everything into a bunch of agents. Down
+13:37 the road you will pay for it. You'll pay
+13:38 for it in some way, whether it's
+13:40 mistakes, hallucinations, which I know
+13:42 is becoming less and less of an issue as
+13:44 these models progress. It's not just
+13:45 that, right? There is cost, there is
+13:47 speed, there is performance. There are
+13:49 just things you likely are having your
+13:51 agents do like execute tests that you
+13:53 could run into deterministic paths of
+13:55 code and then if something goes wrong,
+13:57 hand it back to your agent. Tell me why
+13:58 you would need to pass successful
+14:00 passing tests back into your agent's
+14:02 context window. Again, this is just one
+14:04 more advantage you get by understanding
+14:06 what's actually going on. And again,
+14:08 that's that fine line between vibe
+14:09 coding and agentic engineering. Let's
+14:11 scale this up. Let's do something more
+14:13 interesting. I want to dive into how
+14:15 this tool is customizable and
+14:16 configurable and now I'm going to be
+14:18 using this tool for my products, for my
+14:20 code bases. We're going to run the full
+14:21 software developer life cycle. You know,
+14:22 you can imagine I've invested more time
+14:24 into this AI developer workflow. We're
+14:26 going to give the Inkoo editor a
+14:27 side-by-side markdown viewer. In the app
+14:29 right now, there's no actual markdown
+14:31 render. We would love to have this for
+14:33 writing. You need to emphasize things,
+14:34 you need to underscore things, blah blah
+14:35 blah. Let's go ahead and get this added.
+14:37 Just kind of detailing that we want a
+14:38 switcher, cover it with tests,
+14:40 togglable. And then we have this
+14:41 additional instruction here. Use the
+14:43 state-of-the-art configuration for this
+14:45 work. So of course, with the system we
+14:47 can customize every single model, every
+14:49 single role, every single agent harness,
+14:51 every single tool, so on and so forth.
+14:53 We'll just go ahead and watch our agent
+14:54 boot this up so you can see us doing a
+14:55 little bit of research, understand the
+14:57 system, AWS DLC. There's a frontier
+15:00 config we'll look at in just a second.
+15:01 Confirm the roster and now it's going to
+15:04 get this kicked off with the SDLC and
+15:07 that prompt that we're running. So
+15:09 that's that. Now we can go back into our
+15:10 observability system and we can see this
+15:12 running. Simple SDLC. And of course, as
+15:14 our planner, we have the cracked Claude
+15:16 Opus 5. Shout out to Anthropic for
+15:18 putting out another game breaking model.
+15:20 It's state-of-the-art. The one thing I
+15:21 will say is it's reportedly above Fable
+15:24 5. I'm not quite feeling that and maybe
+15:27 I'm just getting cost baited here, but I
+15:28 still feel like Fable 5 is above Opus 5.
+15:30 Comment down below, let me know what you
+15:32 think. Does Opus 5 clear Fable 5? I
+15:34 don't think so. Regardless, they're all
+15:36 kind of in this same frontier level
+15:39 model now and so I'm really impressed
+15:40 with that. Really a great model and you
+15:42 know, the fact that it's half the price
+15:43 obviously makes it the model of choice
+15:45 over Fable 5. I'm just still using Fable
+15:47 5 when I can here in the really, really
+15:48 critical situations just cuz I think
+15:50 it's still a notch above and I've seen
+15:52 all the benchmarks. I know that the
+15:54 benchmarks are saying Opus 5 beats
+15:55 Fable. It's just what I'm feeling with
+15:56 my benchmarks and my execution. So here
+15:58 we go. We're running state-of-the-art
+15:59 workflow here. We want to give our
+16:00 Inkwell editor application a markdown
+16:02 side-by-side view. You know exactly
+16:04 what's going to happen here. We're going
+16:04 to run a full software developer life
+16:06 cycle. Let me go ahead and show you some
+16:08 of the underneath, some of the
+16:09 nitty-gritty of this, right? It's
+16:10 important to understand how your system
+16:12 works so you can improve it properly.
+16:14 Let's go ahead and jump into this a
+16:15 little bit. I'm going to open up the
+16:16 code base here. For code viewing, I am
+16:18 using VS Code. There isn't really any
+16:21 reason to use anything else right now
+16:22 and it's really just for code viewing
+16:24 and I do do some typing when I'm writing
+16:25 out my prompts inside of VS Code. So all
+16:28 of this is wrapped around a single
+16:30 skill, SSSF, Super Simple Software
+16:33 Factory. The whole idea with this
+16:34 application is that you can build these
+16:37 workflows where you have agents
+16:39 proposing and code disposing, right?
+16:40 Your code is always validating what just
+16:43 happened. It's always doing the
+16:44 deterministic things and the code
+16:46 actually controls the entire workflow.
+16:48 If you've taken Tactical Agent Coding,
+16:50 this is going to look very familiar to
+16:51 you. We have an ADWS directory inside
+16:54 this code base that contains our AI
+16:56 developer workflows that run end-to-end.
+16:58 This workflow that's running right now
+17:00 is the largest workflow we have here. We
+17:02 have the simple SDLC here at the bottom
+17:04 and it's relatively concise, right? It's
+17:07 180 lines and I know like everyone's
+17:09 shocked right now and you can't bear the
+17:10 sight of looking at code. Yes, I do
+17:12 actually still look at the critical code
+17:14 in the main line of my code to make sure
+17:16 it is going to scale and to make sure
+17:19 that my agents can operate it properly,
+17:21 right? Yes, I coordinated it with agents
+17:23 to build this out. But, you can see here
+17:24 we have phases. So, we're using the
+17:25 width statement in Python to denote the
+17:28 entrance and the exit of this block of
+17:30 code. And this is what makes up the
+17:31 individual piece of work that we want to
+17:33 do. We have planning here. We just
+17:34 search for name. We have our requests,
+17:36 which is our engineer type. We have our
+17:38 plan. We have the commit plan, build,
+17:40 test. If something goes wrong, fix.
+17:42 Something goes wrong, review, revise.
+17:44 Again, if something goes wrong, document
+17:46 and our commit docs. So, we are clearly
+17:48 separating agents plus code. And we can
+17:50 do this by looking at this. We go kind
+17:52 equals. And so, you can see how we are
+17:54 separating this out. Let me go ahead and
+17:55 just get rid of this. Search, engineer,
+17:57 agents, code. And so, we're clearly
+17:58 delineating this for ourselves and for
+18:01 our agents. Every one of these is an
+18:02 agent call to my favorite agent to
+18:04 coding tool. If you go into AGW modules,
+18:07 I am running the pie coding agent. I've
+18:08 got it all configured here. And at the
+18:11 end, it's just going to run a pie coding
+18:12 agent with all the customization. But,
+18:14 let's simplify this and just look at the
+18:15 configuration. So, super simple config.
+18:18 And this is what really lets us
+18:19 customize our agents and their core
+18:21 four. Context model prompt tools. Always
+18:23 the same thing. If you match the core
+18:25 four, you'll master the agent. If we
+18:26 look at our planner, you can see here in
+18:28 the base config, we're running that Chem
+18:30 E K3 through fireworks, thinking high,
+18:32 nice purpose. We have our prompt
+18:34 engineering section. So, the system and
+18:36 user prompt. And then we have the
+18:37 harness engineering. On the channel,
+18:39 we've been breaking down, looking at
+18:41 different types of pie coding agent,
+18:43 custom agent harnesses. We've been
+18:45 building them and we've been sharing
+18:46 them. Mostly in public, some private or
+18:48 tactical agent to coding and agenda
+18:50 horizon members. But, ultimately, what
+18:52 we're doing here is putting together, as
+18:54 mentioned, the core four for every
+18:55 specific agent we want to run throughout
+18:57 the software developer life cycle. So,
+18:59 this pattern repeats. Here's the
+19:00 builder. Same thing. Specify the tools,
+19:02 specify the prompts, specify how your
+19:05 agent is going to operate. Specialize
+19:07 it. We've been talking about building
+19:08 custom agent harnesses. We're doing that
+19:10 because every single agent can have
+19:12 their own unique agent harness with
+19:13 specific abilities, all right? So, you
+19:15 can see here, I've added sub-agent
+19:17 support to the planner, and I've also
+19:19 added it somewhere down here for the
+19:20 scouter. So, if it needs to, it can spin
+19:22 up its own sub-agents. Just one simple
+19:24 example of how you can build out and
+19:26 specialize the agent harness that your
+19:28 individual agent executes. The
+19:30 implications of this are massive. One of
+19:32 these agent harnesses, as we've talked
+19:34 about on the channel, can do
+19:35 extraordinary things. So, that's the
+19:37 configuration file. The system reads
+19:38 this in. Where the real magic is is
+19:40 inside combining this with the actual
+19:43 ADW that runs, right? So, let's go to
+19:44 the simplest possible ADW, right?
+19:46 Prompt. All this does is taking some
+19:47 inputs, and it runs and executes the
+19:50 actual agent. We have our pH call. It's
+19:53 an agents call, and if we search our
+19:55 phase here, it should be a class that we
+19:57 can look at here. It's going to just do
+19:58 validation for us, and then it boils
+20:00 down into an agent run call. So, if you
+20:02 look at our call, our agent is going to
+20:04 then start executing, and this does
+20:06 exactly what you think it does. This is
+20:07 going to run right down into our agent
+20:10 pi and run the run workflow. We can just
+20:12 collapse everything to take a quick look
+20:14 at this. There's run, so on and so
+20:15 forth. And you can see there, we're
+20:16 setting up the pi coding agent with our
+20:18 exact params, mode, JSON, provider, blah
+20:21 blah blah blah blah. No need to overfix
+20:22 it on the code. Just wanted to kind of
+20:23 share that. What we're doing here is
+20:25 really simple. We're staying in
+20:27 distribution. What does that mean? I'm
+20:28 not inventing a DSL. The only customized
+20:31 thing I have here is this config file,
+20:32 which is just YAML. With the super
+20:34 simple software factory, we're just
+20:35 staying in distribution of what these
+20:37 models know, what they're trained on.
+20:39 It's just Python. It's just YAML. It's
+20:42 just agents. And it's just a skill.
+20:44 Let's go and check on our workflow.
+20:45 There we go. All finished. Here's that
+20:47 like high-level view. Here's what it all
+20:49 looks like put together. And so, you can
+20:50 see how this could be really, really
+20:51 valuable. First off, full model
+20:53 customization. We can put whatever we
+20:54 want wherever we want it. We have a
+20:56 great cost analysis. We know how much
+20:58 some of our work costs. Full agent
+21:00 configuration. And then we have phased
+21:02 work. It's plan, build, review. One
+21:04 agent, one prompt, one purpose. We're
+21:06 keeping everything nice and focused. If
+21:08 we need to, we can restart the workflow
+21:10 with the session ID, with the ADW ID.
+21:13 Communicating this idea is going to
+21:15 differentiate your engineering from the
+21:16 rest of the pack. It's not just agents
+21:18 here. We have deterministic checks to
+21:20 validate the work and proceed from
+21:22 there. There's a lot missing from this.
+21:23 There's a lot you can do with this. For
+21:24 instance, I'm just running this on the
+21:26 main branch. Of course, you're going to
+21:27 want a branch. You're going to want to
+21:29 put your agent in a sandbox. You're
+21:30 going to want to isolate the agent run,
+21:33 and then there's going to be a merge
+21:34 step later on. The whole point here is
+21:35 that this is an observable,
+21:37 customizable, reusable system that we
+21:39 can modify at the speed of agents, at
+21:42 the agentic speed. We can just dial into
+21:44 this. This is just committing the plan.
+21:46 Very simple. Here, we're actually
+21:47 running the test suite right after the
+21:49 agent is building. So, if something goes
+21:51 wrong, we feed it right back into the
+21:52 agent, right? No problems though. So,
+21:54 then we go on to the review step. So,
+21:56 what's the review doing? Our review
+21:57 agent is asking the question, is what we
+21:59 built what we asked for? You can see our
+22:01 configuration, classic cracked Opus
+22:03 model. Everything's looking good there.
+22:05 So, then we continue to committing, and
+22:07 then we diff the changes. Why did we
+22:09 diff the changes? Because we're
+22:10 documenting the work done for the next
+22:12 engineer, and more likely the next set
+22:14 of agents coming into this work. And so,
+22:16 you can see, it's very concise. It's
+22:18 doing a streamlined set of things, and
+22:20 this gives us extreme flexibility. We're
+22:22 not just throwing a state-of-the-art
+22:23 model. We're not just torching tokens.
+22:25 We're not just token maxing. We're
+22:26 thinking about what our system needs to
+22:28 win over and over and over, hundreds and
+22:30 thousands of runs. This is the art and
+22:32 science of agentic engineering. It's not
+22:35 just about the one thing you're doing
+22:36 right now. It's about the hundredth
+22:38 time. It's about the thousandth time,
+22:40 and it's about scaling your compute to
+22:41 scale your impact in a way that is high
+22:44 leveraged, in a way that gives you
+22:46 flexibility, optionality, extensibility.
+22:48 And so, that's the core idea here. It's
+22:50 super simple.
+22:51 Literally called the super simple
+22:52 software factory. For context, I needed
+22:55 to kind of rebuild a reusable system for
+22:58 building agent available workflows for
+23:00 my work coming up here for the next
+23:02 phase of agentic engineering. It's very,
+23:04 very clear that there's a new cohort of
+23:07 engineers that are just building these
+23:08 now. It's stacking up code plus agents,
+23:10 and then when you need to human in the
+23:12 loop, there's many next directions to
+23:14 take that. Maybe that's a great place
+23:15 for us to go next. Like, where does this
+23:17 go from here? This system was designed
+23:18 to be fully customizable at the atomic
+23:21 level. Let's first validate that that
+23:22 feature was built out. Let's go ahead
+23:23 and refresh this. Let me go and get that
+23:25 split view. There's our preview. You can
+23:27 see there's that line there. Let me try
+23:29 an underscore here. Okay, very good.
+23:30 Let's try a bullet point. Low. Another
+23:32 bullet. Great. Let's try a list. Here's
+23:34 a list item. Great. Let's try a header.
+23:37 H2 item. Very good. You can see that
+23:39 this is working pretty expected out of
+23:41 these models. You can go into full
+23:42 preview mode and just view it here.
+23:43 Edit, split, so on and so forth. That's
+23:45 working very well. Again, SDLC kind of
+23:47 built this out, validated. These models
+23:49 are more than good enough to prompt
+23:50 this. In fact, this is something, again,
+23:52 you probably could have just thrown in a
+23:53 single agent and got the work done. I
+23:54 fully acknowledge that. I know a lot of
+23:56 engineers watching this is just going to
+23:57 be like, at what scale do you need
+23:59 something like this? This probably isn't
+24:00 the scale. We're getting close, but this
+24:02 will absolutely save you time at some
+24:04 point. Cuz at some point your system
+24:05 will get so large, so complex, that
+24:07 validation will be the only way forward.
+24:09 And whether you hand that to an agent,
+24:11 it's going to be more expensive across
+24:13 some dimension, likely time or cost, you
+24:15 will pay that cost. Meanwhile, myself
+24:17 and other engineers are going to be
+24:19 scaling the compute to scale their
+24:20 impact in a high leverage way by
+24:22 combining engineers, agents, and code,
+24:25 specifically code plus agents. I can
+24:27 already see the comments
+24:29 >> [laughter]
+24:29 >> in the comment section. Please think a
+24:31 little further than that. Think about
+24:32 scale. Think about production. Think
+24:34 about standards. Think about the
+24:36 thousandth run, not the first, not the
+24:39 tenth. So, you know, like, where can we
+24:40 take this system next? What comes next
+24:42 in a system like this? So, this super
+24:43 simple software factory is designed to
+24:45 be an atomic tool. Everything is
+24:47 composable, and I've taught an agent
+24:49 exactly how to operate this. So, how is
+24:51 this tool so extensible and reusable?
+24:54 So, Ducklog skills SSF. What I've
+24:57 actually here is a skill that allows an
+25:00 agent to operate this system. And what
+25:03 I've built here is a skill that allows
+25:05 this software factory to be built into
+25:07 new code bases. There's going to be a
+25:08 link in the description. You can clone
+25:10 this code base, and and then you can run
+25:12 the {slash} install command. And so,
+25:14 {slash} install is going to run this
+25:15 workflow, where the agent is actually
+25:17 going to copy everything into the code
+25:19 base. So, this is a fully reusable
+25:21 system. It's designed to be deployed
+25:23 across your code bases. You know, a lot
+25:25 of stuff I bring to the channel and
+25:26 share on the channel, I need myself. I
+25:28 need a reusable, extensible,
+25:30 customizable AI developer workflow
+25:31 system that allows me to build software
+25:33 factories. So, I built it. I have and
+25:35 will invest a lot of time into this
+25:37 specific tooling because it has the
+25:39 properties that I mentioned, observable,
+25:41 customizable, reusable. Out of the box,
+25:43 it gives you what you need, and then you
+25:44 can see all the cookbook recipes here.
+25:46 How I like to design my skills is
+25:47 there's a central idea, super simple
+25:49 software factory, deploy and operate
+25:51 repeatable agents plus code in any code
+25:53 base. So, that's the kind of core idea.
+25:55 And then the cookbook is the kind of
+25:56 lazy loaded actions, the incrementally
+25:59 adoptable contexts that the agent can
+26:02 look at to execute, right? So, we have
+26:03 this table here, we can go ahead and go
+26:04 into render view, and you can see the
+26:05 requests routing. So, the requests set
+26:07 up the factory in a new repo, create an
+26:09 ADW, modify an ADW, create the config,
+26:12 set up a new agent roster, so on and so
+26:14 forth, right? I've taught an agent how
+26:15 to operate the super simple software
+26:17 factory. And this is agentic access, one
+26:19 of the five key pillars of agentic
+26:21 engineering. You are moving too slowly
+26:23 if you are doing pretty much anything by
+26:25 hand unless you're building the system
+26:27 that builds a system. That's exactly
+26:29 what I've done here. That meta concept
+26:30 is going to reign true throughout the
+26:32 age of agents. If you're doing something
+26:34 you can teach your agents to do, why
+26:36 aren't you? This system here is a great
+26:37 example of that, super customizable. Of
+26:39 course, it's got a bunch of templates in
+26:41 here. It uses all this to create that
+26:43 first version inside your code base, and
+26:45 then of course, after that, the whole
+26:46 goal is that you should customize it to
+26:48 make it your own. The tests I have set
+26:50 up here are not the tests you need. The
+26:51 plan quality is not the plan quality you
+26:54 need, so on and so forth. It's designed
+26:55 to be a customizable. It's atomic.
+26:57 Software factories give you more
+26:58 leverage on your prompt. How well is
+27:01 based on the effort, time, and
+27:03 investment you put into your AI
+27:05 developer workflows, which make up your
+27:07 software factory. There's a ton of
+27:08 engineering work you just don't need to
+27:10 be doing anymore. That continues to be
+27:12 true. So, why are you? This is something
+27:14 I think about. This is something I tell
+27:16 myself and other engineers when I'm
+27:18 sitting here working, prompting back and
+27:19 forth like an idiot. So, it's time to
+27:21 shift. It's time to make that next jump.
+27:22 Build your software factory. Deploy it
+27:24 into the cloud. Set up sandboxes so that
+27:27 you can push all the 80% junk work of
+27:30 engineering away off to your agent stack
+27:32 in a reliable, repeatable way so that
+27:34 you can focus on the real net new hard
+27:36 work your agents can't do without you.
+27:38 So, feel free to use the super simple
+27:39 software factory. Pull in ideas. Steal
+27:41 it. Roll it into your own software
+27:42 factory. It's here for you. Again, every
+27:44 single week my goal here on the channel
+27:46 is to bring you ideas you've seen,
+27:48 permutations of ideas, some net new
+27:50 ideas, and some just raw, hitting
+27:52 examples of how you can use agents and
+27:54 code, how you can engineer to scale to
+27:57 get your work done, right? To build
+27:59 valuable software. At the end of the
+28:00 day, that's what it's all about. Those
+28:02 who can orchestrate intelligence at the
+28:04 highest level to accomplish work are
+28:06 winning. They're just in the lead right
+28:08 now, and the software factory is the
+28:11 next permutation. It's the next step of
+28:13 this. It's not just about agents. It's
+28:14 about agents plus code. We're getting to
+28:17 a key point in the age of AI where if
+28:19 you're not running a software factory,
+28:20 you're going to be behind. We're just at
+28:22 another branding point here, and I want
+28:24 to make sure I say it clearly and
+28:25 concisely to you so you're aware.
+28:27 Building these out, it takes time. I
+28:29 wanted to give you a head start here
+28:30 with the super simple software factory.
+28:32 Always remember this. Vibe coding is not
+28:34 knowing how your system works and not
+28:35 looking. Agentic engineering is knowing
+28:37 how your system works so well you don't
+28:40 have to look. You want to rise with the
+28:42 ceiling of agentic engineering, not the
+28:44 floor of vibe coding. If you want a
+28:45 complete understanding of how to build
+28:48 AI developer workflows, which make up
+28:50 your software factory, check out
+28:51 Tactical Agentic Coding. Link in the
+28:54 description for you. You're going to
+28:55 scale far beyond AI coding and Vibe
+28:57 coding with advanced agentic
+28:58 engineering. So powerful, your code base
+29:00 runs itself. This is what the name of
+29:02 the game is right now in engineering.
+29:04 This is for the top 20% of engineers. If
+29:07 you're a noob, again, if you're Vibe
+29:08 coding, I'm sorry, this just isn't for
+29:10 you. But if you're doing real
+29:11 engineering work, check this out. This
+29:12 is going to be ultra valuable. All the
+29:14 ideas embedded in here are going to be
+29:16 the ideas to help you advance your
+29:17 career. Thousands of engineers have
+29:19 taken this. I built this by hand from
+29:21 scratch. If you don't want to pay to
+29:23 play, that's totally fine. Check out the
+29:24 links in the description. The Super
+29:26 Simple Software Factory is going to be
+29:27 completely free and available to you.
+29:29 Also, if you want to understand why I
+29:30 didn't mention loop engineering once in
+29:32 this video, watch the first video linked
+29:34 in the description. What you're really
+29:35 looking for is the software developer
+29:37 life cycle, not loop engineering. We go
+29:39 deep into that topic and really the idea
+29:42 of building software factories in that
+29:43 video, so check that out if you're
+29:45 interested. You know where to find me
+29:46 every single Monday. Stay focused and
+29:48 keep building.

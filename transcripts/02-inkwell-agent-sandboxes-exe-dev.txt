@@ -1,0 +1,1171 @@
+# Engineers... Your Software Factory NEEDS Agent Sandboxes to SCALE (exe.dev)
+# IndyDevDan | 2026-08-10
+# https://youtu.be/SEI_qIW4o2c
+
+0:00 What's up engineers? Indy Devdan here.
+0:02 It's time to focus. This is going to be
+0:04 a big video and a lot of engineers are
+0:06 going to miss the leverage I'm going to
+0:07 share in this one. I don't want you to
+0:09 be one of them. Your software factory
+0:10 can unlock an unprecedented level of
+0:13 engineering results. But there's a
+0:15 massive roadblock every agentic engineer
+0:17 runs into at some point. A roadblock you
+0:20 might have. Where should your software
+0:22 factory run? Where do your agents plus
+0:25 code actually run? Most engineers
+0:27 allocate a tiny corner of their own
+0:30 computer for their agents, or they lean
+0:32 too heavily on CI/CD or some container.
+0:35 The best engineers aren't doing this.
+0:37 Engineers at big AI labs running the
+0:39 most insane workloads you can imagine do
+0:42 something else because they've realized
+0:44 one simple fact. The more autonomous and
+0:47 secure your agents are, the more they
+0:49 can do for you riskfree. On this
+0:52 channel, across hundreds of agentic
+0:54 engineering videos, you've heard me say
+0:56 scale your compute to scale your impact.
+1:00 Compute applies equally to GPU compute
+1:02 and CPU compute. Old school bare metal.
+1:06 An agent sandbox is the best space to
+1:09 place your agents. [music] Why is that?
+1:11 Why can't we just use a container and
+1:13 call it solved? It's because agent
+1:15 sandboxes give you three key advantages:
+1:18 true isolation, insane scale, and
+1:20 agency. Here's the raw reality of the
+1:23 state of agentic engineering. If you are
+1:26 inside the loop, you are the bottleneck.
+1:28 In this video, I'm going to break down
+1:30 exactly how you can step outside the
+1:32 loop by putting your software factory
+1:35 inside an agent sandbox. Let's put your
+1:38 [music] factory in a box.
+1:45 Here's the tech stack we're going to be
+1:46 using to put our factory inside a box.
+1:49 Don't focus on the tool. Focus on the
+1:51 purpose and choose the best tool you
+1:53 need. Here's the architecture of the
+1:55 system as well. We'll throw this up on
+1:56 the screen. And why did I put the second
+1:58 orchestrator agent inside the sandbox?
+2:01 It'll all make sense as we progress.
+2:03 Let's start with a powerful workflow you
+2:05 can't do on containers on your device.
+2:08 Best of N.
+2:13 We'll boot up Herder. This is my
+2:15 terminal multiplexer of choice for
+2:17 watching agents, kicking off jobs,
+2:19 running arbitrary commands, application
+2:21 directory. And we're going to use claw
+2:23 code fable as our tople orchestrator
+2:27 inside of our software factory. We're
+2:28 going to use pi as our agent SDK. Don't
+2:30 just limit yourself to one agentic
+2:32 coding tool. The tools you use directly
+2:34 limit what you believe is possible.
+2:36 Let's go ahead and kick off the skill
+2:37 that activates our agents understanding.
+2:40 This is going to be SSF, agent, sandbox,
+2:42 orchestrator. I'll break this all down
+2:43 in a second. It understands the skill.
+2:45 It's got all the context primed, ready
+2:47 to go. And it can see that we have one
+2:49 VM running. We're not going to touch
+2:51 this one. We're going to open up brand
+2:52 new VMs. We're going to run the best of
+2:54 end pattern. We're putting our software
+2:56 factories into an agent sandbox. Let me
+2:58 show you exactly what that looks like.
+3:00 I'm going to open up VS Code. I'll grab
+3:01 my demo prompt here. Copy this. Feel
+3:04 free to pause. We're going to break this
+3:05 down in a second. I'm going to paste
+3:06 this in and fire it off. This top level
+3:09 orchestrator agent that operates outside
+3:11 of all of our sandboxes is going to
+3:13 start orchestrating this workflow. If
+3:15 you were here for last week's video
+3:16 where we talked about the super simple
+3:18 software factory, you're going to love
+3:20 what you're going to see next. So, we're
+3:21 running five different agent
+3:22 configurations. Default, Frontier,
+3:24 Deepest, Seek, Open Weights, and Top
+3:27 Speed, each with its own sandbox. And
+3:28 they're all going to solve the same
+3:31 problem. But we're not just launching
+3:32 agents. We're running an AI developer
+3:34 workflow. We're running the full
+3:36 software developer life cycle against
+3:38 our simple application which you're
+3:40 going to see here in a second. But you
+3:42 can see here our orchestrator is kicking
+3:43 off not just agents inside sandboxes.
+3:46 Our agent is building our software
+3:47 factory and placing the entire factory
+3:50 inside our agent sandbox. And this
+3:52 unlocks a lot of really really powerful
+3:54 things. When you use agent sandboxes,
+3:56 you're getting isolation, you're getting
+3:57 scale, and you're getting autonomy.
+3:59 Every single agent owns the computer.
+4:02 They're not just running on a little
+4:03 corner of yours interfering with your
+4:05 work, you interfering with their work.
+4:07 They have everything they need to own
+4:09 the outcome. We are using exe.dev as my
+4:12 primary sandbox tool. One of the best,
+4:15 simplest ways to get started with agent
+4:17 sandboxes. I'll of course link all the
+4:19 resources we're going to talk about
+4:20 throughout this video in the description
+4:21 for you, but their tagline keeps it nice
+4:23 and simple for you. Computers for
+4:25 developers and agents. Durable
+4:27 sandboxes, fast, secure, and sharable.
+4:29 The agent sandbox is a developer device
+4:31 for your agents. Let's just like really
+4:33 atomize everything. Let's say exactly
+4:35 what things are. There's a lot of hype
+4:36 and noise in the AI industry. I try to
+4:38 dehype things as much as possible as
+4:41 complex as something like this is. We're
+4:43 not just throwing a expensive claw opus
+4:46 cloud fable Asian at this. We are
+4:47 understanding what model needs to run
+4:50 where with what code surrounding it.
+4:52 Right? That's the software factory.
+4:54 That's the next step. So this is a lot
+4:56 more powerful than just a skill and an
+4:59 agent and spin up this web app inside of
+5:01 this service. Orchestrating other
+5:03 agents, orchestrating sandboxes does
+5:05 require state-of-the-art intelligence. I
+5:08 always track these models inside of my
+5:10 model stack here. You've probably seen
+5:11 this if you've been with the channel. I
+5:13 delineate between three tiers of models.
+5:15 We have state-of-the-art, we have
+5:17 workhorse, and we have our lightweight
+5:19 models, which are basically the floor.
+5:20 These lightweight models are defined by
+5:22 their ability to be run by previous
+5:24 generation GPU node or directly on your
+5:26 Mac device if you have the unified
+5:28 memory for it. And then we have our
+5:29 workh horses. These are all of the
+5:31 powerful models that aren't quite
+5:33 state-of-the-art. The newest entry which
+5:34 you're going to see here is the brand
+5:36 new Deep Seek V4 Flash0731.
+5:39 This model is absurd for its price.
+5:41 You're going to see a model
+5:42 configuration that we're going to kick
+5:44 off that I call Deepest Seek, which is
+5:46 just V4 Flash models. We're going to see
+5:48 how they compare to a bunch of other
+5:50 model plus harness configurations inside
+5:52 of our software factory. If you're still
+5:54 fixated on models, you are behind.
+5:55 That's not the name of the game anymore.
+5:57 We're entering an age of abundance of
+5:59 compute. And now it's about focusing on
+6:01 what model plus what code do you need to
+6:03 do the job. And the software factory is
+6:06 that system. So our agent is finished.
+6:08 You can see we have the application
+6:09 layer and the agentic layer. Let's go
+6:11 ahead and jump into them. Open these all
+6:13 in Chrome. Let's see what's going on in
+6:15 our system. We're going to open them all
+6:17 up in Chrome. And as you can see, we're
+6:19 working on Inkwell. This is a simple
+6:21 mock application. This is not the
+6:23 important piece. We're using this as a
+6:24 demo. What's important here is our
+6:26 software factories. So, what you're
+6:28 going to see here is 1 2 3 4 five unique
+6:33 software factories running in their own
+6:35 agent sandboxes. So, inside of that
+6:37 prompt, this user interface is like not
+6:39 clear. There's too many buttons. Things
+6:40 are too out in the open. And we want a
+6:42 more unified experience for our Inkwell
+6:45 writing application. Instead of just
+6:46 running this once on one agent or two
+6:49 agents, I'm running them in software
+6:51 factories. We're running the simple
+6:52 software developer life cycle. Again, we
+6:54 covered this last week. The super simple
+6:55 software factory is a key piece of this,
+6:57 but it's not our key focus. We're using
+6:59 this as our observability system into
+7:01 our sandbox. We have discrete URLs for
+7:04 every sandbox. This is our default Asian
+7:06 config. This is our front tier Asian
+7:08 config. This is our deepest seek Asian
+7:11 config. We then have our open weights
+7:13 configuration and then our top speed.
+7:15 And as you can see here, we've opened up
+7:17 two applications for each set. The
+7:20 software factory and the actual
+7:21 application. So you can see we have five
+7:23 unique versions. These are each inside
+7:25 an agent sandbox. If we hop back over to
+7:27 exe.dev, do a refresh, you can actually
+7:29 see all of our sandboxes up plus the one
+7:32 I had up earlier. Okay, so we have five
+7:34 new redesigned agent sandboxes. So
+7:37 again, like really important concept.
+7:38 I'm not giving my agents a corner of my
+7:40 computer. I'm giving them an entire
+7:42 computer to do all the work they need to
+7:44 with isolation, with scale, and
+7:46 autonomy. Let's click into our software
+7:48 factories. You can kind of see our model
+7:50 breakdown here on the left. And we can
+7:51 do this for every one of our versions,
+7:53 right? Let's go ahead and click into
+7:54 everything. Now, we can get an
+7:55 understanding of the models that are
+7:57 running, the agent harnesses that each
+7:59 model is running, the tools available. I
+8:01 want to keep uping the discussion here.
+8:03 It's not just about a single agent
+8:05 anymore. One agent is not enough. just
+8:07 like one prompt was not enough. We then
+8:09 started running sub agents. We then
+8:11 started chaining agents. Maybe you put
+8:13 together your own custom agent harness
+8:15 thanks to great tools like the PI agent
+8:16 harness. Fantastic. At some level you
+8:18 realize that agentic engineering is
+8:21 software engineering. We have a new
+8:23 primitive which is the agent autonomous
+8:25 software and we need to put them inside
+8:28 of our existing developer workflows that
+8:30 we ourselves would run. Hence the term
+8:32 AI developer workflow. We're adding AI
+8:34 to the work you and I used to do as
+8:36 engineers. every single day. So, we have
+8:38 this new tool. We need a new frame of
+8:40 mind to understand how we can really use
+8:42 this in the best way. And spoilers, you
+8:44 know, the whole point of me creating
+8:45 this video and sharing it with you here
+8:46 is that when your agents have their own
+8:48 developer device just like you do, guess
+8:51 what they can do? They can perform and
+8:52 act and even outperform you. That's the
+8:55 whole goal here. A lot of engineers are
+8:56 afraid, you know, of these great models
+8:58 progressing further and further and
+8:59 further. I am not. This is a new tool in
+9:01 your toolbox. Don't run away from the
+9:03 fire. Run into the fire. These agents
+9:05 can do incredible work on your behalf
+9:07 for you, for your business, for your
+9:08 career, for your users, but you have to
+9:10 leverage it. So, inside of every single
+9:12 sandbox, we have placed a set of agent
+9:14 configurations and we built an AI
+9:16 developer workflow that walks through
+9:18 the software developer life cycle and
+9:19 our agents are shipping work on our
+9:21 behalf. Here's a key word without us.
+9:23 The key idea that I really want to
+9:25 communicate here is that if you are in
+9:26 the loop, you are always the bottleneck.
+9:29 Now, there are exceptions to this. If
+9:30 you're doing hands-on agentic coding
+9:32 work that requires you, that requires
+9:34 your expertise and you know a great
+9:35 exception to this is like if you are
+9:37 building the system that builds the
+9:39 system, then of course get in the loop,
+9:40 do the work, go hands-on, prompt back
+9:42 and forth, babysit your agent, you need
+9:44 to do that at some level. But there's a
+9:45 lot of work you might be doing. I know
+9:47 for a fact teams are doing and god
+9:49 forbid we talk about enterprises like
+9:51 there's a ton of work all these sets of
+9:53 engineers are doing that they don't need
+9:55 to be. Why not? because they can have a
+9:57 team of agents do it for them. And not
+10:00 just a team of agents, a team of agents
+10:02 plus code plus engineers. This is our
+10:05 default agent set. This is our frontier
+10:07 agent set. This is our deepest seek
+10:09 agent set. Spoiler, everything's
+10:11 deepseek v4 flash.
+10:14 We're saving an incredible amount of
+10:16 cache of compute. Then we have our open
+10:18 weight. So pure openweight
+10:20 implementation, no closed labs here. At
+10:22 the end, by the way, we're going to
+10:23 compare all the changes made to Inkwell.
+10:25 in each one of these versions. Back to
+10:27 the source. That's why this is called
+10:28 best of end. Say you have a great idea.
+10:30 Say you have multiple directions you
+10:32 want to go or even one single concrete
+10:35 direction. In our example here, we just
+10:36 pass in this one singular prompt. And
+10:38 this is actually running our redesign
+10:40 quiet room. We want a quiet room as our
+10:43 design principle for this application.
+10:45 The current version is cluttered. We
+10:46 want it to be simple and clear. So this
+10:49 is the prompt we pass into every agent
+10:50 sandbox and then into the software
+10:52 factory inside each agent sandbox. As
+10:55 you can see, I'm not just running one
+10:56 agent. I'm running a pipeline of agents
+10:58 plus code. And of course, inside the
+11:00 incoming task, we can dial into all the
+11:03 results here. You know, this is a
+11:04 classic agent observability system.
+11:06 We've talked about these on the channel
+11:07 in the past. You know, you can see the
+11:08 request here. Redesign Inkwell. But
+11:10 then, you know, we can look at the plan
+11:12 workflow. Of course, we can see all the
+11:13 thinking, all the agent calls, the gate
+11:15 passes. We have deterministic gate
+11:17 checks on our nondeterministic systems.
+11:19 JSON error, it fixes JSON error, so on
+11:22 and so forth. Again, we talked about
+11:23 this last week, so check out that video
+11:25 if you want to dig in depth into our
+11:27 super simple software factory that I
+11:28 have fully open sourced. Oh, nice. GLM
+11:30 5.2 review has kicked off here. Love to
+11:32 see that. Pure open weights. In our
+11:34 super simple software factory, we are
+11:36 not just doing lightweight prompts. We
+11:38 are fully in control of the system. What
+11:40 do I mean by that? We are selecting a
+11:42 specific coding agent. Of course, the
+11:43 model, of course, the thinking level, of
+11:45 course, the tools. Oh, what are these
+11:47 tools? These tools came from our custom
+11:49 agent harness. Yes, we are harness
+11:52 engineering inside of our software
+11:53 factory. If you don't have custom
+11:54 harnesses, you can customize and
+11:56 control. You don't have a software
+11:58 factory. The software factory is your
+12:00 full control over the agents and your
+12:02 code. We have a nice simple purpose
+12:04 breaking down what this phase is, which
+12:06 is just the plan phase of this workflow.
+12:09 And then we have a nice description. We
+12:10 have our prompt engineering. Okay, so
+12:12 what is prompt engineering? It's both
+12:14 your system prompt and it's your user
+12:16 prompt. Okay, so on and so forth. I'm
+12:17 not going to download this again. Check
+12:18 out last week's video where we really
+12:20 dive in to the super simple software
+12:22 factory. If you've been with the
+12:23 channel, you're going to notice we're
+12:24 going to start compounding some really
+12:26 heavy-hitting ideas. We're going to lose
+12:27 a lot of engineers. A lot of engineers
+12:29 are going to look at this and just
+12:30 think, I don't need this. I don't need
+12:31 to build this. Insert whatever excuse or
+12:33 lack of focus or whatever. I don't
+12:35 really know. I don't want to judge
+12:36 anyone, but engineers that can focus
+12:38 right now. This is the time to focus
+12:39 because the next leap is available. It's
+12:41 your software factory. And then you can
+12:43 really leverage and scale your software
+12:45 factory by putting your factory in a
+12:47 box. So that's all we're doing here. At
+12:49 a high level architecturally, it's
+12:51 relatively simple. The implementation
+12:52 details do make things a little more
+12:54 complex, but you can see here our
+12:55 default run is running, you know, gem
+12:57 flash, deep flash, GLM52, and GBT Luna.
+13:02 Just a lot of great compute. If you're
+13:04 constantly going back and forth on what
+13:05 model you're using, you're missing the
+13:07 point. You need a model stack, not a
+13:09 single model. Combine compute. Don't
+13:11 select compute. Let's go and look. Of
+13:12 course, our Opus 5 going crazy. 13
+13:15 minutes on the plan phase to be
+13:17 expected. I'm sure this is in high
+13:19 thinking. If we select this, look at our
+13:20 Asian config. Yeah, of course we're in
+13:22 high thinking. Maybe should have dropped
+13:23 that down for this demo. Who cares? Our
+13:25 deepest config. [laughter]
+13:27 All pure DeepSk implementation, saving a
+13:31  ton of cash, using a ton of
+13:33 tokens. Love to see this. Again, we're
+13:35 entering an age of abundant compute. And
+13:37 you know, by the way, we're going to
+13:38 dial into the system a little bit more
+13:40 here. You can see here our top level
+13:42 orchestrator agent has stopped. It's not
+13:44 doing anything. All it did was kick off
+13:46 the orchestrators inside our sandbox. So
+13:49 again, we have this three- tier
+13:50 architecture and there's a reason for
+13:51 that. I'll explain that in a moment. We
+13:52 have this three-tier architecture where
+13:54 we have an outloop orchestrator. We have
+13:56 an in sandbox orchestrator and then we
+13:58 have our software factory. Looks like we
+14:00 have a full fail here. One of our jobs,
+14:02 open weights, completely failed. ChemK3
+14:04 bombed. You can see here we have a nice
+14:06 detail of why this happened. That's
+14:08 okay. This is another reason why best
+14:09 event is so important. It looks like it
+14:11 couldn't get the JSON format out. We
+14:12 could dial into the results. I'm not
+14:14 going to waste your time with this. This
+14:15 is why we use best event. This is why we
+14:17 scaler compute to scaler impact. And
+14:19 what do we have here? This is our top
+14:21 speed. Um, of course, top speed is
+14:23 already done. 14 minutes for this full
+14:24 run. 2 million toes. And look at all of
+14:26 our fast models. If you just care about
+14:28 speed, you want to be looking at Gemini
+14:29 3.6 Flash, DS4 Vlash, 0731, and of
+14:33 course the incredible GBT 5.6 Luna
+14:35 model. We can start looking at our
+14:37 Inkwell applications. Then we'll dive
+14:38 into more of the like heavy technical
+14:40 side of it. Okay, I just want to like
+14:41 really connect with you on the core idea
+14:44 here. Five instances. Looks like one of
+14:46 them failed. Let's go ahead and just
+14:47 like start refreshing. So here's the v1.
+14:49 Let's refresh. There is our updated
+14:51 version. So this is just one sandbox. We
+14:53 have our entire app and our Asian
+14:56 factory and all of our Asian configs and
+14:58 an orchestrator inside this one box. Our
+15:01 agent has a computer. Our agent can do
+15:03 more. It can solve more problems. It is
+15:04 fully autonomous. And guess what? The
+15:06 blast radius is zero. The blast radius
+15:08 is the box. Very, very important stuff.
+15:10 And API keys are completely solved here.
+15:13 You know, for all of our PI coding
+15:14 agents running on the software factory
+15:16 level, they're using an open router
+15:18 provisioned key. Really important
+15:20 concept. It's all going to be here
+15:21 linked in the description for you. But
+15:22 let's keep looking at our versions. So,
+15:23 our default agents put this together.
+15:25 Looks really, really good. We have the
+15:26 title. We can start writing. We feel a
+15:28 lot more focused than our V1. So, here's
+15:31 that V1. We have hotkeys all over the
+15:33 place. It's not clear. I don't feel
+15:35 focused. We have the sidebar open. I'm
+15:36 distracted. But now in this new clear
+15:38 version, I am focused at the same time.
+15:41 We didn't lose our sidebar. We can still
+15:43 do all of our editing and we can do our
+15:44 delete publish. So our actions are
+15:46 there. Total words. Let's go over to our
+15:48 frontier version and let's actually
+15:50 check on this because it might not even
+15:52 be done. Okay. Yeah. So Cammy K3 and our
+15:54 Frontier version is getting to work.
+15:56 This is not complete yet. So refreshing
+15:58 this won't do anything. So let's move
+15:59 on. Deepest seek. [laughter]
+16:02 Let's see how our deepest seek is doing.
+16:03 Very very nice. Uh let's see if we have
+16:05 our sidebar. Good. We don't want to lose
+16:07 anything. Menu at the top right. Very
+16:09 very good. Love the way that looks. We
+16:10 can scale up, scale down. Three words
+16:12 saved. We are just writing we feel
+16:14 focused. Shout out to the Deep Seek
+16:16 engineers. What an incredible model and
+16:18 what insane prices. When we look at
+16:20 artificial analysis, we go to flash.
+16:22 Guess who's at the very bottom of the
+16:25 cost per task benchmark. And guess who's
+16:28 at a decent amount of speed, right? 110.
+16:31 Okay, very good. And guess who's in that
+16:32 workhorse tier? It's Deepseek V4 Flash.
+16:35 Now, I'm super stoked. I'm waiting for
+16:37 two new sets of models to come out. I'm
+16:39 waiting for aside from all the
+16:40 state-of-the-art stuff. You know, I
+16:41 always want Anthropic OpenAI to really
+16:43 push out the state of the art, but aside
+16:45 from that, I'm really paying attention
+16:46 to two models. And comment down below if
+16:48 you are as well. I'm looking for that
+16:50 Deep Seek V4 Pro. Super curious where
+16:52 that's going to land, if we're going to
+16:54 get into that state-of-the-art territory
+16:55 or if that model is just going to be a
+16:56 super economical uh Pro that has
+16:59 improved benchmarks. And I'm also
+17:01 waiting for Quinn 3.830 billion or 50
+17:05 billion or 12 billion. That like 30
+17:07 billion parameter model that they've
+17:09 been putting out has been incredible.
+17:10 Really really excited for that to run on
+17:12 device but also put that on a B300 and
+17:15 that thing is going to run ultra ultra
+17:17 fast or some other sets of nodes. My
+17:19 point is there is that I'm super super
+17:20 excited for that compute to be available
+17:23 because again I'm looking at all these
+17:25 levels. We're constantly trading off
+17:27 three things. Performance, cost, speed.
+17:30 Keep your eye on the ball, but also
+17:32 always move where the ball is going,
+17:34 move where the models are going, and
+17:35 have a plethora of options you can
+17:37 deploy into your software factory. So,
+17:39 back to our factory. This looks good.
+17:40 Deepest seek, incredible model,
+17:42 incredible economics. Like, frankly,
+17:44 stock market crashing economics. If you
+17:46 really start using and really start
+17:47 understanding this model, it's insane
+17:49 what you can do with this. This is a
+17:50 great builder. It's a great worker
+17:52 model. Again, that's why I named these
+17:54 workhorse. It's for your daily 90% of
+17:56 your work. Previous Deep Seek Flash was
+17:58 in that B tier. This is clearly in the A
+18:00 tier. And A tier is like roughly just to
+18:02 have something to benchmark against. The
+18:04 A tier kind of is in this zone here,
+18:06 right? It's in that 50 plus level in the
+18:09 artificial analysis intelligence index.
+18:11 And then of course, your
+18:11 state-of-the-arts are like up here. It's
+18:14 more like this, right? This cut off here
+18:15 is what I consider state-of-the-art.
+18:16 It's like that 56 plus level. But again,
+18:19 that's just rough benchmarking. This is
+18:21 an index and this thing changes. So, you
+18:23 have to be dynamic with comparing your
+18:25 model stack with public benchmarks.
+18:27 Anyway, let's see what else we have
+18:28 here. deepest seek has fully completed.
+18:30 And by the way, once again, this is not
+18:31 just an agent. This is not sub agent
+18:33 delegation. This is not random cloud
+18:35 code/workflows
+18:36 execution where you have really no idea
+18:38 what workflow it shows or why. We have
+18:40 built a software developer life cycle
+18:42 that we have fine-tuned. We've templated
+18:44 our engineering into the software
+18:46 development life cycle. We've added AI
+18:48 to it and we wrapped it in a software
+18:49 factory. And this gives us full control
+18:52 over our engineering, over our products.
+18:54 Be careful how much of your engineering
+18:57 work you're handing off to these AI
+18:58 labs. You're handing off to third-party
+19:00 resources. You're handing off to these
+19:02 all auxiliary tools. Don't outsource
+19:04 your thinking. Stay close to the
+19:06 engineering. This is aic engineering,
+19:08 not vibe coding. Okay? And I say it all
+19:10 the time. I'm going to keep saying it.
+19:12 Vibe coding is not knowing what your
+19:13 system does and not looking. Aentic
+19:16 engineering is knowing what your system
+19:18 does so well you don't have to look. Big
+19:22 difference. like that. It's like a
+19:24 really fine line. If you look at a vibe
+19:26 coder and an agentic engineer, it might
+19:27 look like they're doing the same thing.
+19:29 If you spend a little more time, if you
+19:30 really think about what's happening when
+19:32 an agentic engineer sits down to do
+19:34 work, they're thinking in systems.
+19:36 They're thinking about the hundth and
+19:38 thousandth run of the system. They're
+19:40 thinking in observability, reusability,
+19:42 isolation, scale. So, I hope that makes
+19:44 sense. Again, a lot of engineers, I'm
+19:46 going to lose a lot of my audience here.
+19:48 I know it for a fact. We're at the point
+19:49 in the age of agents where you have to
+19:51 start working for it. So, here we go.
+19:52 Let's see what top speed did. Open
+19:54 weights bombed. Okay, we just go ahead
+19:56 and close that. And then we had our top
+19:58 speed. How does top speed look? Pretty
+20:00 good. Still a little bit noise, although
+20:01 you know, nice hot keys in the footer.
+20:03 We have shortcuts at question mark.
+20:05 Okay, we like to see that. And then we
+20:06 have our nice writing view. And that
+20:09 looks good. We do like that confirmation
+20:11 of saving. And we can scale this up and
+20:13 down. We have some controls here.
+20:15 Overall, really, really good. These
+20:17 workhorse models, Gemini 3.6 Flash, V4,
+20:20 Luna. These fast, relatively cheap
+20:22 models. They can do a lot of the work
+20:23 you're probably doing right now. That is
+20:26 our changes to our live application
+20:28 here. Of course, this is just a mock
+20:29 application. I can't share production
+20:31 code with you, but um you know, I can
+20:33 share open source stuff. I can create uh
+20:35 demos, mocks for you. And you know, the
+20:37 the super simple software factory is the
+20:39 same thing. It is a template for how I'm
+20:42 pulling it in to my products, to my
+20:44 client work, to my production level
+20:46 workloads, then doing a lot of
+20:47 fine-tuning and tweaking. Remember,
+20:48 specialization is your product. The
+20:51 advantage you're going to have is not an
+20:52 out-of-the-box agent. It's a specialized
+20:54 system that does something really,
+20:55 really well at the best economics,
+20:57 right? The best tokconomics. And again,
+20:59 your software factory inside your agent
+21:01 sandbox lets you scale that. It lets you
+21:03 move faster, lets you get out the loop.
+21:06 Best event, fuse the results, move on,
+21:08 hand the work off to your factory. We
+21:10 really dive into the details of the
+21:11 super simple software factory in last
+21:13 week's video. Check that one out. I
+21:14 haven't looked to see how much engineers
+21:15 like that one yet, but that's there. A
+21:17 lot of value in that one and a lot more
+21:19 value in this one. It's hard to follow,
+21:21 but let me break down some of the
+21:23 implementation details for you so that
+21:24 it's easier to follow. I'm still
+21:26 observing this stuff. At any point in
+21:27 time, I can enter these sandboxes and I
+21:30 can enter the orchestration. So, let me
+21:31 show you what I mean. In my demo prompt
+21:33 here, we can get shell access. So, let's
+21:35 get shell access. I'm going to fire this
+21:36 off. And I've got a couple really,
+21:38 really important skills that my
+21:40 orchestrator agent is working off. If
+21:41 you open up cloud skills, you can see
+21:43 here I have four essential skills.
+21:45 Herder sandbox exe.dev super simple
+21:47 software factory and then our super
+21:48 simple software factory orchestrator
+21:50 agent. So this is a composite skill. I
+21:52 don't like to compose my skills. It
+21:54 makes it really hard to change things.
+21:55 You create these nasty dependency
+21:57 graphs. But when things are unified in a
+21:59 single monor repo, you can make an
+22:01 exception to the rule. Our agent is
+22:03 going to use herder, my terminal
+22:05 multiplexer here to kick off this
+22:07 sandbox redesign fleet. Check this out.
+22:08 We have five panes. And now my agent is
+22:10 going to boot up SSH access into every
+22:13 single one of them. There we go. A key
+22:15 idea I've been talking about on the
+22:16 channel over and over is a gentic
+22:18 access. If you want to move at light
+22:20 speed, if you want to move the speed of
+22:21 agents, you need an agent layer wrapping
+22:24 whatever you're trying to do, right?
+22:25 It's that meta layer. It's that building
+22:27 the system that builds the system. You
+22:29 can see here we're in all of our
+22:30 sandboxes, right? Here's our redesign
+22:32 default. Here's the frontier, open
+22:33 weights, top speed, deepest seek, right?
+22:36 It's all here. And then we can Oh, yeah.
+22:38 I don't have any of my hot keys. We can
+22:40 get status. We can get log to see the
+22:42 exact change. Document the equal quiet
+22:44 room redesign. Redesign document blah
+22:46 blah blah. And we can go from there. So
+22:48 this is useful. It's always that same
+22:50 idea in here. I have to do everything
+22:52 manually. So we can go one step further.
+22:54 If we open up code and we go to our
+22:57 third agent access. Let me just show you
+22:59 what this does. I want the exact same
+23:01 thing except I want to talk to the
+23:03 orchestrator inside each running
+23:06 sandbox. So what's that? It's an
+23:07 interactive cloud code on top of the
+23:09 boxes. This is workflow B. Again, I've
+23:11 taught my agent exactly how to do this.
+23:13 So, let's see how it does it. We have a
+23:15 new workspace inside of Herder. Let's go
+23:17 ahead and crack it open. We have a nice
+23:18 grid here. There's the boot up command.
+23:21 We have to trust the system all the
+23:23 time. I'm sure there's some way to
+23:25 bypass this. This is one of the annoying
+23:27 things about cloud code. Yes, I booted
+23:29 it. Just open it for me. Our agent will
+23:30 likely take care of this for us though
+23:32 in each one of the sandboxes. Let's go
+23:33 ahead and see how it does here. And
+23:35 there we go. Great. We have a policy and
+23:38 we're getting that dangerous mode
+23:40 warning. We are operating inside of a
+23:42 sandbox. So, we're doing exactly what
+23:44 the anthropic engineers uh want us to
+23:46 do. And there we go. So, notice here
+23:48 we've connected to an agent that's
+23:50 already ran. This is the three- tier
+23:52 orchestration system. We can run
+23:53 whatever we want to, right? Summarize
+23:55 changes made bullets. Copy that. Fire.
+23:58 Move. Fire. Move. Fire. Move. Fire. And
+24:01 again, I'm doing this by hand. You can
+24:02 always do this with an agent. My whole
+24:04 point here is if you don't measure it,
+24:05 you can't improve. But if you can't
+24:06 touch your boxes, if you can't jump in,
+24:08 you can't actually get anything done.
+24:10 Our agents are kicking off. They're
+24:11 reading the ADW state, the actual agent
+24:15 work that was completed. Again, check
+24:16 out last week's video. There's a whole
+24:18 system around this. Our agents are
+24:19 summarizing what exactly was done in
+24:21 each one of these sandboxes. Let me show
+24:22 you what's going on underneath the hood.
+24:24 This is going to be fully available to
+24:26 you. Link in the description. Although I
+24:28 do a lot of agentic coding for this
+24:30 stuff, it still takes me a lot of time
+24:31 to really build this out, right? and to
+24:33 really make it reusable for you. If you
+24:36 made it this far in the video, if you're
+24:37 getting value out of this, you know,
+24:38 like, subscribe, comment, let the
+24:40 algorithm know you're interested and let
+24:41 me know you're interested so I can keep
+24:42 delivering this type of content. You
+24:43 know, if this video doesn't perform well
+24:45 cuz the ideas are too advanced, it's
+24:47 fine. Like, I'll just dial it back and
+24:48 go to safer, more hype, you know, based
+24:51 stuff. But I think you and other top
+24:53 engineers are interested in this. You
+24:55 want to be on the frontier. You want to
+24:56 do as much as you possibly can do with
+24:58 agents. And also like, you know, I might
+25:01 sound like a super red pill engineer
+25:03 like just trying to maximize
+25:05 productivity, but I think a lot of the
+25:06 value in this technology is that you can
+25:08 just work faster, get everything you
+25:10 want done, and then chill, right? Go
+25:12 back to your life, go back to real life,
+25:13 do your thing. I should probably make
+25:15 that clear on the channel. It's not
+25:16 super important to me what you think of
+25:19 my my philosophy around work life
+25:21 balance, but I just want to mention that
+25:22 a lot of this technology you can use to
+25:24 speed up your work and then chill or
+25:26 speed up your work and get a massive
+25:28 edge in front of your competition. So
+25:29 anyway, factory in a box. Okay, the
+25:31 whole idea here is that you and I are
+25:33 the bottleneck. We want to be building
+25:34 systems that prevent that now. So what
+25:36 we can do, we can take two great pieces
+25:38 of technology. These are compositions
+25:41 that are emerging. We can take
+25:42 sandboxes, throwaway sandboxes that are
+25:44 also permanent if you want to keep them
+25:46 up. This is why exe.dev is so important.
+25:48 A lot of other sandbox providers give
+25:49 you 24 hours. They give you a couple
+25:51 days. Is a VM you own, and you can spin
+25:54 them up and down as much as you want.
+25:55 It's nice and secure. We have SSH
+25:57 access, but then inside of it, we have
+25:59 this factory. We have our Asian factory.
+26:01 Again, check out last week's video, but
+26:03 a lot of that again is going to be super
+26:04 familiar for tactical agent coding
+26:06 members. We have this ADW's directory.
+26:09 It's not just about agents. It's about
+26:10 agents plus code. And then of course we
+26:12 have the actual application. So here we
+26:14 have what are effectively two agentic
+26:17 layers. Really it's just one. And then
+26:18 we have our application layer. The whole
+26:20 idea is that you want to get yourself
+26:23 out the loop. If you are letting your
+26:25 agents run on your computer, even inside
+26:27 of a container, that's only getting you
+26:28 isolation. It's not giving you scale and
+26:30 autonomy. In a sandbox, you get to leave
+26:33 the loop. You get to show up when you
+26:35 want to. As you can see here in Herder,
+26:37 I can still show up into the box. I can
+26:40 still jump in, get things done,
+26:41 understand what's been built inside of
+26:43 every agent box. But the whole idea here
+26:45 is I am out this loop. Great agentic
+26:48 engineering is about showing up at the
+26:49 beginning and the end, the planning, the
+26:51 reviewing, the prompting, and the
+26:53 validating. Uh the more you're in the
+26:54 loop, the more you are the bottleneck.
+26:56 Okay, so that's what this system allows
+26:58 us to do. So we have a couple
+26:59 interesting things happening here. The
+27:00 orchestrator agent, as you can see here,
+27:02 is inside the sandbox. I put an agent in
+27:05 the sandbox. So we have one operating on
+27:07 all the sandboxes. On the outside, we
+27:09 have an agent operating inside the
+27:10 sandbox on the inside. And this allows
+27:12 them to run our super simple software
+27:14 factory system, right? And then we have
+27:16 the actual agents running from our
+27:20 pi.dev instance inside of the individual
+27:22 software factories. And we have a great
+27:24 visual here. Jesus, you can see that our
+27:26 state-of-the-art still churning here.
+27:28 Looks like Kimmy 3 is having a hard
+27:30 time. But anyway, our software factory
+27:32 runs any agent configuration. We're
+27:33 controlling the core 4 on an individual
+27:36 agent basis. We are scaling. We are
+27:37 composing. We are creating compositions.
+27:40 This is what the architecture looks
+27:41 like. Again, this is the like highle
+27:42 architecture, right? We have our out
+27:44 sandbox orchestrator. We have our in
+27:46 sandbox orchestrator. And then we have
+27:47 our ADW agents. The ADWs. Once you have
+27:50 two or more, what you really have is a
+27:52 software factory. Outbox orchestrator
+27:54 runs on my machine. Inbox orchestrator
+27:56 runs on the sandbox virtual machine. And
+27:58 then we have the factory. Again, still
+28:00 in the sandbox virtual machine. Couple
+28:02 key commands are agent ran. I'm not
+28:03 going to go through all the details.
+28:05 We'll be here for a while. But you can
+28:06 imagine there's a setup flow to this. We
+28:08 need to mount, create the sandbox, set
+28:10 it up. We can tear it down whenever we
+28:12 need to. Inside the orchestrator runs
+28:14 whatever a developer workflow we need.
+28:16 Usually, it's going to be the full
+28:17 software developer life cycle or we're
+28:18 fixing a bug or we're doing a hot fix.
+28:20 Whatever it is, that's up for you to
+28:22 decide what's the most valuable chain of
+28:24 agents plus code your developer workflow
+28:27 must run. And then we have our actual
+28:28 ADW agents, which of course there are
+28:31 atoms, there are scouters or planners or
+28:33 builders or testers. This is what most
+28:35 engineers are hyperfixated on and really
+28:37 it's a key piece but a small piece of a
+28:39 bigger picture getting actual
+28:41 engineering work done and being able to
+28:43 step away from the loop. Here's the
+28:45 actual setup process our orchestrator
+28:47 did end to end. So we host and then
+28:49 inside the box we set up an execute
+28:51 where we kick off the agent and then of
+28:53 course we can observe from outside the
+28:55 loop thanks to our observability tool
+28:57 and the actual application hosting from
+28:59 exe.dev my sandboxing tool. And then of
+29:01 course at the end here which you'll see
+29:03 in a moment we're just going to tear it
+29:04 all down. These are ephemeral sandboxes.
+29:06 We spin them up. We do work. We spin
+29:07 them down. Environment variable keys is
+29:09 a big deal right? So in the system this
+29:11 example codebase system. What I'm doing
+29:13 here is showcasing that. What I've done
+29:15 here is used open router's provision key
+29:17 system. I've limited to 50 bucks. And
+29:19 then when I tear down all these I'm
+29:20 going to kill the key. So really
+29:22 powerful way to spin up intelligence.
+29:24 Open router is a great tool for this.
+29:26 And it all creates a result that looks
+29:28 something like this. again with the best
+29:30 event system. Our single prompt fired
+29:32 off in our orchestrator. Orchestrator
+29:33 spun up in sandbox orchestrators to run
+29:36 our ADW system. Whatever model
+29:38 configuration we wanted plus whatever
+29:39 code it needs and then we can pull the
+29:42 best result as you saw here. Not all of
+29:44 our systems finished, but you can
+29:45 imagine your application built in
+29:48 multiple different ways. And this is
+29:50 just one pattern, right? Best event is a
+29:52 great sandboxing pattern for you to
+29:54 explore potential futures you want in
+29:56 your product, in your system, in your
+29:57 application. And best of n gives you the
+29:59 best of some set of results. And of
+30:01 course the great part about that is you
+30:03 can configure your model selection.
+30:05 Every one of these runs is running a
+30:07 different set a different team of
+30:09 agents. A side effect here is as an
+30:11 agentic engineer as you're running these
+30:13 different variants of your software
+30:15 factory. You're just picking up on data.
+30:17 How good is this configuration? Is it
+30:19 getting me the results I need in a
+30:21 cheaper, more efficient way? Do I need a
+30:23 state-of-the-art system? By the way,
+30:25 this is still running. This total
+30:26 workflow has taken almost 45 minutes. I
+30:29 mean, I've been filming for 50 minutes
+30:30 now. This workflow has been running
+30:31 basically the entire time. There's
+30:32 clearly a bug here with Kimmy. So, you
+30:34 know, we'll dismiss this runtime, but
+30:36 you can see here Opus 5 churning up
+30:37 tokens, churning up spend, right? Do you
+30:39 need this? Interesting question. And
+30:41 then, of course, we have our deepest
+30:42 seek doing things the cheapest and one
+30:44 of the fastest. Definitely churning up
+30:46 some tokens though. Here's read, here's
+30:48 right, but getting the job done right in
+30:49 the deepest seek version here, you pay
+30:51 attention to the title, Deepest Seek,
+30:53 and we go over here. This version was
+30:55 good. like I feel a lot more focused.
+30:57 It's a quiet room for me to write in.
+30:59 That's just a nice side effect of
+31:00 running these multiple variants of your
+31:02 software factory. It's not just about
+31:04 understanding the difference of the
+31:05 model. It's about understanding the
+31:06 stack of models plus code and the
+31:08 results and the cost of the results. And
+31:10 ultimately the architecture looks like
+31:11 this. We have the application. We have
+31:13 the agent view outbox orchestrator inbox
+31:16 orchestrator and then our software
+31:17 factory. If you want you absolutely can
+31:20 take your outbox orchestrator, go right
+31:22 to the ADW system, your software factory
+31:24 system. that's fine. Uh you get a little
+31:26 bit less control there because the inbox
+31:28 orchestrator shouldn't really be doing
+31:29 anything but running and kicking off the
+31:31 workflows. The key here is just keeping
+31:33 it simple. Complexity is always going to
+31:35 come as you add another thing. But in
+31:37 reality, you know, it looks like this.
+31:39 We have our software factory inside the
+31:40 sandbox, public port for the
+31:41 application, and then a private port.
+31:42 You have to log into exe.dev. But
+31:44 basically, you get the software factory
+31:45 view. This factory in a box system is
+31:48 going to be available to you. Link in
+31:49 the description. It's going to build on
+31:51 a super simple software factory. I'm
+31:52 going to link that video as well. I
+31:54 skipped over some of those key deeper
+31:56 ideas, but as you can see on the
+31:58 channel, I'm going to be stacking up all
+32:00 of these big ideas so that you can scale
+32:02 your computer, to scale your impact. I'm
+32:04 building and using these systems because
+32:05 I need them to get to the next level.
+32:07 And part of my journey here, part of my
+32:09 goal is to share them with you. Let me
+32:11 be super clear about this. I come here
+32:12 every single week as a secondary, almost
+32:14 a tertiary goal. All of it comes from my
+32:17 goal to build living software that works
+32:19 for me while I sleep. And then my second
+32:21 and third goal is like democratize this
+32:24 because as we continue to become more
+32:26 capable agentic engineers as you can see
+32:28 and feel this is scary powerful
+32:31 technology especially when you start
+32:32 using it properly especially when you
+32:34 start embedding your engineering into it
+32:36 it's very very powerful there's going to
+32:37 be a lot of economic value created a lot
+32:39 of careers changed and I want that to be
+32:41 dispersed I want that to be democratized
+32:43 equally or as equal as we can technology
+32:46 should not be limited to the lucky few
+32:47 that's why I come here and I share these
+32:49 ideas every single week with you. Let's
+32:51 go full circle. Why are software
+32:52 factories important? Why is this
+32:54 valuable for your engineering? Software
+32:56 factories let you scale your compute to
+32:58 scale your impact by combining
+33:00 non-deterministic agents with
+33:02 deterministic code. You want the best of
+33:04 both worlds. There will be a point in
+33:06 time when agentic engineering is just
+33:08 called software engineering because
+33:10 agents will be part of the fabric of how
+33:12 we build software as they are becoming
+33:14 already today. But right now we need to
+33:16 clearly delineate we are agentic
+33:18 engineering. This is not really
+33:20 traditional software engineering yet.
+33:21 And we're absolutely not vibe coding. I
+33:23 know what the system is doing. I could
+33:25 find the exact file doing the exact
+33:27 thing. Big difference there. That's why
+33:28 software factories are important. They
+33:30 let you compose agents plus code into
+33:32 the workflows that you used to run
+33:34 yourself as an engineer to get results
+33:36 done. We're talking plan, build, test,
+33:38 review, document. We're talking hot fix.
+33:41 A production issue comes in. Can you
+33:43 solve it in record time with your ADW?
+33:45 We're talking about support requests.
+33:46 We're talking about a bunch of And
+33:47 your software factory is the mechanism.
+33:49 It's the system that lets you do that.
+33:51 That's why that's important. Why are
+33:52 agent sandboxes important? They're
+33:54 important for three reasons. Isolation,
+33:56 scale, autonomy. Isolate your agents so
+33:59 they don't blow up your production
+34:00 system. Right? Strip them of their
+34:02 ability to access AWS and GCP and insert
+34:05 the next really important tool. They
+34:07 give you scale. I use one orchestrator
+34:09 agent to spin up five sandboxes to spin
+34:11 up factories of agentic work. A bunch of
+34:14 stuff happened there. Plan build test
+34:16 review document. and it happened end
+34:17 times. Best event is just one pattern.
+34:19 It's going to be a really popular
+34:20 important pattern because it lets you
+34:22 see multiple futures. Scale is very
+34:25 important. Many of us, just as we have
+34:27 been for a long time, underestimate the
+34:29 importance of scale. What happens if you
+34:32 could just do this 10 times? What about
+34:34 a 100 times? What could you see? What
+34:36 could you find? What could you build?
+34:37 What could you learn if you just threw
+34:39 more scale at your problem? Sandboxes
+34:42 are scale for your agents plus code.
+34:45 Sandboxes give you scale. And of course,
+34:46 they give you autonomy. Don't just limit
+34:49 your agents to a little corner on your
+34:51 computer. You can and should do that
+34:52 when you're working with your agents on
+34:54 net new work, specifically building
+34:56 systems that build systems. I'll just
+34:58 say this, you know, upfront, right in
+35:00 your face. If you're using an agent to
+35:02 directly modify the application layer
+35:04 code, you are wasting time. There are
+35:06 very few exceptions to that. I hope that
+35:08 makes sense to you. I'm not trying to be
+35:09 a douchebag or talk like I'm above you
+35:11 or anything like that. I'm saying this
+35:13 so you understand where the leverage is.
+35:15 I don't want you to fall behind. So that
+35:17 is autonomy. Sandboxes give you
+35:19 isolation, scale, and autonomy. When you
+35:21 put these two things together, you get
+35:23 something extraordinary. You get absurd
+35:25 scale inside your sandboxes. When you
+35:27 put a factory in a box, you get absurd
+35:30 scale, absurd leverage. You get really
+35:32 great isolation because you're going to
+35:34 want it [laughter] as you build more and
+35:36 more agents on top of your system. And
+35:38 of course, you can just scale and solve
+35:39 many, many, many problems at the same
+35:41 time while not limiting the agency of
+35:43 your agents. Okay? Ultimately, you and
+35:45 I, what are we doing here? We're
+35:47 preparing for an age of abundant
+35:49 compute. You see how the landscape is
+35:51 shifting. You can see these new great
+35:53 cheap workhorse models. You can see the
+35:54 intelligence getting passed down the
+35:56 tier levels. It doesn't matter if you
+35:58 believe it's right or wrong, it's
+35:59 happening. And so, what do we do as
+36:01 engineers? We act like a function. We
+36:02 take the inputs, we execute, we
+36:04 synthesize, and we deliver outputs.
+36:06 That's all we're doing here. taking the
+36:07 information, make the best decision,
+36:08 act. This implementation of the factory
+36:11 in a box is going to be available to
+36:13 you. Link in the description. I also
+36:14 highly recommend you check out last
+36:15 week's video. Super simple software
+36:17 factory. It's going to be a banger one.
+36:19 You'll notice once again I didn't
+36:20 mention loop engineering once. I believe
+36:22 this is the wrong term, the wrong
+36:23 phrase. What we really should be
+36:24 focusing on is the software developer
+36:26 life cycle. If you haven't seen that,
+36:27 I'll link that in the description as
+36:29 well. Take the pieces of everything I'm
+36:31 sharing with you, merge it with your
+36:32 own. I don't have all the answers here,
+36:34 but what I do have is a great direction.
+36:37 Try to get the leverage of the next
+36:38 phase of agentic engineering. All right,
+36:40 these are relatively advanced concepts,
+36:42 but I don't want you to miss out on the
+36:43 opportunity to scale up. If you made it
+36:45 to the end, you know, hats off to you.
+36:46 Things are going to get more complex
+36:48 from here because all the low-level
+36:50 leverage has been sucked up. Everyone's
+36:52 prompting inside Cloud Code now.
+36:53 Everyone has a terminal agent.
+36:54 Everyone's using a co-work tool. The
+36:56 next level of leverage is going to take
+36:58 work. It's going to take upfront
+36:59 investment. But as software engineers,
+37:01 there's a lot you can do that you don't
+37:03 realize yet. And that's what I'm going
+37:04 to be here week after week to help you
+37:06 unlock. You know where to find me
+37:07 [music] every single week. Stay focused
+37:10 and keep building.

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QL Software Factory — Semantic Core Intent Prototypes</title>
+<style>
+  :root{--bg:#f6f5f1;--panel:#fff;--ink:#181817;--muted:#6a6861;--line:#d9d6ce;--soft:#efede7;--accent:#2d2c29;--good:#e8f1e9;--warn:#f4eee0;--bad:#f4e7e5;--info:#e8edf3}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45}
+  .shell{max-width:1440px;margin:0 auto;padding:28px}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:31px;line-height:1.1;margin:7px 0 8px} h2{font-size:22px;margin:0} h3{font-size:15px;margin:0 0 8px}.lead{max-width:900px;color:var(--muted);margin:0 0 24px}
+  nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 28px} nav a,.button{border:1px solid var(--line);background:var(--panel);padding:8px 12px;border-radius:8px;color:var(--ink);text-decoration:none;font-size:13px}.button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  section{scroll-margin-top:20px;margin:0 0 48px}.frame{border:1px solid var(--line);background:var(--panel);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.035)}
+  .topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:#fbfaf7}.crumb{font-size:13px;color:var(--muted)}.status{font-size:12px;padding:4px 8px;border-radius:999px;background:var(--info)}
+  .grid{display:grid;grid-template-columns:1.45fr .85fr;min-height:650px}.main{padding:22px}.aside{border-left:1px solid var(--line);background:#fcfbf8;padding:22px}
+  .hero{padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:20px}.hero p{font-size:18px;max-width:850px;margin:7px 0 0}.meta{font-size:12px;color:var(--muted)}
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--panel)}.card.soft{background:var(--soft)}
+  .kicker{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:7px}.big{font-size:24px;font-weight:650}.small{font-size:12px;color:var(--muted)}
+  .timeline{display:grid;gap:0;margin:4px 0 8px}.step{display:grid;grid-template-columns:22px 1fr;gap:10px;position:relative;padding:0 0 18px}.step:before{content:"";position:absolute;left:8px;top:15px;bottom:-2px;width:1px;background:var(--line)}.step:last-child:before{display:none}.dot{width:17px;height:17px;border-radius:50%;border:1px solid var(--line);background:#fff;z-index:1;margin-top:2px}.done .dot{background:var(--accent);border-color:var(--accent)}.active .dot{box-shadow:0 0 0 4px var(--info);border-color:var(--accent)}.returned .dot{background:var(--warn)}
+  .node-title{font-size:13px;font-weight:650}.node-sub{font-size:12px;color:var(--muted)}
+  .branch{display:grid;grid-template-columns:34px 1fr auto;align-items:start;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.branch:last-child{border-bottom:0}.badge{display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:8px;background:var(--soft);font-weight:700;font-size:12px}.tag{font-size:11px;padding:3px 7px;border-radius:999px;background:var(--soft);white-space:nowrap}.tag.good{background:var(--good)}.tag.bad{background:var(--bad)}.tag.warn{background:var(--warn)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.divider{height:1px;background:var(--line);margin:18px 0}.claim{border-left:3px solid var(--line);padding:9px 11px;margin:9px 0;background:#faf9f6}.claim.intent{border-color:#727d8c}.claim.observed{border-color:#637865}.claim.challenge{border-color:#9a6a63}.claim .type{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .metric{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.metric:last-child{border:0}.why{background:var(--warn);border-radius:10px;padding:12px 14px;font-size:13px}
+  .candidates{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.candidate{border:1px solid var(--line);border-radius:12px;padding:16px}.candidate.reco{border:2px solid var(--accent)}.candidate h3{font-size:17px}.check{font-size:13px;padding:5px 0}.check:before{content:"✓";display:inline-block;width:20px}.unknown:before{content:"?"}.fail:before{content:"×"}
+  .history{display:grid;grid-template-columns:210px 1fr;gap:18px}.date{color:var(--muted);font-size:12px}.event{border-left:2px solid var(--line);padding:0 0 24px 18px;position:relative}.event:before{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);left:-6px;top:3px}.event h3{font-size:14px}.event p{font-size:13px;color:var(--muted);margin:4px 0}.callout{border:1px solid var(--line);background:#fbfaf7;border-radius:10px;padding:13px;margin-top:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+  footer{border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:12px}
+  @media(max-width:900px){.shell{padding:16px}.grid{grid-template-columns:1fr}.aside{border-left:0;border-top:1px solid var(--line)}.cols,.candidates{grid-template-columns:1fr}.history{grid-template-columns:1fr}.date{margin-bottom:-8px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="eyebrow">Ground + Intent artifact · non-authoritative projection</div>
+  <h1>Software Factory semantic-core interaction prototypes</h1>
+  <p class="lead">Static prototypes derived from the canonical A/C/G/J Wayfinder design. They demonstrate the information hierarchy and human authority apertures; they do not create new semantic state or replace the canonical Run Map.</p>
+  <nav><a href="#glance">Run at a glance</a><a href="#recognition">Candidate recognition</a><a href="#return">Return after months away</a></nav>
+
+  <section id="glance">
+    <div class="frame">
+      <div class="topbar"><div class="crumb">Epi-Logos / Run 184</div><div class="status">Active · autonomous work</div></div>
+      <div class="grid">
+        <main class="main">
+          <div class="hero"><div class="eyebrow">Destination</div><h2>Improve session model switching</h2><p>Preserve logical session identity while allowing provider/model switching.</p><div class="meta">run:01J…184 · revision 37 · canonical Factory state</div></div>
+          <div class="cols">
+            <div class="card"><div class="kicker">Frontier</div><div class="big">2</div><div class="small">one runnable · one non-blocking decision</div></div>
+            <div class="card"><div class="kicker">Claims</div><div class="big">8 / 1 / 2</div><div class="small">supported · challenged · open</div></div>
+            <div class="card"><div class="kicker">Candidates</div><div class="big">3</div><div class="small">one runnable · one returned · one retained dead branch</div></div>
+          </div>
+          <div class="divider"></div>
+          <div class="kicker">Processual view · L3</div>
+          <div class="timeline">
+            <div class="step done"><div class="dot"></div><div><div class="node-title">Ground recovered</div><div class="node-sub">Current session/runtime behaviour inspected and evidenced.</div></div></div>
+            <div class="step done"><div class="dot"></div><div><div class="node-title">Intent recognised</div><div class="node-sub">Logical session identity is the invariant; provider identity may change.</div></div></div>
+            <div class="step done"><div class="dot"></div><div><div class="node-title">Design determined</div><div class="node-sub">SessionRuntime boundary and recovery contract fixed.</div></div></div>
+            <div class="step active"><div class="dot"></div><div><div class="node-title">Candidate B · application tests</div><div class="node-sub">Runnable now; provider A→B path verified.</div></div></div>
+            <div class="step"><div class="dot"></div><div><div class="node-title">Recognition</div><div class="node-sub">Human authority aperture opens when application evidence is sufficient.</div></div></div>
+          </div>
+          <div class="why"><strong>Why the route changed:</strong> Candidate C returned to Design because Evidence E91 challenged Claim C44: persistence was coupled to provider-local runtime identity.</div>
+          <div class="divider"></div>
+          <div class="kicker">Candidate branches</div>
+          <div class="branch"><div class="badge">A</div><div><strong>Simple adapter swap</strong><div class="small">Retained dead branch · context was lost on provider change.</div></div><span class="tag bad">discarded</span></div>
+          <div class="branch"><div class="badge">B</div><div><strong>Explicit SessionRuntime</strong><div class="small">Current recommendation · runnable candidate and evidence available.</div></div><span class="tag good">runnable</span></div>
+          <div class="branch"><div class="badge">C</div><div><strong>Provider-owned persistence</strong><div class="small">Returned to Design · branch remains historical evidence.</div></div><span class="tag warn">returned</span></div>
+        </main>
+        <aside class="aside">
+          <h3>Current frontier</h3>
+          <div class="card soft"><div class="kicker">Runnable</div><strong>Application verification · Candidate B</strong><p class="small">All hard prerequisites are satisfied.</p></div>
+          <div style="height:10px"></div>
+          <div class="card"><div class="kicker">Decision D7 · non-blocking</div><strong>Provider-specific fallback</strong><p class="small">Authorial input not required for Candidate B recognition.</p></div>
+          <div class="divider"></div>
+          <h3>Epistemic standing</h3>
+          <div class="metric"><span>Intent claims</span><strong>3 recognised</strong></div>
+          <div class="metric"><span>Observation claims</span><strong>12</strong></div>
+          <div class="metric"><span>Verified assessments</span><strong>7</strong></div>
+          <div class="metric"><span>Known gaps</span><strong>1</strong></div>
+          <div class="divider"></div>
+          <div class="row"><span class="button primary">Open B</span><span class="button">Compare</span><span class="button">Evidence</span></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="recognition">
+    <div class="frame">
+      <div class="topbar"><div class="crumb">Run 184 / Recognition / Candidate B</div><div class="status">Human authority point</div></div>
+      <div class="main">
+        <div class="hero"><div class="eyebrow">Candidate B</div><h2>Does this belong to the project?</h2><p>The default surface foregrounds intended meaning, encountered behaviour, epistemic standing, and meaningful delta—not implementation logs.</p></div>
+        <div class="candidates">
+          <div class="candidate"><div class="kicker">A · historical comparison</div><h3>Adapter swap</h3><div class="check fail">Session identity lost</div><div class="check">Minimal change</div><div class="check fail">Recovery contract absent</div><span class="tag bad">discarded</span></div>
+          <div class="candidate reco"><div class="kicker">B · current recommendation</div><h3>SessionRuntime boundary</h3><div class="check">A→B session ID stable</div><div class="check">Recovery suite passes</div><div class="check unknown">Provider C unexercised</div><span class="tag good">partially verified</span></div>
+          <div class="candidate"><div class="kicker">C · returned</div><h3>Provider persistence</h3><div class="check">Fast prototype</div><div class="check fail">Persistence coupled to provider</div><div class="check fail">Intent mismatch</div><span class="tag warn">returned to design</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="cols">
+          <div class="card"><div class="kicker">Intended</div><div class="claim intent"><div class="type">Intent Claim</div>“Switching model/provider preserves the logical session.”</div></div>
+          <div class="card"><div class="kicker">Observed</div><div class="claim observed"><div class="type">Observation Claim</div>A→B transition retained session identity and recovery state.</div></div>
+          <div class="card"><div class="kicker">Verified</div><div class="claim"><div class="type">Assessment</div>Supported and verified for the A→B acceptance criterion; Provider C remains an explicit evidence gap.</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="cols">
+          <div class="card"><div class="kicker">Meaningful delta</div><strong>Added</strong><p class="small">SessionRuntime abstraction; recovery contract; provider-independent identity.</p></div>
+          <div class="card"><div class="kicker">Challenge retained</div><strong>Provider C</strong><p class="small">Not silently converted to “pass”. The evidence gap remains addressable.</p></div>
+          <div class="card"><div class="kicker">Proposed recursion</div><strong>3 explicit effects</strong><p class="small">Promote design artifact; publish run history; emit contextual fitness observation.</p></div>
+        </div>
+        <div class="divider"></div>
+        <div class="row"><span class="button primary">Recognise</span><span class="button">Return to Design</span><span class="button">Compare</span><span class="button">Discuss</span><span class="button">Defer</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="return">
+    <div class="frame">
+      <div class="topbar"><div class="crumb">Epi-Logos / Project evolution</div><div class="status">Derived from canonical Runs</div></div>
+      <div class="grid">
+        <main class="main">
+          <div class="hero"><div class="eyebrow">You last opened this project 4 months ago</div><h2>What changed, and why?</h2><p>A chronological/processual reconstruction over canonical Run Maps. It is a view, not a second history store.</p></div>
+          <div class="history">
+            <div class="date">18 Apr</div><div class="event"><h3>Run 161 recognised · Identity Matrix interaction</h3><p>Candidate B became project reality. Two design artifacts and Decision D42 entered Project Canon.</p><span class="tag good">recognised</span></div>
+            <div class="date">4 May</div><div class="event"><h3>Run 169 returned from Application to Intent</h3><p>Runtime evidence showed the initial “faster search” objective weakened interpretability. The intent itself was revised rather than patching the implementation.</p><span class="tag warn">return</span></div>
+            <div class="date">23 Jun</div><div class="event"><h3>Pattern discovered across 5 Runs</h3><p>Repeated context retrieval before architecture work correlated with fewer Design→Ground returns. Recorded as contextual fitness evidence, not as a universal preference.</p><span class="tag">pattern</span></div>
+            <div class="date">8 Aug</div><div class="event"><h3>Run 184 opened · Session model switching</h3><p>Three candidates were developed; C returned to Design, A was discarded, B remains runnable.</p><span class="tag good">active</span></div>
+          </div>
+          <div class="callout"><strong>Current consequence for future Context:</strong> recognised SessionRuntime canon and the retained context-retrieval fitness observation are eligible inputs to the next Context resolution. Your explicit preferences and trust settings were not rewritten.</div>
+        </main>
+        <aside class="aside">
+          <h3>Since your last visit</h3>
+          <div class="metric"><span>Recognised Runs</span><strong>7</strong></div>
+          <div class="metric"><span>Returned Runs</span><strong>2</strong></div>
+          <div class="metric"><span>Canonical decisions</span><strong>11</strong></div>
+          <div class="metric"><span>New insights</span><strong>4</strong></div>
+          <div class="metric"><span>Open human decisions</span><strong>1</strong></div>
+          <div class="divider"></div>
+          <h3>Knowledge-work lens · L4′</h3>
+          <div class="small mono">Prompts  →  Traces<br>   ↓           ↓<br>Challenges → Patterns<br>                ↓<br>           Discovery<br>                ↓<br>             Insight</div>
+          <div class="divider"></div>
+          <div class="row"><span class="button primary">Resume Run 184</span><span class="button">Open evolution</span></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <footer>Intent prototype only. Canonical identity, mutation authority, Claims/Evidence, Recognition, and Recursion remain owned by Factory Core; this page represents a projected read model.</footer>
+</div>
+</body>
+</html>

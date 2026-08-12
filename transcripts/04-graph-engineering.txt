@@ -1,0 +1,445 @@
+# Anthropic Just Fixed Graph Engineering's Greatest Flaw
+# AI LABS | 2026-07-29
+# https://youtu.be/H7t3uUp3HVw
+
+0:00 There's a new term going around called
+0:01 graph engineering and everyone on X is
+0:03 talking about it. Before graphs, it was
+0:05 all loop engineering where you hand the
+0:07 agent a goal and it works toward it on
+0:09 its own. But with graphs, the work gets
+0:11 done faster and covers way more ground
+0:13 at once than a loop ever could. There's
+0:15 a huge problem with them though. One
+0:17 error in a small part of the graph
+0:18 disturbs the entire output that comes
+0:20 back and it's hard to track down because
+0:22 all you get at the end is the finished
+0:24 result. So Anthropic just released
+0:26 something that solves that exact problem
+0:28 and keeps your graphs working without
+0:30 failing. If you're new here, we're a
+0:31 software company and this is our channel
+0:33 AI labs where we show you how to
+0:35 optimize your business with AI and if
+0:37 you don't have your own, you can use
+0:39 these skills to get paid by optimizing
+0:41 it for someone else. And in this video,
+0:43 we're going to go over graph engineering
+0:45 for anyone who doesn't know it and give
+0:47 you the exact fix Anthropic suggested.
+0:49 Before we explain graph engineering to
+0:51 you, you need to understand what loop
+0:53 engineering actually is. If you already
+0:55 know, you can skip this section. A loop
+0:57 is basically a working cycle you hand
+0:59 over to the agent. Instead of you
+1:01 prompting it through every single step
+1:03 yourself, you tell it the end goal it
+1:05 needs to reach and it gets there on its
+1:07 own adjusting as it goes. We've been
+1:09 using them heavily in our own workflows.
+1:11 We've already got a full video on loop
+1:12 engineering too where we went deeper
+1:14 into the different ways you can set them
+1:16 up. But loops are now turning into
+1:18 something called graphs. The problem
+1:20 with loops comes down to the way they're
+1:21 built. A loop does a piece of work then
+1:24 a verification step kicks in to see if
+1:26 it's actually the way it should be. Once
+1:28 it passes, the next step starts.
+1:29 Everything runs in a straight line. So
+1:31 every step sits there waiting on the
+1:33 step before it even when the two have
+1:35 nothing to do with each other. Graph
+1:36 engineering fixes exactly that. Instead
+1:38 of running in a straight line, a graph
+1:40 splits the main task into smaller parts
+1:42 and each part gets its own agent. The
+1:44 first thing you get out of that is speed
+1:46 because several agents cover the work at
+1:48 once instead of one agent grinding
+1:50 through the whole thing. And splitting
+1:52 the work out like that brings the cost
+1:53 somewhat down too because you get to
+1:55 pick which model each one runs on. So,
+1:57 you stop burning your most expensive
+1:59 model on the parts that never needed
+2:01 that much intelligence in the first
+2:02 place. But, that's the cost per agent,
+2:04 not the cost overall. A graph burns way
+2:07 more tokens than a single agent ever
+2:09 will because you've got a whole set of
+2:10 them going at once instead of one. If
+2:12 you are using graphs, expect your limits
+2:14 to hit way sooner than you're used to.
+2:16 So, you can't really set this up with
+2:18 the $20 plans of Claude Code and Codex.
+2:20 Now, if you've been using Claude Code,
+2:22 this probably isn't entirely new to you
+2:25 because you've already seen a graph,
+2:26 which is the dynamic workflow. A dynamic
+2:28 workflow takes the task you hand over
+2:31 and fans it out across a set of sub
+2:33 agents, which is basically what a graph
+2:35 does. Now, before [snorts] we get into
+2:36 the shapes a graph can take, you need to
+2:38 know what actually makes one up. Every
+2:40 graph is built out of two things: nodes
+2:42 and edges. A node is basically a single
+2:45 job out of the bigger task you handed
+2:47 over, and it runs on its own. It is an
+2:48 agent that does a task in its own
+2:50 isolated context window and reports
+2:52 back. What ties all those separate jobs
+2:55 together is the edge. An edge controls
+2:57 how the data moves from one node to the
+2:59 next. So, one agent's output lands with
+3:01 the right agent at the right point. So,
+3:03 every node's got to be tied into the
+3:05 rest of the graph somehow. You can see
+3:07 that in a set of agents all reviewing
+3:09 the same piece of work. None of them
+3:10 ever wait on each other, but they all
+3:12 started from the same work, and every
+3:14 one of their reports feeds into the same
+3:16 place at the end. So, that's what a
+3:18 graph is made of. Now, here are the
+3:19 shapes those pieces get arranged into.
+3:22 The first one's a shape we've already
+3:23 shown you on this channel. And we got
+3:25 the name wrong at the time. We called it
+3:26 a loop because this was before graph
+3:28 engineering was even a thing. But, what
+3:30 we actually had was a graph that we were
+3:32 looping, and the shape of it was a
+3:33 diamond. One task at the top splits out
+3:36 into several sub agents running side by
+3:38 side. Then, they all narrow back down
+3:40 into a single agent that pulls
+3:42 everything they found into one answer.
+3:44 Then, there's the fan in at a barrier
+3:46 graph, and that's the shape you want
+3:47 when one thing has to be judged from
+3:49 several angles at once. The fan out part
+3:51 sends the same problem out to a set of
+3:53 agents, and each one looks at it through
+3:55 a different lens. Nothing moves forward
+3:57 until every one of those agents has
+3:59 reported back, and only then does it go
+4:01 and run their fixes. There are plenty of
+4:02 other shapes, too, but every one of
+4:04 these shapes rests on the same thing,
+4:06 and that's verification. If you don't
+4:07 set those checks up properly, every
+4:09 agent that comes after is just building
+4:11 on top of a mistake. But before we talk
+4:13 about verification, it would be great if
+4:15 you subscribe to the channel and hit the
+4:17 hype button. This small gesture of
+4:18 support goes a long way for us. Once
+4:21 you're running a whole fleet of agents,
+4:22 things go wrong in ways they never do
+4:24 with a single one. The biggest problem
+4:26 is just the amount of work. They're all
+4:28 going at the same time, so a huge pile
+4:30 of it comes back at once, and that's
+4:32 really hard to review at the end. The
+4:33 other problem is that you can't see what
+4:35 happened. When something goes wrong,
+4:37 you've got no way of telling what caused
+4:39 it. Now, all agents verify whatever they
+4:41 write, whether you ask them to or not.
+4:43 If you're working with code, that just
+4:44 means the agent runs your tests and
+4:46 catches the errors that come back. But
+4:48 that only catches major errors. It still
+4:50 doesn't check how the code is written,
+4:52 and that's important because if Claude
+4:53 keeps writing it like this, it's going
+4:55 to cause problems in the future. There
+4:57 are a few built-in tools for this in
+4:59 Claude Code as well. The first is the
+5:00 verify skill, which takes the code from
+5:02 start to finish and confirms it actually
+5:04 behaves the way it's supposed to. The
+5:06 second is tool chaining, which is
+5:08 basically the agent running different
+5:10 tools to verify. Claude already knows to
+5:12 run the tools that check your work, so
+5:14 it reads the errors that come back and
+5:16 fixes them itself. It can work out your
+5:18 project's exact commands on its own,
+5:20 too. But writing them into your
+5:21 Claude.md file saves it the trouble of
+5:24 figuring them out every single time. And
+5:26 the third is a code review skill, which
+5:28 checks the code against a set of
+5:29 standards. Not every agent ships with
+5:31 one, but you can just ask your agent to
+5:33 build you one if yours doesn't. But the
+5:35 verification that actually works best is
+5:37 the one you set up yourself, instead of
+5:39 leaning entirely on the built-in stuff.
+5:41 So, the fastest way to build a skill
+5:43 that verifies your work is the skill
+5:45 creator plugin in Claude Code. You can
+5:47 also use this Claude code skill in Codex
+5:49 as well. You run the plug-in command,
+5:51 search for skill creator, and install
+5:53 it. From there, you've got two options.
+5:55 You can install it at the user scope,
+5:57 which means it's there no matter which
+5:58 folder you're working in, or you can
+6:00 install it just for the project you're
+6:02 working in right now. Since this is a
+6:03 skill you'll be using constantly, we
+6:05 went with the user scope. After that,
+6:07 you reload the plug-ins with the slash
+6:09 command, and skill creator's ready to be
+6:11 used. Now you tell it what you want
+6:13 built, and this is the part where you
+6:15 describe the kind of verification you're
+6:17 actually after. We mostly use a review
+6:19 skill for checking the finished work
+6:21 against what we asked for in the first
+6:22 place. And that matters way more in a
+6:24 graph, because each agent only ever sees
+6:27 its own piece. This is what gives it a
+6:29 way to check that piece against the
+6:30 original requirements. But a skill is
+6:32 only ever as good as the model you run
+6:34 it on. When we were building the
+6:36 verification system for our community
+6:38 website's UI, we ran the reviewer on
+6:40 Haiku, because it's cheap and the job
+6:42 looked simple enough. It came back with
+6:44 a long list of issues. Going off the
+6:46 number of findings alone, it looked like
+6:48 it had done a great job. Then we ran the
+6:50 exact same on Opus, and it flagged way
+6:52 fewer things. That looked like the worst
+6:54 result, right up until we read the
+6:56 reasoning. A lot of what Haiku had
+6:57 reported was stuff we'd left there on
+6:59 purpose. So most of the findings it made
+7:01 were completely unnecessary. Opus had
+7:04 worked that out from the code around it,
+7:05 which Haiku had missed it completely. So
+7:07 the cheap review hadn't saved us
+7:09 anything, because now the review itself
+7:11 needed reviewing. Now put that inside a
+7:13 graph, where a whole set of nodes are
+7:15 all checking their own work with that
+7:17 same skill. You'd have agents burning
+7:19 time and tokens fixing things that were
+7:21 never broken. And because it's happening
+7:23 across separate agents all at once,
+7:25 you'd have no way of telling which one
+7:26 started it. So the model you pick
+7:28 doesn't just decide the quality of the
+7:30 review, it decides the quality of the
+7:32 whole graph. The node that does the
+7:33 judging is the one place where saving
+7:35 tokens costs you everything. The other
+7:37 thing you've got to decide is how and
+7:39 when that skill gets invoked. And that
+7:41 splits them into three kinds. But before
+7:43 we go deep into the types, let's have a
+7:45 word by our sponsor. If you've ever
+7:47 pulled live data off the web, you know
+7:49 scraping is a genuine pain, where you
+7:51 end up fighting captures and rate
+7:52 limits, wrestling with proxies, and
+7:54 patching layouts that break the moment
+7:56 you ship. So, we reach for SerpApi,
+7:58 which solves all these problems, so you
+8:00 can focus on building. It's one API
+8:02 call, you send a request and get back a
+8:04 clean JSON object with exactly the data
+8:07 you need with over 99.9%
+8:09 uptime and around a 1.2-second response.
+8:12 When you're building AI agents, you can
+8:14 point the Google Search API at an agent
+8:16 that needs current information or use
+8:18 the Google Scholar API for peer-reviewed
+8:20 papers with full metadata, which is why
+8:22 so many production agents rely on it.
+8:25 Get started with 250 free credits using
+8:27 the link in the description or scan the
+8:29 QR code on screen. Thanks to SerpApi for
+8:32 sponsoring this video. The first kind is
+8:34 standalone, and that's the sort of skill
+8:36 that only runs when you actually do it
+8:38 yourself. A standalone skill is built to
+8:40 go deep on something that already
+8:41 exists, so it can properly go back over
+8:44 a finished output. That's why you don't
+8:45 want it firing after every single run.
+8:47 You'd be burning tokens on a heavy
+8:49 review of work that isn't even finished
+8:51 yet. One we've used before is the
+8:53 thermonuclear code review by Cursor. It
+8:55 fans out a set of agents and sends each
+8:57 one through the code from a different
+8:59 security angle. Every finding comes back
+9:01 in one place, so it can work through the
+9:03 fixes together, and that's exactly the
+9:05 kind of review you only run once the
+9:07 app's done. To build one of these,
+9:09 you're better off using Skill Creator
+9:11 than just prompting it to do it, because
+9:13 what comes back is tested, and that
+9:15 makes it easier to trust. You tell it in
+9:16 the prompt which area you want reviewed,
+9:19 and make sure you mention that the
+9:20 review should be comprehensive, so it
+9:22 knows you're after a deep pass and not a
+9:24 quick one. But a standalone [snorts]
+9:26 skill is no use to a node that's still
+9:28 working, because you have to run it
+9:29 yourself. That's what embedded skills
+9:31 are for. An embedded skill fires as part
+9:34 of the workflow you're already running
+9:35 without you asking for it. You could
+9:37 build one that kicks in whenever
+9:38 somebody asks for a new feature. It
+9:40 checks that every component being
+9:42 created follows the rules you laid out
+9:44 in the skill, and it won't let the
+9:45 implementation finish until it's been
+9:47 checked against those rules. You can
+9:49 build embedded skills yourself, but you
+9:51 can't take a pre-installed one and have
+9:52 them be invoked automatically like the
+9:54 verify skill we talked about earlier.
+9:56 The instructions those skills run on sit
+9:58 inside the product and you don't get to
+10:00 touch them. To build your own, give
+10:02 skill creator a prompt telling it to run
+10:04 verification steps after every feature
+10:07 implementation. So, you tell it to test
+10:09 the feature from start to finish, so it
+10:10 catches whether the new work broke
+10:12 anything that was already working.
+10:14 Claude then creates the skill for you,
+10:16 and because skill creator generated it,
+10:18 it comes with references and scripts
+10:20 that skill creator structured and tested
+10:22 as part of the process. Now, to verify a
+10:24 feature, Claude uses browser testing by
+10:26 default where it checks the interface by
+10:28 opening a full Chrome browser, loading
+10:30 the page, and taking screenshots of it.
+10:32 And if you've wired up Puppeteer or
+10:33 Playwright, which are basically the
+10:35 tools most people use to drive a browser
+10:37 automatically, they do the same thing.
+10:39 But, Chrome's famous for eating memory
+10:41 and running heavy. And for checking a
+10:43 page over and over inside a workflow,
+10:45 it's slow enough that it starts costing
+10:47 you real time. So, there's a lighter way
+10:49 to do it called Chrome headless shell.
+10:51 It's basically a stripped-down version
+10:53 of the browser with all the extra parts
+10:55 ripped out. The agent still goes to the
+10:57 page and takes its screenshots the same
+10:59 way. It just gets through all of it way
+11:01 faster than a full Chrome does. You can
+11:03 build that straight into the
+11:04 verification skill you create. Then
+11:06 every feature the agent builds gets
+11:08 checked visually without you setting
+11:10 anything up each time. Aside from that,
+11:12 the skill we use the most in our own
+11:14 workflow is one called second opinion,
+11:16 and the reason is simple. The agent that
+11:18 built the thing is the worst possible
+11:20 one to review it. It's judging its own
+11:22 work off the same context it used to
+11:24 build it. So, it just reviews based on
+11:26 that. A fresh Claude session hasn't seen
+11:28 any of that. It gives an unbiased review
+11:30 and gives you a straight answer. Now,
+11:31 Claude does have a built-in advisor that
+11:33 does something along these lines, but it
+11:35 reads the chat you're currently in, so
+11:37 it inherits all that same context.
+11:39 Second opinion is for when you want the
+11:41 review without it. It works by starting
+11:43 another Claude session from inside the
+11:45 one you're already running using the
+11:47 dash P flag. That's the flag that fires
+11:49 off a whole separate Claude code session
+11:51 in the background by handing it a prompt
+11:53 to work on. There are a couple of things
+11:55 you need to know if you're going to use
+11:56 this though. Since it's launching an
+11:58 entirely separate session, it takes a
+12:00 really long time to come back with an
+12:01 answer. And the model matters here more
+12:03 than anywhere else because the whole
+12:05 point is a smarter second read. So, it's
+12:07 worth telling Claude explicitly to start
+12:09 that session on Opus. That gives every
+12:12 node in your graph a way to get its work
+12:14 checked by something that had no hand in
+12:16 doing it. But one skill can't cover
+12:18 everything though. Once you're reviewing
+12:20 something properly, you're reviewing it
+12:21 from several different angles and every
+12:23 angle has its own way of measuring. You
+12:25 can't stuff all review types into one
+12:28 skill because that way agent will have
+12:30 too many directions to review and will
+12:31 end it up getting worse instead of
+12:33 better. So, you build a separate skill
+12:35 for each angle and chain them together.
+12:37 Anthropic's own team works this way,
+12:39 too. They chain the code review skill
+12:41 together with the simplify skill and the
+12:43 verify skill, and all three of those now
+12:45 ship with Claude code. On top of that,
+12:47 they run their own design skill, which
+12:49 checks the interface against the
+12:50 design.md file, which is basically the
+12:53 file that holds every design decision
+12:55 for the product. So, that's a review
+12:57 coming from four directions instead of
+12:59 one. You'll end up in the same place
+13:01 with a stack of skills that each cover a
+13:02 different angle, but you can't just tell
+13:04 the agent to run all of them at once.
+13:06 What you need is one more skill sitting
+13:08 above the rest, which is basically an
+13:10 orchestrator skill whose only job is to
+13:12 run other skills. It spins up an agent
+13:15 for every review skill you've got and
+13:16 hands each one its skill. They all
+13:18 review at the same time in their own
+13:20 separate context windows. Then it pulls
+13:22 every finding back into one report that
+13:24 the fixing agents can work from. Then
+13:26 when you're building a graph, the only
+13:28 thing you have to say in the prompt is
+13:29 that it should use that one skill. Every
+13:31 node it spins up loads that single
+13:33 skill, and the whole review fans out
+13:35 underneath it on its own. Now we have
+13:37 curated a document containing all the
+13:39 ways you can set up verifications for
+13:41 graphs in detail. That doc along with
+13:43 all the skills shown in this video are
+13:45 available in AI Labs Pro, which is our
+13:47 community. So if you found value in what
+13:49 we do and want to support the channel,
+13:51 this is the best way to do it. The
+13:52 link's in the description. That brings
+13:54 us to the end of this video. If you'd
+13:56 like to support the channel and help us
+13:58 keep making videos like this, you can do
+14:00 so by using the Super Thanks button
+14:01 below. As always, thank you for watching
+14:04 and I'll see you in the next one.

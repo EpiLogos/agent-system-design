@@ -1,0 +1,1984 @@
+# Ex-NASA dev reveals his Agentic Engineering Workflow
+# David Ondrej Podcast with Dexter Horthy (HumanLayer) | 2026-08-07
+# https://youtu.be/xgkjtF89-44
+
+0:00 Stop playing with your coding agents and
+0:01 get back to work. They can solve
+0:02 problems really, really well, but
+0:04 they're not going to be able to write
+0:05 maintainable code without you in the
+0:07 loop helping. The thing that I think
+0:09 most people skip is actually what I call
+0:10 like program design. It's like before
+0:12 you let the agent go cook, there are
+0:14 decisions that it's going to make that
+0:15 you might not like.
+0:17 >> If you can tell it a measurable output,
+0:19 the agent will move mountains for you.
+0:21 >> You can tell the model how you want it
+0:22 done, and if you don't tell it how you
+0:23 want it done, okay, it might do it in a
+0:25 terrible way, but it also might figure
+0:26 out like a better way to do it that you
+0:27 never would have come up with.
+0:29 >> This is Dexter, also known as Dex. He's
+0:31 the one who invented the term context
+0:33 engineering, and he's also known for
+0:35 creating a software factory where AI
+0:37 agents ran for four months straight
+0:40 without any human input. In this
+0:42 podcast, we talk about why benchmarks
+0:44 don't matter, his unique program design
+0:46 system, and why pull requests are dead.
+0:49 If you want to be in the top 1% of
+0:51 agentic engineers, watch until the end.
+0:53 This is the David Andre podcast. Enjoy.
+0:56 >> You had a thought on benchmarks not
+0:58 being an accurate way of representing
+1:00 agent's power. Can you tell more about
+1:01 that?
+1:02 >> basically about the idea that like a lot
+1:04 of benchmarks are like one-off problems.
+1:06 They're quick, one-shot, fix the tests,
+1:08 do all this stuff, and like, I don't
+1:10 know, I am not a machine learning
+1:11 expert, but like I was doing a bunch of
+1:13 research on this cuz I wanted to match
+1:15 my vibe understanding with like how this
+1:18 actually works in the real world.
+1:20 >> let basically agents run by themselves.
+1:23 Give us the backstory.
+1:23 >> So, like software factory's been around
+1:25 since 1968, but like I like to think of
+1:27 like the 2022 software factory, right?
+1:29 Which is basically like right before AI,
+1:32 you had a team of humans, and they would
+1:34 put stuff on a list of things to do.
+1:36 This was your Jira, your linear, your
+1:37 state machine, your issue tracker, and
+1:39 someone would go build the thing, and
+1:41 then like eventually you would do a pull
+1:43 request, and you'd do your CI/CD, and
+1:45 all kinds of We've automated a ton of
+1:47 stuff, but we still review the code by
+1:48 hand. If something is wrong, we loop it
+1:50 back to building the thing. Eventually
+1:53 it goes into prod, hits our users, they
+1:55 complain about stuff, they ask for
+1:56 features, and then we go around the loop
+1:58 over and over again. And then eventually
+2:00 we put on monitoring so we can wake
+2:02 people up at 3:00 in the morning because
+2:04 apparently we love to wake up engineers
+2:05 up at 3:00 in the morning when things
+2:06 break. But this is your like software
+2:08 factory before AI. Basically the first
+2:11 thing that happens after that is you
+2:12 replace like person builds the thing
+2:14 with agent builds the thing. I'm not
+2:17 going to get too much into like
+2:17 orchestration and harness and sandbox
+2:19 and model. Like you need all these
+2:20 things, but basically like every single
+2:22 thing that comes off your list, this is
+2:23 the ramp, the work OS, the Brax, they
+2:26 all have their the Stripe Minions, they
+2:28 all have their like system that does
+2:30 this. And this is the first thing you
+2:32 replace. And you probably leave most of
+2:34 this other stuff in here. And basically
+2:36 like now this part takes minutes or
+2:38 hours, and this part still takes hours
+2:40 or days. I guess like before we had
+2:42 agentic factories, we basically had like
+2:45 people noticed that like building stuff
+2:46 took hours or days and reviewing stuff
+2:48 took hours or days. And so we did this
+2:50 stuff to like get more leverage, which
+2:52 is basically like we'd sit in a freaking
+2:53 meeting and talk to other engineers
+2:55 about what we were going to do so that
+2:57 like instead of spending 6 hours
+2:58 reviewing it, maybe there's like a a
+3:00 better chance that like oh yeah, this is
+3:03 what we all talked about, the PR matches
+3:04 what we explained, and there's like very
+3:06 little changes required. And so like we
+3:08 want to basically optimize spend an hour
+3:10 up front to save hours in the review
+3:13 time, in the build time, make sure we're
+3:14 not building the wrong thing, etc. This
+3:16 department is now fast, but this part is
+3:18 still slow. And we bring in like agentic
+3:20 code review and it catches all the small
+3:21 stuff. And we let the agents like just
+3:23 poke at the app and test it with
+3:24 browsers testing and stuff like this.
+3:26 And that makes this faster, but like if
+3:28 you want to read like the code that
+3:29 matters or any of the code or all of the
+3:31 code, whatever it is, like this is still
+3:33 your bottleneck of like how do you build
+3:35 trust that the thing that was built is
+3:37 going to work today and it's not going
+3:38 to like slow you down in a month, right?
+3:40 >> If you're, you know, getting tens of
+3:42 thousands of lines, you cannot review
+3:43 that manually.
+3:44 >> Yeah.
+3:44 >> That is that is the bottleneck for sure.
+3:46 >> So you do what you can to build trust.
+3:47 You say, "Okay, well, we threw Codex and
+3:49 Opus at it and they both said like they
+3:51 both found 10 things and we fixed all 10
+3:53 of those things. So, now I have higher
+3:54 trust that this is going to be like I'm
+3:57 not going to get a ton of complaints and
+3:59 feature requests, and I'm not going to
+4:00 like get woken up at 3:00 a.m. cuz
+4:02 something broke. And then we can do some
+4:03 stuff like routing incidents straight
+4:04 into the factory. So, when the alarm
+4:06 goes off at 3:00 a.m., I don't wake up
+4:07 to an alert, I wake up to a pull
+4:08 request. And we can do the same thing
+4:10 with like user feature requests, right?
+4:12 Instead of like going through a support
+4:14 queue, we triage some of the support
+4:16 queue straight to the agent and it just
+4:17 goes and fixes the bug. Have you done
+4:19 any of this yet?
+4:20 >> Yeah, I'm implementing this as as much
+4:22 as I can, to be fair. For example, for
+4:24 my current thing, Deep API, I'm I have
+4:26 like GLM 5.2 to review every single like
+4:28 uptime incident. So, anything that's
+4:31 like suspicious or anything that it goes
+4:33 down before, you know, I have to like
+4:36 read it and understand it or use AI to
+4:38 understand it, but now I just get like
+4:39 an AI report of like, "Oh, this is what
+4:40 happened. It's actually the provider. We
+4:42 cannot do anything about it." Or like,
+4:43 "Oh, yeah, this is caused by missing
+4:45 migration. Do this."
+4:46 >> Yeah. You're like, "Oh, Anthropic is
+4:47 down right now. Like, you just have to
+4:49 like tell your users. And like, here's a
+4:51 draft of a message you can put out in
+4:52 your Discord channel or whatever."
+4:54 That's cool. Where are you running that?
+4:55 Is that running like in a in a in a
+4:57 cloud sandbox somewhere?
+4:58 >> It's split between render.com and just
+5:01 cron jobs on Vercel and GitHub Actions.
+5:03 >> Okay. So, you have cron jobs on Vercel,
+5:05 and then like when incidents happen, you
+5:06 pull them in and then render.com runs
+5:08 some little agent loop that does
+5:10 inference and then like sends it
+5:11 somewhere.
+5:12 >> Yeah.
+5:12 >> Cool.
+5:13 >> Now, launching your app is just step
+5:15 one. The moment some users show up, the
+5:17 question becomes, "What are they
+5:19 clicking? Where do they drop off? What's
+5:21 breaking?" And right now, that
+5:23 information is scattered. You have one
+5:25 tool for analytics, one for surveys,
+5:27 another one for error tracking. But with
+5:29 PostHog, you get all of this in one
+5:32 clean platform. You can link all your
+5:34 data sources and query everything
+5:36 alongside your product data. So, you can
+5:38 find real correlations and real patterns
+5:40 instead of just guessing. There's also
+5:42 session replay, so you can watch
+5:44 recordings of real user sessions to see
+5:47 where exactly they get stuck. But
+5:49 honestly, you don't even have to watch
+5:51 this yourself. PostHog's new AI tool,
+5:54 replay vision, watches those recordings
+5:56 for you. It automatically spots any
+5:58 friction and an agent opens a pull
+6:00 request with the exact fix. So all you
+6:02 have to do is just review it and merge
+6:04 it. That's the whole idea. PostHog makes
+6:07 your product self-improving. And this is
+6:09 essential if you're building software in
+6:11 2026. For example, most people have no
+6:14 idea how to monitor their AI inference
+6:17 calls. But PostHog does all of this for
+6:19 you. It tracks the prompt, the response,
+6:21 the token cost, and the latency.
+6:23 Everything per user. So you can see
+6:25 which features are burning money, which
+6:27 agents are misbehaving, and which
+6:29 prompts are actually working. This is
+6:31 what you need to build a great product.
+6:33 You can try PostHog for free by clicking
+6:35 the link in the description. Oh, and
+6:37 thank you PostHog for sponsoring this
+6:38 video. So this is like when people talk
+6:40 about the full software factory, this is
+6:42 like getting towards like how do we take
+6:44 ourselves out of the loop? If something
+6:46 can be just one-shotted by an agent,
+6:48 even if it's only like 30% of your work,
+6:50 only 30% of your incidents, that's huge.
+6:53 That's like you're getting close to
+6:54 doubling your productivity, right? Cuz
+6:56 if you can automate 50% of your work,
+6:57 you can now ship twice as much. And so
+6:59 like now the thing is like cool, now our
+7:01 job is more just like ask for features,
+7:03 evolve the platform, think about
+7:05 strategy, and then like how fast can you
+7:07 review the changes?
+7:08 >> Yes.
+7:08 >> Which gets us to this thing that I don't
+7:09 think works, which is the light soft
+7:11 factory, where we just say like okay,
+7:12 we're just not going to read the code.
+7:13 Like how can we build a system where we
+7:15 don't have to read the code or we have
+7:16 to read as little code as possible? Do
+7:18 you still review your your PRs that the
+7:20 agents write?
+7:20 >> Not like all of them. If there's a small
+7:22 change, I just ship straight into
+7:23 production. Like one maybe controversial
+7:26 opinion, and again like I have less
+7:27 experience than you, so like you know, I
+7:29 have to preface that. But like I have a
+7:30 good sense of like my prompt, right? If
+7:32 it's like a small front-end tweak, I
+7:35 know what the agent's going to do. Like
+7:36 I just have like over thousands of hours
+7:38 building with AI, probably over 100
+7:40 hours with these new models. But like I
+7:42 I just know like what type of things the
+7:44 agent is likely to [ __ ] up and what I
+7:45 can trust with. If I'm not sure, again,
+7:47 I do the basics, right? Review it with
+7:48 the other frontier model and do more
+7:50 testing myself, stuff like that.
+7:52 >> That makes sense. And basically the idea
+7:54 is like when when you if you want to get
+7:55 out of code review, you you end up
+7:56 investing into all these other things.
+7:58 You make it so the agent can test its
+8:00 changes live. Maybe it can even send you
+8:01 a little video when it's done building.
+8:03 This is like the cursor sandbox agents
+8:04 do this. You make your agent to code
+8:06 review way better. You make your
+8:07 regression testing way better. Every
+8:09 time something fails, you go figure out
+8:11 what it was and you make sure that that
+8:13 particular failure mode never happens
+8:15 again. You make your CICD checks better
+8:17 and more robust. You add more different
+8:18 types of linters. complexity monitoring,
+8:21 all this stuff. And so now your job
+8:23 really is just like how much stuff can
+8:25 you think of? How many how many features
+8:27 can you ask for? How many features can
+8:29 your users ask for? And like you can
+8:32 actually run this thing where you don't
+8:33 ever read any code. I personally don't
+8:35 think this works and this was like kind
+8:36 of my epiphany and like me I mean, I
+8:38 think if you've used agents for a while,
+8:39 you kind of have this vibe of like if
+8:42 you do this for like way too long,
+8:44 >> You can like completely lose the touch
+8:45 of the code base, right? So then like
+8:47 the maybe the part that like I would add
+8:49 is really spending time on the agent
+8:51 educating you. Like checking like is the
+8:53 human still in the charge? You know,
+8:55 like giving you some some quizzes,
+8:56 giving you some like HTML visualizations
+8:58 and kind of slowing down on purpose when
+9:01 you start to lose the grip.
+9:02 >> Yes, exactly.
+9:04 >> Real quick, if you want Dexter's exact
+9:06 program design system that he uses, it's
+9:08 going to be available as the first link
+9:09 below the video. It's completely free.
+9:11 Go grab it now.
+9:12 >> We even had a prototype feature that I
+9:13 didn't end up shipping but we may bring
+9:15 back which was like while the agent is
+9:16 working on stuff, you can pull up the
+9:18 session and it'll quiz you on like what
+9:20 is the current state of the code base
+9:21 and how does it work today? And then
+9:23 like how does the new implementation
+9:24 work and what does it change? And you
+9:25 can like test your understanding with
+9:27 like multiple choice questions with
+9:29 different mermaid diagrams and stuff
+9:31 like this. Anyways, we we did this for a
+9:32 while. Basically like the idea here is
+9:34 like if you stop reading the code, you
+9:36 might and or you absolutely will
+9:39 eventually hit an issue that the agent
+9:41 can't solve. You're like, "Oh, this is
+9:43 broken, go fix it. Oh, this is broken,
+9:44 go fix it." And like you try all of your
+9:46 like most intense prompting and you get
+9:48 three of the smartest models together to
+9:49 do a council on it and they just keep
+9:52 thinking it's something that it's not
+9:53 and they keep shipping fixes that don't
+9:55 actually fix it. And so you have to go
+9:56 into the code base that you stopped
+9:58 reading 3 months ago and spend like days
+10:02 or weeks like one, like trudging through
+10:05 like sloppy code cuz you stopped reading
+10:07 it. And two, like trying to figure out
+10:09 what is actually wrong. And this has
+10:11 happened to us at least once or twice,
+10:13 which is why we kind of like threw out
+10:14 our We did this in like July of 2025. We
+10:16 had this light soft factory where we
+10:18 were like really zooming out and not
+10:20 really looking at the code so much. We
+10:21 reviewed the plans and we did like
+10:23 collaboration on like the tickets and
+10:24 the like what went into the to-do list,
+10:26 but we weren't reading the code. And
+10:28 then we hit a bug and like for weeks it
+10:30 was like, "Okay." Our site was like I
+10:32 mean we we were shipping a desktop app,
+10:34 so like the app was buggy, users were
+10:36 pissed, we were miserable reading
+10:38 through a bunch of like slop code trying
+10:40 to figure out what the hell happened.
+10:41 And it just it sucked. And I kind of
+10:43 have this thesis that like the odds of
+10:45 this happening to you if you stop
+10:46 reading the code are much higher than
+10:48 the odds of it not happening to you or
+10:50 like that the models will get smart
+10:52 enough by the time it happens that you
+10:54 that that they will be able to solve it.
+10:56 >> Maybe I will challenge you on the
+10:57 wording, right? Like is code the right
+10:59 word? Because like you can replace code
+11:00 by the logic. Like if you understand the
+11:03 underlying logic of your software and
+11:05 like are we using a certain API schema
+11:08 or like what's the difference between
+11:09 hashing and encryption? If you just
+11:11 understand these concepts, you don't
+11:12 necessarily need to look at the code per
+11:14 se. You need to know like the logic of
+11:15 like, "Okay, what does the first 5
+11:17 minutes look like in the onboarding?
+11:18 What does it look like when someone
+11:19 tries to cancel? What does it look like
+11:21 when this API endpoint fires?" Maybe I
+11:23 will challenge the word code and like
+11:25 replace that with logic, no?
+11:26 >> Like know what the product is. I'll jump
+11:28 ahead to kind of like what we I'll go
+11:29 back to like why I think this is. We do
+11:31 a whole thing in like RL and how the how
+11:33 the cases work and how it's like kind of
+11:35 obvious that that that is how it
+11:36 happens. But we basically go through
+11:38 like four stages and I can demo this in
+11:39 a little bit with our tool, but like you
+11:41 don't need any tool or any specific set
+11:43 of skills to do this. This is just like
+11:45 what I think is the right way to think
+11:46 about aligning with AI and kind of
+11:49 staying in the loop as much as as
+11:50 possible. And the first one is like the
+11:52 product part. Like what user problem are
+11:54 we trying to solve and like
+11:56 >> Yeah.
+11:56 >> if you can do it, how do we measure it,
+11:58 right? Because if you can put an
+12:00 experiment on your website and say like,
+12:02 "Okay, this is hard to use." The agent
+12:04 can try three different things and then
+12:05 it can check the data every day and
+12:07 decide which one works best. That's
+12:09 incredible. Now you're really getting on
+12:11 autopilot, right?
+12:12 >> And this is something that the latest
+12:13 generation of agents is like doing way
+12:15 better. Like I noticed, you know, with
+12:16 Fable and 5.6 so like I I don't have to
+12:19 tell them to run tests. I just noticed
+12:21 like if they do something medium-sized
+12:22 or a large, they just try to do way more
+12:24 testing by themselves. So I think yes,
+12:27 in certain areas you still have to like
+12:28 think of ways to measure and track, but
+12:31 with the models getting better, they're
+12:33 they're doing this by themselves.
+12:34 >> When you say testing, are you you
+12:35 talking about like doing like browser
+12:37 testing and stuff like this? Like using
+12:38 something like agent browser?
+12:40 >> No, no, no. Like if I'm building some
+12:41 feature, like something like your deep
+12:42 research or scraping and they switch a
+12:44 provider, they would test cost, speed,
+12:47 quality, you know, using LLMs as a judge
+12:49 without me even saying like test it
+12:51 after changing it. And that didn't
+12:53 happen in the previous generation of
+12:54 models.
+12:55 >> That's sick. We have seen that a little
+12:56 bit more. They got much better at like
+12:58 computer use and browser use and they're
+12:59 much more likely to do it without being
+13:01 told, for sure. The whole like concept
+13:03 here is like back pressure, right? Is
+13:05 like how can you take what you build and
+13:07 give the model like deterministic like
+13:11 yeah, LLM as a judge is is fine and LLMs
+13:13 can review code and they can review
+13:14 outputs, but like if you can actually
+13:17 say like, "Hey, here's a number, like
+13:19 the conversion on my website that is
+13:20 directly tied to the success of my
+13:23 business, to how much revenue I'm
+13:24 getting, to how many users I'm
+13:25 converting." That is crazy powerful.
+13:27 >> I was about to say that's the same idea
+13:29 behind like the slash goal. If you can
+13:30 tell it a measurable output, the agent
+13:33 will move mountains for you.
+13:34 >> That was the same thing as auto
+13:35 research, right? It's like just go make
+13:36 this CUDA kernel faster until it like
+13:39 whatever it is is you've reached the 20%
+13:41 resource reduction or whatever it is,
+13:42 right?
+13:43 >> Yep.
+13:43 >> And so like here what what some of the
+13:45 things we like to do here is like
+13:46 basically I'll actually pull up a doc
+13:48 that we did. Yeah, so here's like a PRD
+13:50 I made in in Humanlayer that is like
+13:53 here's how you bring your custom
+13:54 workflows into Riptide. So it's like we
+13:56 have here's the problem to solve, here's
+13:57 how we measure success. And actually did
+13:59 this Amazon thing which is like write
+14:00 the blog post before you build the
+14:02 feature. Think about how you're going to
+14:04 explain it to users and why it's
+14:06 valuable before we ever write a line of
+14:08 code. So we're building this new JSON
+14:10 format and then it comes with a bunch of
+14:12 like we do HTML mockups to understand
+14:14 how like what it's going to look like. I
+14:16 did a bunch of iterations on this and
+14:18 then like basically all of the different
+14:21 views in the app that are relevant, we
+14:23 kind of just like prototype them out
+14:24 with like plain HTML and it it it seems
+14:27 to work really well. But this is like
+14:28 the product part. There's no tech here,
+14:29 there's no architecture, we're not
+14:30 talking about databases or schemas or
+14:32 anything. It's just like what is the
+14:34 user see? What is the user spacing
+14:35 stuff?
+14:36 >> Yes, having perfect clarity about like
+14:38 what do you actually want to build and
+14:39 why do you want to build it before
+14:41 getting into any prompting or coding.
+14:43 >> Yeah. And like people say like oh but
+14:44 this is just extra work and like the
+14:46 models are good enough now and it's like
+14:47 sometimes, right? You can roll the dice
+14:49 and just see what comes out, but if you
+14:51 spend 20 minutes going back and forth
+14:52 and figuring out what this looks like,
+14:54 you can do a lot. You can like raise the
+14:57 chance that whatever the agent ships
+14:59 does not need a bunch of like hand
+15:01 polish or tweaks or you got to like file
+15:02 a bunch of changes to the UI or whatever
+15:04 it is.
+15:05 >> Yeah, the models are also good enough at
+15:06 like doing what you tell them and never
+15:08 calling you out about like yo, you've
+15:10 been working on this for days and there
+15:11 is zero progress and like you still have
+15:13 zero users. So like you know, that's the
+15:14 dangerous part.
+15:15 >> So I mean you mentioned like
+15:16 understanding the product part, that's
+15:18 one example. The next thing we do is
+15:19 like system architecture, right? If you
+15:21 want to save time during the review, you
+15:22 pick whoever would review the PR. I
+15:24 mean, if you're solo, then this is a
+15:26 different story, but it's like whoever
+15:27 would review the PR, if you're
+15:28 especially if you're working on a team.
+15:29 We focus a lot on like we work with
+15:30 publicly traded companies, a lot of like
+15:32 series B plus fintech companies. People
+15:35 where you can't just like vibe it and
+15:36 hope it works, right? And like, "Oh, if
+15:38 it's broken, like we'll just fix it
+15:40 tomorrow." cuz it's like in those
+15:41 industries, if it's broken, you might
+15:43 get fined a million dollars if you do
+15:44 something wrong. And so, they are
+15:45 reviewing the code and stuff. And so, we
+15:47 can do this high-level architecture
+15:48 thing, right? Of like, "Hey, here's how
+15:50 the Here's how the services are going to
+15:51 fit together and here's the flow. Here's
+15:53 the new endpoints we're going to make.
+15:54 Here's the new tables and then like
+15:56 outlines of the queries we're going to
+15:58 do." And this is like going down one
+16:00 more level, right? This is what a lot of
+16:02 people do. A lot of people have gotten
+16:04 to the point where they're quite
+16:05 comfortable working back and forth with
+16:06 models to design the system
+16:08 architecture. And this is really good.
+16:09 Do you do stuff like this?
+16:10 >> I'm not at that level, so, you know,
+16:12 right now I'm launching a new startup
+16:13 with like two developers, so I'm not
+16:15 there yet.
+16:15 >> So, yeah. The The other like asterisks
+16:17 on this, right, is like there are times
+16:19 to vibe code. This is like less about
+16:21 vibe coding than anything else. Like, if
+16:23 you are a pre-product-market-fit startup
+16:25 and you have to figure out what's worth
+16:26 building and you just have to like put
+16:28 as much different things in front of
+16:29 customers and figure out what they're
+16:30 willing to pay for. Like, this is
+16:32 probably overkill. But if you're on any
+16:34 kind of team, even like around like five
+16:37 plus engineers where it's like, "Okay,
+16:38 we know what we're building and we have
+16:40 people paying for it and we need to make
+16:41 sure that it like is going to be around
+16:43 in six months and that we're going to be
+16:44 able to maintain it." This is kind of
+16:46 step one. The thing that I think most
+16:49 people skip is actually what I call like
+16:50 program design. It's like actually going
+16:52 before you let the agent go cook, there
+16:54 are decisions that it's going to make
+16:56 that you might not like.
+16:58 We see a lot of people actually going
+16:59 one layer down of like, "Here's actually
+17:01 what the call stack of the program's
+17:03 going to look like." Actually, Dylan
+17:04 Mulroy from Cloudflare did a tweet about
+17:06 this recently that's really good, which
+17:07 is like most of his plans actually end
+17:10 with like, "Here's what the tests are
+17:11 going to look like and here's what the
+17:12 call stack is going to look like when we
+17:14 go build this." And again, the most
+17:17 important thing we talk about is like I
+17:19 use the word leverage a lot. How can you
+17:20 spend a little bit of time up front to
+17:23 increase the odds that the thing that
+17:25 comes out is not going to need a lot of
+17:26 fixes and changes before you can merge
+17:28 it. Or after you merge it, you're going
+17:30 to have to go back and clean it up,
+17:31 right?
+17:31 >> This is basically like the inverse
+17:33 process. I don't know if you've seen a
+17:34 tweet by Victor Tali. But basically,
+17:36 it's like when the models do a change,
+17:38 ask them, "While working on this, which
+17:40 choices did you make that you're not
+17:41 confident of?"
+17:42 >> Yeah, I've seen this. Yeah.
+17:43 >> Yeah, so that's basically doing this
+17:45 before the the model runs.
+17:46 >> Exactly. Yeah. My take is basically like
+17:48 once the model has written thousands of
+17:50 lines of code or even hundreds of lines
+17:52 of code, it is harder to change then
+17:55 because you're deep in a context window.
+17:56 You've done Even if you use a lot of
+17:57 sub-agents, like there's a lot of
+17:58 context there and you're already kind of
+18:00 biased in one direction by what the
+18:02 model chose in the first place. The
+18:04 sessions that generate these kind of
+18:05 docs are very context light. Like the
+18:07 model has all the understanding, but
+18:09 it's doing it in a very token efficient
+18:11 way. I have one of these in progress. Um
+18:13 let me go pull it up. This is like the
+18:15 conversation back and forth. We're at
+18:16 43,000 tokens and we've already made uh
+18:19 a lot of decisions. We read the PRD in
+18:22 this session and then we've already made
+18:24 a lot of decisions on like how this is
+18:25 going to fit together or what the
+18:26 endpoints going to look like, like
+18:28 what's the flow, what's the actual like
+18:31 This is this is our program design.
+18:32 Actually, this is just the architecture
+18:34 still. I haven't even gotten into the
+18:35 program design. But the point is like
+18:37 you can make a lot of these decisions in
+18:39 a very context cheap way, which means
+18:41 you're getting the most model
+18:43 intelligence, right? The deeper you are
+18:45 in the context window, the long context
+18:46 window, right? So, that's that's like
+18:48 kind of the program design side of it.
+18:49 We look at like actually, "Hey, where
+18:51 are we going to put these files?" I'm
+18:52 sure people see like, "Wait, why did you
+18:53 put that over there?" It's like, "Okay,
+18:55 this is one question that you can go
+18:56 back and forth with
+19:05 on the model." And we use these like
+19:07 code blocks a lot. We prompt the model
+19:09 to use these things that are like very
+19:10 easy for humans to quickly read and
+19:13 decide is this right or is it wrong. We
+19:15 just define the types and the method
+19:17 signatures, but not necessarily like
+19:19 getting into the implementation details.
+19:21 And the last one we do is like I
+19:23 recommend people do is what I call like
+19:24 vertical slices. Matt Pocock talks about
+19:26 this all the time. We I talk I actually
+19:27 did a YouTube with him in like January.
+19:30 We talked about like tracer bullets. Um
+19:32 and the basic idea is like models love
+19:34 to build things in a horizontal way.
+19:36 They like to do everything at one part
+19:38 of the code base in each phase. And so
+19:40 like there's nothing along the way here
+19:42 that you can test. Basically is the
+19:44 challenge. Is like you do the database
+19:45 and the services and the API and front
+19:47 end. And like at the end of it you're
+19:48 sitting at like the other side of
+19:50 thousands of lines of code and there was
+19:51 nothing to check along the way. So
+19:53 again, coming back to our like once the
+19:54 code is already written, it's more work
+19:57 to re-steer and it's harder to kind of
+19:59 like pick it up and change it in a big
+20:01 way. And so what we always recommend is
+20:04 this thing we call vertical slices,
+20:06 which is like you have these layers of
+20:07 your system, but like when I built code
+20:09 before AI, I would always build like a
+20:11 mock API endpoint first. And then
+20:14 [clears throat] I would And then I would
+20:15 stub out the front end. And then I would
+20:16 get the front end right. And then I
+20:18 would wire it down. And then I would do
+20:19 a migration. And then I would do all my
+20:20 business logic. And then I would do all
+20:22 my error handling. I have never seen a
+20:24 model do this without human getting in
+20:26 the loop and like telling it what order
+20:27 to do the things. But this means that if
+20:29 you want to, you can test it along the
+20:31 way either manually or with curl or with
+20:34 browser agents or whatever it is. It's
+20:36 like get it working all the way end to
+20:37 end first and then go add logic and then
+20:40 go add business cases. Does that make
+20:42 sense?
+20:42 >> Yeah. Okay, so you say that I I realize
+20:43 like I've never seen a model be like,
+20:45 "Okay, I'm just going to build a empty
+20:47 version of this end API endpoint, test
+20:49 if it works, then add 50 lines, test if
+20:51 it works." It's just always like, "Okay,
+20:53 so this is going to require complete
+20:54 front end feature plus 500 on the front
+20:56 end. Then we're going to do plus 400."
+20:59 Right? So like as you're saying that I
+21:00 recall like this you know, before I
+21:02 built some stuff before LLMs, not as
+21:04 much as you, but like you know, when I
+21:05 was like 15, 16 and I was building like
+21:07 mobile games, that's how I did it. I was
+21:09 just like, "Can I get something to
+21:10 work?" Okay, it works. Let's make it
+21:12 slightly more complex. Okay, it still
+21:14 works. And then like adding one step at
+21:15 a time.
+21:16 >> This is like how you learn a new
+21:17 programming language, right? You do the
+21:18 Hello World, and then you change the
+21:19 Hello World until it's kind of looking
+21:21 like the thing that you want. And you
+21:22 like push the boundaries of the
+21:23 language, and you understand the shape
+21:25 of the problem as you're going. And like
+21:27 >> Yes.
+21:28 >> I think this is a great way to save a
+21:29 ton of time, especially if you like
+21:32 you're going to end up reading all the
+21:33 code at the end. Like you might as well
+21:35 check these first two steps and like go
+21:36 check peek at the code as well and be
+21:38 like, "Oh, I don't like the trajectory
+21:40 this is on. Let me re-steer it now when
+21:41 it's cheap versus going all the way to
+21:43 the end and then like hope that it's
+21:45 right. And if it's not, it's much more
+21:46 work to change it."
+21:47 >> Yeah, I mean it's the same in business,
+21:48 right? Like your first customer, deliver
+21:50 them and do everything. You don't like
+21:51 spend like, "Okay, let's spend 10 months
+21:53 designing the perfect Facebook ad
+21:55 campaign so then we're ready for $10
+21:56 million a month." It's like nobody works
+21:59 like that.
+21:59 >> And so this is all predicated on this
+22:01 like thesis of like, "Hey, you're going
+22:03 to have to read the code for now." They
+22:04 can solve problems really, really well,
+22:06 but they're not going to be able to
+22:07 write maintainable code without you in
+22:09 the loop helping. I had this vibe, and
+22:11 lots of people I talked to had this
+22:12 vibe, and I wanted to go figure out why.
+22:13 So I like dug in a lot into like how
+22:16 reinforcement learning actually works,
+22:18 and like
+22:18 >> Okay.
+22:19 >> why they can't get the models to do
+22:20 this. I'm sure they're trying and
+22:22 they're working on it, and it may be
+22:23 solved soon, but like one of the things
+22:25 I focus on a lot is like, "Okay, if you
+22:27 want to solve problems today, and you
+22:29 don't want to just sit around and YOLO
+22:30 prompts until GPT-7 comes out and hope
+22:33 that that's going to be better, then
+22:34 like you should understand one level
+22:36 down on like why they're bad at the
+22:38 things they're bad at so that you can
+22:40 have an intuition about like where to
+22:41 get involved versus like you said
+22:43 earlier, it's like there's certain
+22:43 things where I just know the model's
+22:45 going to do it well and I don't need to
+22:46 be in the loop." So I had this like
+22:47 visualization inspired by my buddy
+22:49 Calvin French-Owen who used to work on
+22:50 Codex. So we basically give the model a
+22:52 problem, we have it try to solve it a
+22:53 bunch of times, we put the temperature
+22:54 high so it tries lots of different
+22:56 stuff.
+22:57 >> Yeah.
+22:57 >> And then we score each of these traces.
+22:58 Like did it actually solve it? Was the
+23:00 code concise? Is it verified from the
+23:02 outside, and then we reinforce, right?
+23:04 We take the traces that did well and we
+23:06 give them make them more likely to
+23:08 happen by shifting the weights, we take
+23:09 the traces that did badly, and we make
+23:11 them less likely to happen. And the
+23:13 thing is is like if you look at the
+23:14 problems, basically there's no penalty
+23:16 for bad design here. All these
+23:18 benchmarks, like you can look at Sweep
+23:19 Bench multilingual, you can actually
+23:20 look at every single problem in here.
+23:22 Somewhere in here we have Yeah, so
+23:24 here's like the golden patch for this
+23:25 problem. So the actual like correct
+23:27 answer for this, they're like short
+23:29 little changes, maybe like 100, 200
+23:31 lines, and then we have like what are
+23:33 the new tests that need to pass after
+23:35 the model solves it. So it doesn't have
+23:36 to solve it in the way the human solved
+23:38 it, but it does have to make the test
+23:40 pass that the human wrote, which is a
+23:41 little bit shaky sometimes because it
+23:43 means that like depending on how the
+23:45 model implements it, it may be correct
+23:47 but the test don't pass. But this is
+23:48 really simple like problem from Fast
+23:50 Language Ruby project, which is like,
+23:52 "Hey, if you call this thing in a
+23:53 certain way, you get this like null
+23:55 pointer exception and the stack blows
+23:56 up." And the the human fix was like just
+23:59 to basically if it's nil, put it in
+24:01 empty list. And we have these tests
+24:03 basically is like, "Okay, after the
+24:05 model's done writing the code,
+24:07 uh this is the test that should pass."
+24:08 This is the size and scope of some of
+24:11 these problems. And so basically like
+24:13 the way we grade this is we have the we
+24:14 have the problem statement and we check
+24:16 out the code base at whatever commit it
+24:18 was at before a human solved this open
+24:20 source problem on the web maybe 10 years
+24:22 ago. The agent tries to solve it, it
+24:24 builds a patch, and then we like grade
+24:26 it in a sandbox. And so we see like,
+24:28 "Okay, did you We still got whatever
+24:30 changes the agent made to the test
+24:31 because I'm sure you've seen agents like
+24:33 basically comments out test to get them
+24:35 to pass." And then we put in our tests
+24:37 and then we see do they pass. And like,
+24:39 "Okay, did we fix the Did we fix the new
+24:41 problem and did we do it without like
+24:42 breaking any of the old tests?" Then you
+24:45 get a point.
+24:45 >> So in this case you don't care if that
+24:47 specific like open source, you know,
+24:50 solution is in the training data.
+24:51 >> So this is one of the problems. I'll
+24:52 show you what some of the newer
+24:53 benchmarks are doing. One of the things
+24:55 they do is also like trying to make sure
+24:57 that the the benchmark set is really
+25:00 held out because yeah, the models have
+25:01 read a lot of code. It is possible that
+25:03 during training the models have actually
+25:04 seen this code, this pull request, this
+25:07 repo already. That's like a totally
+25:09 orthogonal problem to like this problem
+25:11 does not penalize the model for writing
+25:13 slop. It just doesn't. And so like if a
+25:17 model gets 99% on SweBench, I don't give
+25:19 a [ __ ] because I know that it's it's not
+25:22 being penalized for slop. So like yes,
+25:23 it's better at problem-solving but it's
+25:25 not going to convince me that I can stop
+25:26 reading the code anytime soon.
+25:28 >> Yeah, if it if it solves it with like
+25:29 writing tens of thousands, hundreds of
+25:31 thousands of lines of code, you
+25:32 definitely don't want that in a real
+25:33 business, you know? So even though
+25:34 technically it solved that problem, it's
+25:36 like you would probably fire that
+25:37 engineer.
+25:38 >> Yeah, exactly. And this is why we get
+25:40 like patterns like this where it's like
+25:41 JSON.parse and then it's like okay, we
+25:43 catch the error and then we log it and
+25:44 then we re-throw it or return nothing
+25:47 and it's like this is completely
+25:48 unnecessary. It makes your code worse.
+25:50 Like we get these weird type casts
+25:51 everywhere where it's like it's just
+25:53 just trying to get the test to pass,
+25:54 right? And I think like basically the
+25:56 reason why we don't verify quality is
+25:57 cuz it's really, really hard. In
+25:59 reinforcement learning, you need what we
+26:01 call an oracle, right? A thing that can
+26:02 tell you like verify whether the
+26:04 solution was correct or not. And
+26:06 maintainability has no fast oracle,
+26:09 right? You can run the test in a couple
+26:11 seconds and you can run millions of RL
+26:13 loops on on on thousands of problems and
+26:15 you can do it kind of efficiently, but
+26:17 like basically the cost function of bad
+26:20 architecture is measured in weeks and
+26:22 months. And so if you make a bad
+26:24 decision over here and then you keep
+26:25 shipping and you do random stuff and
+26:26 then suddenly get an incident due to
+26:28 something that happened over here cuz it
+26:29 just kept getting more like spaghetti
+26:32 and unreadable. Like there's no it's
+26:34 really hard to like back propogate this
+26:36 during a training run to like make the
+26:38 model not do that again. And the other
+26:40 problem I have with all the benchmarks
+26:41 today is like software is all about
+26:43 discovering problems as you go. You ship
+26:44 something, give it to users, you get
+26:46 feedback, you ship another thing. And
+26:48 every single benchmark, even the
+26:49 frontier ones, like the model knows the
+26:51 whole problem up front. We have no
+26:53 benchmark that like feeds the model like
+26:55 five features in a row and proves
+26:57 whether it's good at like making the
+26:59 code base not just solve the problem,
+27:00 but making it easier to easier to change
+27:03 so that when the next thing comes in it
+27:04 can keep working and keep working and
+27:05 keep making progress.
+27:07 >> I think the big challenge is going to be
+27:08 like trusting the benchmark. You know,
+27:10 2023, 2024, everybody was like only
+27:12 looking at that, but now people are more
+27:14 skeptical. It really is like a big
+27:16 challenge to find a benchmark that
+27:17 doesn't get saturated and that's
+27:18 actually useful.
+27:19 >> Yeah, exactly. Like I have some ideas of
+27:21 benchmarks where it's like, okay, you
+27:22 have a you have a road map of 20
+27:25 features and the model doesn't know any
+27:26 of the features in advance. It gets them
+27:28 one at a time. I think [clears throat] I
+27:30 would trust a benchmark like that way
+27:31 more than a benchmark where it's just
+27:33 like, hey, go clone all of Redis, write
+27:35 200,000 lines of, you know, Rust code
+27:38 that is like Redis compliant and like,
+27:40 oh my god, it cloned Redis. That's
+27:41 crazy. Like so impressive. And it's
+27:43 like, yeah, but are you going to be able
+27:45 to add a feature in two weeks or is it
+27:46 going to be complete chaos? There is a
+27:48 new one from Cognition. There's a couple
+27:50 other ones that I that I'll I mention in
+27:51 this post, but basically there's a new
+27:52 one from Cognition that is like better
+27:54 in the right direction. One of the most
+27:56 interesting things that they do here is
+27:58 like you still have a history of issues
+27:59 and humans create the issues. And so you
+28:02 take the issue and the code base checked
+28:03 out to that shot, the LLM goes tries to
+28:05 solve it. And we have a verifier, like
+28:06 do the new test pass? Did it not break
+28:08 anything? But then we have like a
+28:10 there's like a golden solution and we
+28:12 basically have an LLM that says like,
+28:14 okay, look at what the model wrote and
+28:16 look at what the human wrote and decide
+28:18 if they're like functionally equivalent.
+28:20 Or like did the model miss some nuanced
+28:23 detail? Like even if the test fail
+28:25 because they're not like shaped exactly
+28:27 right, did it solve it did it solve the
+28:29 problem? And so this is like a little
+28:31 bit more flexible in terms of like we
+28:34 don't penalize the model for writing
+28:35 code in a different way that the human
+28:37 did, which is interesting but doesn't
+28:39 solve the slop part problem.
+28:41 Uh but the really cool one is we have
+28:42 this LLM quality judge, right? Um which
+28:45 is like, okay, cool. We have a bunch of
+28:46 part of the data set is we have a bunch
+28:48 of quality rules of like, hey, if you're
+28:49 writing C++ you can never log like this,
+28:51 you have to log like this.
+28:53 And this LM looks at the rules in the
+28:54 patch and says, okay, like thumbs up,
+28:56 thumbs down, did it follow the rules?
+28:58 This is all things that like people are
+28:59 doing in their software factories today.
+29:01 The most novel thing is not like novel
+29:03 in terms of software engineering, but
+29:04 basically they look at the test the
+29:05 model wrote and they say, cool, let's
+29:08 remove the model's patch and run the
+29:10 test against the pre-patch code. Do the
+29:13 test fail there? And if they don't fail
+29:15 on the pre-patch code, then that's like
+29:18 evidence that the model wrote test that
+29:19 don't actually test anything. They're
+29:21 just like testing [ __ ]
+29:22 >> So basically to explain this like in a
+29:24 simpler way, you want to bake in the
+29:26 other less obvious things that like you
+29:29 can label as taste. You want to extract
+29:31 words from the word taste, which is not
+29:33 helpful, into like numbers and tests
+29:35 and, you know, measurements.
+29:37 >> Exactly. Yeah, it's like how can you
+29:39 give deterministic feedback or something
+29:42 a little more like LM quality judges
+29:44 obviously not deterministic, but if you
+29:45 keep it very focused and say like say
+29:47 yes or no, did it follow all the rules,
+29:48 you can get a little bit more of a
+29:50 stable scoring than just the like did it
+29:52 just pass the tests. So like we're
+29:54 moving in the right direction, but again
+29:56 like the model judging code quality I
+29:58 feel like can only go so far. Like the
+30:00 whole point of why models keep getting
+30:02 better and better at solving coding
+30:03 problems and why Fable is a little game
+30:05 changing and why like the sole like 5.6
+30:08 family models are game changing is like
+30:10 they did get better at solving problems,
+30:13 but it's because of what we've done
+30:15 during RL. We've just like the RL runs
+30:17 and the problems have gotten more
+30:18 sophisticated and if the model could
+30:21 tell good code from bad code, I would
+30:23 expect to know that because it's writing
+30:25 good code in the first place. So like if
+30:27 you write something with Fable and then
+30:28 you have Codex review it, it's like,
+30:30 okay, if we have to do this review at
+30:32 all, like it does raise the floor, like
+30:34 throwing more tokens at the problem will
+30:36 probably catch all the small stuff,
+30:38 but I I don't know. I this is my like
+30:40 the the thing I can't quite like
+30:42 prove, but everybody I know has this
+30:44 vibe, which is like if the model knew
+30:47 what good code looked like, then it
+30:48 would be able to write it in the first
+30:50 place. We're all using the same freaking
+30:51 models.
+30:52 >> I mean like like you said earlier, it
+30:53 really depends on the state of the
+30:54 business, right? Cuz like I know people
+30:56 who can get completely one-shotted and
+30:58 just like spend 7 months building the
+31:00 perfect system, not get a first user. I
+31:02 also know people who like, you know, can
+31:04 do the business part, can do the
+31:05 marketing part, but then like you said,
+31:08 when it comes time to scalability,
+31:09 maintainability, they get [ __ ] because
+31:11 they, you know, don't put in the effort
+31:13 and they have no idea what's happening.
+31:15 So, I think it's like, okay, you have
+31:17 product-market fit, you have, you know,
+31:18 enterprise customers, you you want to
+31:20 make sure that you don't lose their
+31:21 trust, you don't get sued, all that
+31:22 stuff, right? If you don't have
+31:23 product-market fit, you need to move
+31:24 fast, you can rely on the models a bit
+31:26 more, still try to architecture it in a
+31:29 ways that like scales, still try to keep
+31:31 your grip on the code base, but like
+31:33 ultimately, if you have zero customers,
+31:34 first figure out if you're building a
+31:36 thing that's even worth building.
+31:37 >> Yep, 100%.
+31:38 >> By the way, I packaged the exact program
+31:41 design system that Dex uses into a
+31:43 single bundle. It's available as the
+31:45 first link below the video. It's
+31:46 completely free. Go grab it now.
+31:48 >> There's this thing that like Jake
+31:49 Nations, who is like at a time he was,
+31:51 you know, the number one cloud code
+31:53 engineer at Netflix, is my impression. I
+31:54 don't think he ever said that, but that
+31:56 that was what it seemed like. He was
+31:57 kind of like leading the charge on
+31:58 agentic coding way before it was like
+32:00 super mainstream, and he has this point
+32:02 of like as a software engineer, you have
+32:04 a lot of hard-earned intuition, whether
+32:06 it was through AI coding or non-AI
+32:08 coding, you know a bad pattern when you
+32:10 see it because you've been stuck trying
+32:12 to fix it at 2:00 in the morning, or you
+32:14 spent 3 days like redoing it so that it
+32:16 actually is like easy to maintain and
+32:18 stuff. And like if you are not
+32:21 leveraging that, you are leaving money,
+32:24 quality, velocity, the ability to ship
+32:27 high-quality like stability, you're
+32:29 leaving that on the table. And so, my
+32:30 whole thesis around all of this is like
+32:33 how can we take the like entropy-tangled
+32:37 like set of like what are models good at
+32:38 and what are humans good at and what can
+32:40 we trust models to do and what can we
+32:41 not and like separating that out and
+32:43 like what is the right workflow that
+32:45 allows you the human because we we agree
+32:47 there are things that the model can't do
+32:48 without a human. How do we organize that
+32:50 set of chaos into a set of steps or
+32:53 ideas or practices that let you bring
+32:55 your intuition to leverage without like
+32:58 slowing down like the idea of yellowing
+33:00 a 2000 line feature and then just
+33:02 reviewing all the code at the end. We
+33:04 all know that sounds terrible. Nobody
+33:06 wants to do that. So how can we how can
+33:07 we how can we like pull the intuition
+33:09 out earlier on in a way that is like
+33:12 easy, pleasant, fun, interesting,
+33:15 whatever it is for the human and then
+33:17 letting the model cook on the things
+33:18 that the model is good at.
+33:19 >> I think my biggest like contribution to
+33:22 this is trying to get more things into
+33:25 the code base. Cuz traditionally the
+33:27 code base is all about the code, right?
+33:28 But as you said that the models are
+33:30 getting better and there's a lot of
+33:32 different things that like normally
+33:34 would be like understood. Like this is
+33:35 our marketing strategy. This is our
+33:36 public image. You know, all of the
+33:38 engineers understand it.
+33:40 But you know, the models don't
+33:41 understand it. So like personally I'm
+33:43 trying to every single project even a
+33:45 small one just like /docs/adr and
+33:48 document all ADRs explicitly and like
+33:50 know this is a decision. We're launching
+33:51 the pricing that way. No, we're never
+33:53 going to change the API schema if
+33:54 there's a massive change we're going to
+33:55 ship /v2 to not break the contract. You
+33:58 know, and then another thing is
+33:59 /docs/external.
+34:01 For example, what is my virtual
+34:03 environment variables like? You know,
+34:05 obviously not the values but like what
+34:07 what's in there, you know? What does my
+34:08 payment processor setup look like? Which
+34:10 emails am I using for testing? Where do
+34:12 customers contact with me? Like all the
+34:13 external things to the code base so that
+34:16 if the models need to find them, they
+34:17 are in the code base as clear markdown
+34:19 files
+34:20 and they can use them as context.
+34:21 >> Yeah. And this is a really interesting
+34:23 like idea of context in general is like
+34:25 I I have found and like the way our
+34:27 product works is like it's all files on
+34:30 disk, right? When Claude's working with
+34:31 plans or technical design docs or
+34:32 whatever it is, it's just using the file
+34:34 system, like the thing that it's really,
+34:36 really good at. And then under the hood,
+34:38 we have hooks of like every time it
+34:39 edits a file, it syncs to the cloud or
+34:40 notifies the team, and people can put in
+34:42 comments, and the comments get pulled
+34:43 back in. Like all this stuff but like if
+34:45 you can make the environment like close
+34:49 as possible to what the model is good
+34:51 at, which is like read, write, edit,
+34:53 grep, bash, then you then then you've
+34:55 like made it very like efficient for the
+34:58 model to get that context. So pulling
+34:59 all that stuff into the file system is
+35:01 like super, super smart. I'm I'm sure
+35:04 you've been doing this for a long time.
+35:05 Like now it's kind of obvious, but like
+35:07 yeah, the that idea of like how do we
+35:09 put as much as possible in the code base
+35:12 so we don't have to be like, "Oh yeah,
+35:13 well you got to turn on this MCP server,
+35:15 and here's how you check the most recent
+35:16 issues." Like all those instructions
+35:18 about how to get the context are wasting
+35:21 like attention in your model while it's
+35:23 trying to do work versus like you can
+35:25 just do this deterministically. You can
+35:27 just literally every time you start a
+35:28 session, you have a hook that is like,
+35:29 "Okay, pull pull the last 10 century
+35:30 issues in case we need them." That's
+35:32 free. That's literally free. It's like
+35:33 code that runs. It costs, you know, you
+35:35 know, CPU cycles, but it doesn't cost
+35:37 inference. And you should save your
+35:39 inference for the things that the models
+35:40 like are really, really like needed for,
+35:42 which is like reasoning through these
+35:44 complex problems and working with you to
+35:45 like come up with a solution and then
+35:47 spit out all that code.
+35:49 >> So let's talk about more context
+35:50 engineering because we're kind of
+35:51 flirting with this topic, and you're one
+35:53 of the first people who coined it. So I
+35:55 guess so
+35:56 how does that change since 2025 to 2026?
+35:59 >> Yeah, so I mean I'll I'll I'll put the
+36:01 screen share back up. Um okay, so we
+36:04 wrote this paper in in April, March of
+36:07 2025, uh about 15 months ago, called 12
+36:10 Factor Agents. And this was the first
+36:11 time that we ended up talking about
+36:13 context engineering. And we basically
+36:15 had these like 12 different things about
+36:18 if you are building agents, these are
+36:20 things you should probably think about.
+36:23 I would say at least nine of these are
+36:26 kind of still relevant. Some of them you
+36:27 kind of get for free and they've just
+36:29 been like adopted into most of the harm
+36:31 harnesses, but like here's the the the
+36:34 most interesting one, the one that
+36:35 popped off the hardest was like own your
+36:37 context window and basically this idea
+36:39 of like everything that you do when you
+36:42 work with LLM's, whether you're writing
+36:44 a script that builds a prompt and sends
+36:45 it to the model and parses the output or
+36:48 you're using a coding agent and you're
+36:49 like, you know, your agent it's
+36:51 assembling its own context window, but
+36:53 you're telling it where to get stuff is
+36:54 like rag and history and memory and
+36:57 prompt engine. All of these things are
+36:59 just like
+37:01 tokens in, tokens out, right? The only
+37:04 way to get like better results from the
+37:05 model is to put more tokens in put the
+37:08 right tokens into the model, not more
+37:09 tokens, but like put the right tokens
+37:11 into the model. That's how you increase
+37:13 your chance and so like understanding
+37:14 that the only like primitive that you
+37:16 have to work with is this context
+37:19 window, whether it's like a list of
+37:20 messages or just one giant prompt,
+37:23 right? There's two ways to do this,
+37:24 right? You could have this like system
+37:25 user, assistant, tool
+37:27 or you could just literally have a
+37:29 system message and then the user message
+37:30 has some other formatted version, but
+37:32 your goal is like when you're building
+37:34 these context windows, especially for
+37:35 agents is like and like obviously you
+37:37 wouldn't do this today because like
+37:38 caching has become really important and
+37:39 this is going to bust your cash every
+37:40 time, but like with agents what's really
+37:43 what's really important is just like
+37:44 understand like what's going into your
+37:46 context window and you can do literally
+37:48 anything you want. Um and so you can
+37:51 literally just model this as state in a
+37:52 program. You can just turn everything
+37:54 that's happened into a prompt and dump
+37:56 it in and like if you understand like
+37:58 literally down to the token level that
+38:00 like, oh, if I put JSON into my context
+38:03 window, that's different from putting
+38:04 XML into my context window and it's more
+38:06 token efficient to do XML. Uh it's like
+38:09 however you can convey the information
+38:11 to the model in the most like efficient
+38:14 uh like basically like you want to make
+38:16 sure you don't have any wrong
+38:17 information. You want to make sure
+38:18 you're not missing information and then
+38:20 you want to make it as small as possible
+38:21 in that world, and this applies just as
+38:23 much to building like an AI pipeline in
+38:25 your back end to like how do you think
+38:27 about using a coding agent? And so this
+38:29 was April 2025, and then in like June
+38:32 Andrej Karpathy and Tobi Lütke decided
+38:34 that they were going to talk about this
+38:35 and
+38:36 I don't know. I still haven't get I
+38:38 tweeted Andrej every once in a while.
+38:40 Let me see if this tweet will open up.
+38:42 Yeah, here it is. I every time someone
+38:45 tweets about context engineering I I
+38:47 come and tell them like, "Oh yeah, this
+38:49 is from a while ago." but he never he
+38:50 never replied. So it's fine. Andrej, I
+38:52 forgive you. It's fine. You couldn't
+38:54 have known. Maybe it's a Newton-Leibniz
+38:56 moment. Actually Jeff Huber from from
+39:00 you know Chroma DB?
+39:02 >> Yes, I know it.
+39:03 >> Yeah, so he also
+39:05 posted the words context and like he
+39:07 posted a tweet in like 2 weeks after 12
+39:10 factor agents came out. And I'm I'm
+39:11 pretty sure he didn't read it. It's like
+39:12 he came up with this he just posted two
+39:14 words context engineering. And that was
+39:16 that was the whole thing. So it was like
+39:17 I think it was like a lot of people were
+39:19 kind of coming to these ideas around the
+39:21 same time.
+39:22 But yeah, I don't know. That's like the
+39:24 the history of it.
+39:25 >> Yeah, I mean that I think that's same
+39:27 concept appeared through history like
+39:29 multiple times of science and technology
+39:31 where like multiple people came to the
+39:32 same realization at the same time
+39:34 because they're you know thinking about
+39:35 the same problems.
+39:36 But yeah, I mean I think like right now
+39:38 how you think about it because I think
+39:40 the the biggest you know it's like the
+39:41 curve of like the
+39:43 mid like the mid width curve you know
+39:44 with the people who are complete
+39:45 beginners they're like super short like
+39:47 fix this and they don't even provide a
+39:49 screenshot. They don't even provide any
+39:50 logs. The people in the middle like
+39:52 spend 30 minutes writing the perfect
+39:53 prompt and the people like who are like
+39:55 locked in they just like provide one
+39:57 screenshot is like oh it's in that file
+39:59 just read that file and fix it. Right?
+40:00 So like
+40:01 >> Yeah.
+40:01 >> how is the context engineering now? Is
+40:04 it really just like trying to have as
+40:06 high signal as possible with as little
+40:08 tokens as possible to not limit like
+40:10 what the model can do because like maybe
+40:12 the model comes up with a better
+40:13 solution. How do you think about it?
+40:15 >> Yeah, I mean it's like the the steering
+40:17 side of it is interesting. You talk
+40:18 about like you mentioned one thing
+40:19 that's interesting, which is like, okay,
+40:20 you have you can tell the model how you
+40:23 want it done,
+40:25 and that's like more likely to hit what
+40:26 you exactly what you wanted. And if you
+40:28 don't tell it how you want it done,
+40:30 there's a broader realm of
+40:31 probabilities, right? Of like, okay, it
+40:33 might do it in a terrible way, but it
+40:34 also might figure out like a better way
+40:36 to do it that you never would have come
+40:37 up with. And I I put that separate from
+40:39 context engineering cuz that's more just
+40:40 like how are you prompting and like what
+40:42 are you open to? But I think of the a
+40:45 lot of the concepts in in context
+40:47 engineering are still really relevant.
+40:49 This was an accident. I did not set out
+40:50 to like most things in AI are completely
+40:52 complete [ __ ] after like 6 months,
+40:54 but I think this one is tied like
+40:56 context engineering gets into like the
+40:57 physics of context windows and like how
+41:00 transformer attention works. And until
+41:02 we get like post post transformer
+41:05 architectures or linear attention, it's
+41:07 basically always going to be like the
+41:09 the smaller and tighter and more
+41:11 specific you can keep your context
+41:13 window, the better results you will get.
+41:15 Now, the the floor keeps going up,
+41:18 right? And so like I don't think super
+41:21 deeply about every token in my context
+41:23 window unless I'm doing something really
+41:24 really hard, right? It's like you said,
+41:26 if I'm doing a UI change, I'm literally
+41:28 just like, "Hey, here's the thing I
+41:30 want. Like, I trust Codex to go read a
+41:32 lot of stuff and figure it out." And if
+41:33 it reads a couple extra files that
+41:35 weren't relevant, like that's fine. It's
+41:37 like it's perfectly capable to go to
+41:39 200, 300K tokens before and and not kind
+41:43 of like crash out on me. Um and this we
+41:45 talked about like the dumb zone a little
+41:46 bit with our context our concept and
+41:49 like I actually came up with this. I was
+41:50 sitting in the office with a bunch of
+41:51 engineers who were like a little bit new
+41:52 to AI coding. We were doing like a like
+41:54 a training session. I was sitting down
+41:56 and I was like I was kept pointing out.
+41:57 I was like, "Okay, cool. We're at This
+41:58 was with like Opus 4.1 and then Opus
+42:01 4.5." I was like, "Okay, we're getting
+42:03 around 100,000 tokens, about 50% of the
+42:05 context window, 120,000 tokens. It's
+42:08 time to like take everything we're
+42:09 doing, like compact it into a whatever
+42:12 document we're working on and be like,
+42:13 "Hey, cool. Take everything we talked
+42:14 about, put it in a doc." And then
+42:15 basically like start a new session off
+42:18 of that doc and like keep working. And
+42:20 the the term I came up with was like,
+42:22 "Okay, cool. Like, the model's in the
+42:24 dumb zone now. That's why it's That's
+42:26 why we're not getting good results." And
+42:27 again, like, this is more like I think
+42:29 of this as training wheels. Like, if you
+42:30 have no LLM intuition and you haven't
+42:33 worked with agents for 70 hours, you can
+42:34 figure this out in about 3 weeks of
+42:36 talking to Claude for 70 hours a week.
+42:38 You can kind of figure out like, "Oh,
+42:39 yeah, no, this is off the rails and I
+42:40 should start over." Uh just by trying it
+42:42 a couple times. So, I would regularly go
+42:44 up over 200, 300k tokens depending on
+42:46 what I'm doing and like, "Okay, I have
+42:48 two It's like I'm too lazy to go like
+42:50 curate this into a handoff and then go
+42:52 start a new session." And like,
+42:53 compaction's getting a lot better as
+42:54 well these days.
+42:55 >> Yeah.
+42:55 >> Uh so, it's less of a like, "You must
+42:58 stay under 100,000 tokens or your"
+43:00 That's the peak of the midwit curve,
+43:01 right? Is like the the other side of it
+43:03 is like, "Just do what works." Like, you
+43:05 have the intuition, you know what's
+43:07 going to And if it's not working, one of
+43:09 the things you can try is start over and
+43:11 like reset the problem.
+43:12 >> Yeah. I mean, the two biggest faults is
+43:14 like as you said, you know, the end
+43:15 justifies the means. Like, just if you
+43:17 can get the result that
+43:19 you want it and okay, maybe use this
+43:21 model, use that model, use a different
+43:23 harness, you send a few extra prompts,
+43:25 it doesn't matter. There's many people
+43:26 who just spend like 80% of the of the
+43:28 time every single day building tooling
+43:30 and 20% like doing their [clears throat]
+43:32 actual work. Like, my goal is to not be
+43:34 that person
+43:35 at all. Like, I you know, if if I have
+43:37 the sub-optimal setup and someone has
+43:39 like one more token than me, I'm fine
+43:41 with that. I just want to build the
+43:42 thing. But, the second thing I would say
+43:44 is like the human It's the same in the
+43:46 human. Like, for me, like, I I can
+43:48 easily find myself working for 3 hours
+43:50 on some problem, then I go on a long
+43:52 walk and I'm like, "Man, this doesn't
+43:53 matter to the business at all." And
+43:55 like, that was my like dumb zone.
+43:56 >> Yeah. Yeah, humans have a dumb zone. If
+43:58 you're tired, your results actually It's
+44:00 really funny.
+44:01 Uh the other metaphor I really like is
+44:03 Calvin Frenchie, the guy who's like
+44:04 Codex, he founded Segment. He He His
+44:06 metaphor is like, the context window is
+44:08 like a It's like a student like when
+44:10 you're sitting and taking an exam,
+44:12 you kind of go through like the first
+44:13 half and you're like, "Okay, cool. I got
+44:15 plenty of time. Let me think. Let me
+44:16 work out these problems." And then you
+44:18 get like halfway through and you realize
+44:19 you have 5 minutes left and then you
+44:21 start like rushing through everything
+44:23 and like you'll see models do this
+44:24 especially like Opus 45 and Sonic 45.
+44:27 They had this thing of like context
+44:29 anxiety of like they would they would
+44:31 they would realize the context window
+44:32 was getting small and so they would
+44:34 start cutting corners. They would like
+44:35 scramble to do stuff and then they would
+44:37 just like give up.
+44:39 >> Yeah, I mean that's the biggest problem
+44:40 I would say.
+44:42 >> It's yeah. When when when when when you
+44:44 get tired and lazy then the results go
+44:46 down for humans and for agents.
+44:49 And I think that's my problem with all
+44:50 this like token maxing stuff. What you
+44:51 said exactly is like I don't need the
+44:53 most efficient setup. I need to care
+44:55 about the outcomes and the results. Do
+44:57 you ever read a book called The Goal?
+44:59 >> No.
+44:59 >> Okay, so this guy Eli Goldratt wrote
+45:01 this book in like the 70s called The
+45:03 Goal and it was kind of this idea of
+45:05 like It's It's this story of a
+45:08 a guy who's trying to like save a
+45:09 factory. And like I guess the way
+45:11 factories worked in America in the 60s
+45:13 and 70s is you had like all of these
+45:16 like stations, right? And this is going
+45:17 to get into software factories as well.
+45:18 You had all these machines and it's
+45:19 like, "Cool. A bunch of raw materials go
+45:21 in and out comes a car." Or out comes
+45:24 some part that gets shipped to another
+45:26 factory to make a car, right? And
+45:28 basically what you would do is you'd
+45:29 hire a bunch of MBAs and they would like
+45:31 get assigned a station and they would
+45:33 max the utilization of that station. You
+45:35 want to make sure like we're going to
+45:36 turn this thing on. It costs money to
+45:37 spin it up and every minute it's sitting
+45:39 idle, we're wasting money. And so
+45:42 everybody would like optimize their
+45:43 stations and what that would lead to is
+45:45 like well different stations had
+45:46 different like times it took to process
+45:48 stuff and there would always be some
+45:49 bottleneck and in front of the
+45:51 bottleneck you would have a bunch of
+45:52 work in progress like stacking up which
+45:55 if you're running a factory is very
+45:56 expensive to store work in progress. And
+45:58 so
+45:59 it's basically this story of like there
+46:01 are
+46:02 inefficiencies that are not bottlenecks
+46:06 and the idea of like token maxing
+46:08 because of the subscriptions that are
+46:09 just like I need to spend all I need to
+46:11 exhaust my cloud stuff every 5 hours.
+46:13 >> end up in the hospital.
+46:15 >> Yeah. Oh, that That That was crazy. I
+46:18 don't know if I fully buy that. I don't
+46:19 know if that was a meme or whatever, but
+46:21 I hope everybody's okay.
+46:24 But yeah, that's the kind of the
+46:25 software factory token bank is like how
+46:26 much can you spend? How much like stuff
+46:29 can you actually extract out of the
+46:30 machine
+46:32 and turn it into code and like there's
+46:35 something to be said for like, you know,
+46:37 try to push the frontier, do the
+46:39 biggest, most ambitious thing possible
+46:41 and see how it goes.
+46:43 But then you should probably walk it
+46:44 back from there because it's like if the
+46:45 bottleneck is code review, like adding
+46:48 more coding agents isn't going to solve
+46:49 it, right? The bottleneck like you need
+46:50 to figure out how to solve the actual
+46:52 bottleneck versus like, "Okay, my agent
+46:54 station is really efficient and my
+46:56 deployment station is really efficient
+46:57 and every time I make those faster,
+46:59 you're not delivering value faster
+47:01 because the thing that matters end to
+47:02 end is like value delivered to users.
+47:04 That's what gets people to pay for [ __ ]
+47:06 >> Yeah. I mean, it's it's like the, you
+47:08 know, the best example who does it right
+47:10 is like it's Elon, but he always works
+47:11 on the biggest bottleneck and then like
+47:12 he doesn't mind if somebody else in the
+47:14 company does something else even though
+47:15 they're probably not going to do it on
+47:16 his level. If it's not the bottleneck
+47:18 that, you know, doesn't matter. Like if
+47:19 they do it on 80% it's fine. He needs to
+47:21 work on the bottleneck. And the same
+47:23 thing applies to like, you know,
+47:24 building a software company or a
+47:25 software factory. It's just like if
+47:28 you're improving your multi-agent setup
+47:30 with like fancy routing and delegation,
+47:32 cool, but like, you know, the production
+47:33 is down or something. Like, you know,
+47:36 >> We have a We have a joke in our office
+47:37 that is stop playing with your coding
+47:39 agents and get back to work. It's like
+47:41 it's so easy and it's so fun to build
+47:43 the thing that builds the I mean, this
+47:45 was me even before AI. I was My first
+47:47 job out of college I was working at a
+47:49 like a social media analytics company. I
+47:51 had a lot of data. I had a lot of good
+47:52 engineers,
+47:53 but I noticed that like the most
+47:55 important person in the company was the
+47:57 guy who built the dev platform. The way
+47:59 that you ship, the way that you deployed
+48:00 your like sandbox environment to send a
+48:02 preview to a product manager. The one
+48:03 who like would like knew how to debug
+48:05 the database Not the database itself,
+48:07 but the rollout procedure for it. And I
+48:09 like since then I've just been obsessed
+48:10 with like every time I've been a company
+48:11 and the CICD is slow, I'm just like, "Oh
+48:13 my god, we need to make the CICD faster.
+48:15 We need to make the cycles faster. Oh,
+48:16 we're releasing once every 2 weeks, we
+48:17 need to release every day." Like I've
+48:19 been obsessed with I've been obsessed
+48:20 with software fact I I didn't know
+48:21 that's what they were called, but I've
+48:22 been obsessed with this idea of software
+48:24 factory since you know, the for the last
+48:27 12 years or whatever, however long I've
+48:29 been working, 15 years. And
+48:31 uh I would often have be on the other
+48:33 side of this conversation of like, "Dex,
+48:36 I need you to stop trying to make CI
+48:37 faster and just go ship the tickets that
+48:39 I gave you. Uh please."
+48:41 Like I would have this conversation with
+48:42 my boss like multiple times at multiple
+48:44 different companies. And I was like,
+48:45 "No, we have to build the thing that
+48:46 builds the thing because that's going to
+48:48 speed everybody up." And it's like
+48:50 I think the hardest lesson is like there
+48:51 are inefficiencies that are not
+48:53 bottlenecks. And you may see things that
+48:54 like make your skin crawl. You say,
+48:56 "That's terrible. Why are we doing that?
+48:58 We could do be doing it so much better."
+49:00 And like
+49:01 if you care about entrepreneurship and
+49:02 building things and all of this is like
+49:04 the most important skill you have is
+49:05 like zoom out, ask yourself, "Is this a
+49:07 bottleneck? Can I just hold my nose and
+49:09 like focus on the thing that really
+49:10 matters?"
+49:12 >> Yeah, as you get to like more
+49:13 successful, whether it's in business or
+49:15 in, you know, software, you will have
+49:17 fires burning. And you need to be
+49:18 comfortable like letting the fires burn.
+49:20 It's like which of these is actually the
+49:22 wildfire that's going to burn down the
+49:23 whole city and which are just like some
+49:25 small embers that you can leave to the
+49:27 side and leave for later.
+49:28 >> It's like, "Okay, cool. Yeah, do we go
+49:30 do we go shut off the gas leak in city
+49:32 hall or do we go put out this fire over
+49:34 here?" It's like, "Well, that one's you
+49:35 know, it's not burning yet, but if it
+49:37 does, it's it's it's it's like it's
+49:38 almost like also like expected pain,
+49:40 right?" It's not It's not just like,
+49:41 "Okay, I don't actually know." And this
+49:43 is the hard part is like holding all
+49:44 these probabilities in your head of like
+49:46 what's worth working on. Is
+49:49 uh is is uh is it crazy? Did you ever
+49:51 play uh did you ever play StarCraft?
+49:53 Were you ever like an RTS guy?
+49:54 >> No. I'm a too young for this.
+49:57 >> [laughter]
+49:57 >> The first the second one came out in in
+49:59 like 2012. I don't Anyways.
+50:02 >> I mean I play I play World of Warcraft,
+50:03 but I feel like StarCraft is like one
+50:04 generation before that.
+50:05 >> Yeah, it was and it was a different
+50:07 Well, so like StarCraft II I think came
+50:09 out in 2012, but it's like
+50:10 >> Okay.
+50:11 >> It's a game that teaches you to make
+50:12 hard decisions with incomplete
+50:14 information and you are constantly
+50:17 making hundreds of decisions a minute
+50:19 and like you don't know everything. You
+50:21 don't know You only know what you've
+50:23 seen and you say, "Okay, I saw him do
+50:24 that and I saw this over here, so that
+50:25 means there's like a 10% chance he's
+50:27 doing this and a 30% chance he's doing
+50:28 this and a 70% chance he's doing this."
+50:31 And so like my best thing is like,
+50:33 "Okay, if I do this it has a 40% chance
+50:35 of beating this and a 20% chance" It's
+50:36 just like this this game of like
+50:37 stacking probabilities on either side
+50:40 Anyways. It's uh it's it's it's a good
+50:43 game. I don't recommend It's incredibly
+50:44 stressful. But uh yeah, this that skill
+50:47 of like knowing what you've seen and
+50:49 making bets and and and making I mean I
+50:52 don't know. Founders talk about building
+50:53 is like investments and tech debt. I
+50:55 think I was talking to somebody at
+50:56 dinner last night. He's like, "We are
+50:57 not making investments in our
+50:59 infrastructure. We are not making like
+51:01 we are we are gambling. We are all
+51:04 gambling all day every day trying to
+51:06 figure out what's my highest like
+51:07 expected value."
+51:09 >> Yeah, or like you know, should I even be
+51:10 building this company? Will I spend the
+51:11 6 months on it? Will that be completely
+51:13 terrible but then 6 months will I just
+51:15 be replaced by OpenAI or Anthropic? But
+51:17 all of these are like bets, you know?
+51:18 And you cannot make too many wrong ones
+51:20 or you'll be irrelevant.
+51:22 >> Well, are you having fun?
+51:24 >> I am.
+51:25 >> Yeah? That's a that's a good start. I
+51:27 mean if you're having fun and you're
+51:28 learning then it's like, "Okay, cool.
+51:30 Like so so what?" I mean crazy things
+51:32 never got like
+51:34 20 years ago there was a hundred
+51:35 startups that exist today that every I
+51:37 guarantee they had, you know, nine out
+51:39 of ten of their invest investor pitch
+51:41 meetings people like, "Nah, Google's
+51:42 just going to do this." And guess what?
+51:44 Google did.
+51:44 >> Yeah, yeah.
+51:46 Yeah, I mean you can see it even even
+51:48 this generation I talked with Magnus
+51:49 from Browser use and everybody was like,
+51:51 you know, Anthropic's already building
+51:52 this, there's no point. And you know,
+51:54 they managed to do it better than
+51:55 Anthropic. And that's literally like
+51:57 year, 2 years. So, yeah, even in today's
+52:01 today's time, like most most of
+52:02 likelihood is these big companies are
+52:04 not focused on your small niche idea and
+52:07 you you probably still should build it
+52:08 if you really want to build it.
+52:10 >> One of my favorite like sound bites on
+52:11 this is like, you're not actually
+52:13 competing against Google or you're not
+52:15 actually competing against Anthropic,
+52:16 you're competing against a product
+52:17 manager at Anthropic.
+52:19 And like, okay, yes, very very very very
+52:22 talented people are there, like you're
+52:23 not it's but like especially the Google
+52:25 version of this is interesting. It's
+52:27 like, okay, there's a there's a team
+52:28 inside a large org that has a lot of
+52:30 rules and red tape and like things kind
+52:32 of move slowly and it's like, I don't
+52:33 care how much money they have or how
+52:35 much distribution you have. A
+52:37 small founder and and a small team who
+52:39 really gives a [ __ ] can out-execute most
+52:42 teams inside a giant enterprise and
+52:44 like, what OpenAI and Anthropic have
+52:46 done and I've talked to a lot of people
+52:47 who who are former employees who work
+52:48 there is just like, oh, they've done a
+52:50 very good job of trying to keep that
+52:51 startup energy and help people move as
+52:53 fast as possible and hire really really
+52:54 like Boris and Katya are [ __ ] insane.
+52:56 They're so they're so good at what they
+52:58 do. So, it's like, okay, that's a PM
+53:00 that is like a little bit a little bit
+53:02 you know, I would think twice before
+53:03 getting in the weeds there, but it's
+53:04 it's very easy to just be like, oh, it's
+53:06 not worth building anything, the labs
+53:07 are just going to win and like, I don't
+53:09 know. That's not a I like to build
+53:10 things in the vein of like, they're
+53:12 they're aligned with the world I want to
+53:14 live in. And the world I want to live in
+53:16 is a world where like you have large
+53:17 companies and small companies and
+53:19 innovation can exist and like we can all
+53:21 solve problems together and like, I
+53:23 don't know. I'm friends with all the
+53:25 coding agent founders in San Francisco.
+53:26 We're all competitors, but like, it's a
+53:28 huge market and in my mind it's like,
+53:30 it's not founder versus founder, it's
+53:32 like founders versus the incumbents
+53:35 maybe or like founders versus people who
+53:37 hate innovation or something. I don't
+53:39 >> Yeah, yeah, exactly. The people who
+53:41 people who hate technology and are like
+53:42 uh stuck in the past. It's like I think
+53:45 it's like in the AI space the more I
+53:48 you know, the more people I talk to I
+53:49 realize it really is are you a true true
+53:51 believer or not? And so many people are
+53:52 here because of like this is the next,
+53:54 you know, wave. This is where money is.
+53:56 This is where, you know, hype is. But
+53:58 like as you talk to people a lot of them
+54:00 are not really true believers. They're
+54:01 like not don't truly believe in
+54:03 technology, right? And like even when
+54:04 like a, you know, new model comes out or
+54:06 there's a new tool instead of like
+54:08 testing it, embracing it, giving it a
+54:09 shot they're like instantly like ah it's
+54:11 another one of these, you know, or or
+54:13 it's too expensive this model. It's like
+54:15 yo like guys we're inventing the future.
+54:17 >> and it I tried it a year ago and it
+54:18 sucked like oh well.
+54:20 >> Now, if you want to actually implement
+54:22 everything that me and Dexter talked
+54:24 about the entire program design system
+54:26 that he invented is available for free
+54:28 in the first link below the video. So,
+54:30 go ahead and click on it. Just enter
+54:31 your email and you're going to get it
+54:33 received on your email. Again,
+54:34 completely for free. So, go get it now.
+54:36 >> Um yeah, I mean it's it's a maybe a good
+54:38 note to like zoom out on and maybe maybe
+54:40 maybe like start to close out on but
+54:42 like this idea of like, I don't know, I
+54:44 was in an event last night. Um it was
+54:46 like Dwarkesh interviewing Dr. Fei-Fei
+54:48 Li and then Michael Grinich from Work OS
+54:50 came out and he was interviewing
+54:51 Dwarkesh for a bit and like
+54:53 I don't know. We're all here in San
+54:54 Francisco and like it's very easy to get
+54:57 sucked into like what's the what's the
+54:58 coolest thing that we can build? What's
+54:59 the hardest problem we can solve? How
+55:01 how how dope can we make it? How fast
+55:02 can we go? And it's like
+55:05 I don't know.
+55:06 Grinich did a good job of kind of
+55:07 pulling us up a level of like, well
+55:09 actually like AI is the one of the most
+55:10 unpopular things in the world right now.
+55:13 Uh slightly less unpopular than AI was
+55:15 like ice and slightly more unpopular
+55:17 than AI was like the Iran war, right? Uh
+55:21 but it's down there and like most people
+55:22 are distrustful of it and like I think
+55:24 it's it's important as builders to kind
+55:27 of like zoom out now and then and just
+55:29 realize like, hey look we need to think
+55:30 about how this technology works in the I
+55:33 mean Dwarkesh is talking about like, hey
+55:35 in 5 and 10 years there's no labor, like
+55:38 there's nothing to do, like how does the
+55:40 economy work? Like do we need to go talk
+55:43 to PhD economists and think have have
+55:45 these people thought about like how does
+55:47 the world function in in that in that
+55:50 new paradigm? And like these are things
+55:53 that like nobody has answers to and
+55:55 until you give someone a compelling
+55:56 someone who's not technical and not
+55:58 super AI pulled until you give them a
+55:59 compelling answer is like this is how
+56:01 the world will work and it will be good
+56:03 and everybody will win other than the
+56:05 very basic like hey industrial
+56:06 revolution life got a lot better. I mean
+56:08 it got worse for some people in in lots
+56:10 of ways but like overall we have more
+56:12 abundance now than we had in say the
+56:14 1500s and I I don't think that's
+56:16 satisfying enough an explanation for
+56:19 most people.
+56:20 >> Yeah, people care about am I losing my
+56:22 job or not?
+56:23 >> Yeah, am I going to be able to feed my
+56:24 family whatever it is and uh
+56:27 so I I I think it's still worth it.
+56:29 >> easy to get stuck in it. If people
+56:30 especially like you know on Twitter or
+56:32 San Francisco which I still need to
+56:33 visit San Francisco. I've never been. Uh
+56:35 I think I'm going to
+56:36 Yeah, I think I'm going to visit in like
+56:38 late September maybe early October but
+56:41 uh it's easy to get stuck in the bubble,
+56:42 right? Whether it's on Twitter or in SF
+56:44 but like most people they've no clue.
+56:47 The only AI they use is like the Google
+56:49 AI search and they don't want to lose
+56:50 their job, right? So if you talk about
+56:52 like oh yeah, we're going after labor
+56:54 like they they will instantly hate you.
+56:57 >> I mean I don't know why they keep saying
+56:58 that. It's like I guess it's better to
+57:00 say it and be wrong than to not say it
+57:02 and be right but uh
+57:04 yeah, we'll see. I don't know. I I I
+57:06 kind of have this theory about like how
+57:07 to think about AI and like there's
+57:09 there's lots of like crazy things that
+57:11 you could panic about, right? There's
+57:12 like okay, if we hit this like
+57:14 singularity and there's complete
+57:16 abundance and no one has to work anymore
+57:18 and everything's just great. Like that's
+57:20 one world the like incredibly good
+57:22 version of the world. There's also like
+57:24 a percent chance that like we screw up
+57:26 alignment and we all get like we're all
+57:27 living in the plot of the Terminator and
+57:29 the machines are just trying to like
+57:30 wipe us all out and then there's like
+57:32 this there's like of like how bad the
+57:34 outcome is. And there's like this middle
+57:35 line going through like the center of it
+57:37 of like things just keep getting better
+57:39 and they might get better 2x faster or
+57:41 1.5x faster every every year every month
+57:43 or whatever it is. But it just kind of
+57:45 stays stable and like nothing too crazy
+57:48 happens. We don't get completely
+57:49 destabilized. And
+57:52 whether you think the good scenario is
+57:54 30% or 3%, whether you think the bad
+57:57 scenario is 30% or 3%, it's like the
+58:00 only world that is actually makes sense
+58:02 to plan for I think is like the middle
+58:05 path. Because if either of those other
+58:06 two things happen, like nothing you do
+58:08 today really matters unless you're at a
+58:10 lab working on alignment.
+58:12 >> Yeah. I think that's a that's a very
+58:14 valid point. And I think we can wrap it
+58:16 up on this point. I want to be
+58:17 respectful of your time. We we already
+58:19 crossed an hour.
+58:20 >> fun.
+58:21 >> Yes. Where should people go? Where
+58:23 should we send them?
+58:24 >> Uh follow me on Twitter Dex Horthy d e x
+58:27 h o r t h y and check out
+58:29 humanlayer.com. Um if you want to learn
+58:31 how to do this.
+58:32 >> I'm going to link both below the video.
+58:34 Again, thank you for your time and have
+58:35 a good day.
+58:35 >> Good stuff, dude.
