@@ -1,3 +1,3 @@
-# Pydantic shared
+# Pydantic shared host
 
-Post-#100 surface for host-only Pydantic AI integration shared by its classical and QL conditions. The foundation branch contains no Pydantic adapter code.
+Active issue 102 QL-free host integration. One adapter is used by both runtime conditions; Pydantic graph events stay on the host channel.
