@@ -26,11 +26,13 @@ If a Profile explicitly requests a lens-aware capability or QL-derived input, th
 
 ## 42. Factory adapter
 
-Factory may use QL/MEF over Project, Context, Run/WorkNode, Claim, Evidence, Decision, Candidate, Agent/Agency, Capability, Action, ExecutionDisposition, Assessment, and Project Evolution history.
+Factory may use QL/MEF over Project, Context, Run/WorkNode, Closure, Claim, Evidence, Decision, Candidate, Agent/Agency, Capability, Action, ExecutionDisposition, Assessment, Gate, and Project Evolution history.
 
 The adapter passes Refs and structured context to the QL/MEF module and receives derived readings.
 
-Promotion into canonical Factory Claim/Decision state is performed through normal Factory epistemic/developmental mechanisms, not implicitly by the QL provider.
+Promotion into canonical Factory Claim/Decision/Closure state is performed through normal Factory epistemic/developmental mechanisms, not implicitly by the QL provider.
+
+A verification-oriented Run remains the same Run when refracted through QL/MEF. Its checks, Evidence, Assessments, Closure conditions, and Gates are client-owned semantics rather than MEF replacements.
 
 ---
 
@@ -85,11 +87,28 @@ while leaving QL-only state inside the QL runtime.
 
 This module should therefore expose operations/refs which the QL runtime can consume without adding QL recurrence internals to generic host APIs.
 
+At the wider architectural level, the shared carrier should remain reusable while Loop Logic is selectable. QL should change recurrence, determination, closure, return, and re-entry semantics rather than force duplication of the whole host/execution loop.
+
 ---
 
 ## 46. Direct Core runtime relation
 
 The QL-native Direct Core runtime requires real semantic recurrence including Frame/P0 ground, QL acts, projection into exterior encounter, interpreted return/difference, semantic transition relation, residue, determination, positive closure, reopening, and retained re-entry.
+
+`P5` is a candidate determination, not Closure itself. A P5 determination may disclose insufficiency and leave the same becoming open through return relations. Positive QL Closure means that the operative recurrence has become sufficiently determinate relative to what opened it; retained difference may then condition re-entry / `P0+`.
+
+This aligns with the wider Factory clarification:
+
+```text
+Run
+    actual chronological execution / observation
+
+Closure
+    sufficient semantic/processual determinacy of the opened span
+
+Gate
+    transition rule that may depend on Closure or narrower conditions
+```
 
 The kernel may provide formal validation and shared operators for these structures.
 
