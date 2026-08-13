@@ -1,0 +1,2 @@
+class MaterializationError(ValueError):
+    pass
