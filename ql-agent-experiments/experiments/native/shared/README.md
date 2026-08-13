@@ -1,3 +1,3 @@
-# Native shared
+# Native shared host
 
-Reserved directory for issue #103 after Foundation Freeze. It will hold the minimal host integration shared by Native classic and QL conditions.
+Active issue 103 host integration. This layer is QL-free and is reused unchanged by both runtime conditions.
