@@ -57,8 +57,12 @@ This directory is the authoritative executable QL/MEF module design, split into 
 
 1. `01-CONSTITUTION-AND-PRIMITIVES.md`
 2. `02-PROVIDER-AND-SERVICE.md`
-3. `03-MEF-MANIFOLD-AND-OBJECTIVE-INTERNALITY.md`
-4. `04-CLIENTS-AGENTS-AND-EXTENSIONS.md`
-5. `05-IMPLEMENTATION-DEVELOPMENT-AND-ACCEPTANCE.md`
+3. `03-MEF-MANIFOLD.md`
+4. `04-MEF-BECOMING.md`
+5. `05-OBJECTIVE-INTERNALITY.md`
+6. `06-CLIENTS-AGENTS-AND-EXTENSIONS.md`
+7. `07-IMPLEMENTATION-AND-LANGUAGE.md`
+8. `08-DEVELOPMENT-PROGRAMME.md`
+9. `09-ACCEPTANCE.md`
 
 This package does not supersede QL canon or the experimental `ql-agent-spec`; it defines the standalone kernel/MEF/provider seam which those and other software systems may consume.
