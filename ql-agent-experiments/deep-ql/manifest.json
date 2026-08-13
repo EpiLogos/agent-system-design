@@ -1,0 +1,23 @@
+{
+  "schema": "ql-deep-workbench/0.1",
+  "status": "candidate",
+  "foundation": {
+    "main_merge_revision": "7690069846eb6fc89f6aa78dcf7aab886ac7c737",
+    "frozen_runtime_candidate": "11c7be5767735c25f49139906b59398bcdf3bf42",
+    "foundation_manifest": "../foundation/foundation-freeze.json",
+    "spec": "../ql-agent-spec-08-13-2026.md",
+    "protocol": "../ql-agent-development-protocol-08-13-2026.md"
+  },
+  "operator_profile": "ql-agent/0.1-deep-required",
+  "integration_boundary": {
+    "strategy": "subclass the frozen Direct Core runtime and override only openConjugate/openChild",
+    "host_contract_changes": false,
+    "foundation_source_changes": false
+  },
+  "conformance": "conformance/runner.js",
+  "typing_corpus": "typing-corpus/corpus.js",
+  "renderer": "render/index.js",
+  "comparator": "comparison/comparator.js",
+  "research_registry": "extensions/registry.json",
+  "research_blocks_readiness": false
+}

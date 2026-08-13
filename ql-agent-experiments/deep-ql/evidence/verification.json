@@ -1,0 +1,22 @@
+{
+  "schema":"ql-deep-verification/0.1",
+  "status":"candidate",
+  "foundation_merge_revision":"7690069846eb6fc89f6aa78dcf7aab886ac7c737",
+  "foundation_runtime_candidate":"11c7be5767735c25f49139906b59398bcdf3bf42",
+  "local_node":"22.16.0",
+  "test_command":"npm test",
+  "tests_passed":7,
+  "tests_failed":0,
+  "conformance_command":"npm run conformance",
+  "qlc_required":61,
+  "qlc_passed":61,
+  "qlc_failed":0,
+  "fixture_results":{"QLF-015":"pass","QLF-016":"pass"},
+  "typing_corpus_count":100,
+  "typing_human_review_status":"pending",
+  "series1_ready":false,
+  "series1_blockers":["ql-agent-spec §42 human review/adjudication of the 100-act typing corpus"],
+  "research_extensions_blocking":false,
+  "verified_revision":null,
+  "note":"verified_revision is populated after the candidate commit exists; Series 1 readiness remains false until human review is complete"
+}

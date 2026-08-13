@@ -1,0 +1,15 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import { qlPosition } from '../../foundation/ql-core-runtime/semantics.js';
+import { createConjugatePacket,createConjugateDelta,reintegrateConjugateDelta,openChildCircuit,closeChildCircuit,reintegrateChildSummary } from '../operators.js';
+import { REQUIRED_QLC_IDS,runConformanceSuite,validatePortableEvent } from '../conformance/runner.js';
+import { corpusStats,agreementMetrics } from '../typing-corpus/corpus.js';
+import { renderRun } from '../render/index.js';
+import { compareTraces } from '../comparison/comparator.js';
+const direct=(active='P5',closed=false)=>({id:'d',depth:0,face:'direct',frame:{id:'f',initiating_intent:'i',success_conditions:[]},active_position:qlPosition(active),residues:[],trajectory:[],closure_state:closed?'closed':'open',children:[],conjugates:[]});
+test('all 61 stable QLC IDs pass',()=>{const r=runConformanceSuite();assert.equal(REQUIRED_QLC_IDS.length,61);assert.equal(r.failed,0);assert.equal(r.passed,61)});
+test('QLF-016 reconstructs fresh conjugate context and R53 reopens open direct P5',()=>{const d=direct();const p=createConjugatePacket({directCircuit:d,scope:'whole'});assert.equal(p.provenance.complete_direct_transcript_inherited,false);const x=createConjugateDelta({status:'reopen',targetPosition:'P3'});assert.equal(reintegrateConjugateDelta({directCircuit:d,delta:x}).circuit.active_position.id,'P3')});
+test('positive closure cannot be retroactively reopened by conjugation',()=>assert.throws(()=>reintegrateConjugateDelta({directCircuit:direct('P5',true),delta:createConjugateDelta({status:'reopen',targetPosition:'P3'})})));
+test('QLF-015 child closes independently and parent reintegrates typed summary without transcript',()=>{const p=direct('P4'),c=openChildCircuit({parentCircuit:p,localWholeIntent:'local'});c.active_position=qlPosition('P5');const s=closeChildCircuit({childCircuit:c,returnedDelta:{x:1}});const r=reintegrateChildSummary({parentCircuit:p,summary:s});assert.equal(r.residue.provenance.typed_summary_only,true);assert.equal('transcript'in s,false)});
+test('typing corpus has required shape and remains pending human review',()=>{const s=corpusStats();assert.equal(s.count,100);assert.equal(s.human_reviewed,0);assert.equal(s.pending_human_review,100);assert.ok(agreementMetrics().claimed_human.position_exact_agreement<1)});
+test('invalid relation fails portable validator',()=>{const x={spec:'ql-agent/0.1',schema_version:'x',event_id:'e',event_type:'transition',run_id:'r',circuit_id:'c',sequence:0,face:'direct',ql:{relation:'R99'},payload:{},witness:{}};assert.equal(validatePortableEvent(x).valid,false)});
+test('renderer and comparator are portable',()=>{const e={spec:'ql-agent/0.1',schema_version:'x',event_id:'e',event_type:'run_started',run_id:'r',circuit_id:'c',parent_circuit_id:null,sequence:0,face:'direct',ql:{to:'P0',lens:['L1','L4′']},payload:{},witness:{}};assert.match(renderRun([e]),/CLOSURE/);assert.equal(compareTraces([e],[e]).equal,true)});

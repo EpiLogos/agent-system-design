@@ -1,0 +1,21 @@
+name: QL Deep Runtime
+on:
+  push:
+    branches: [agent/ql-deep-runtime]
+    paths: ['ql-agent-experiments/deep-ql/**','.github/workflows/ql-deep-runtime.yml']
+  pull_request:
+    paths: ['ql-agent-experiments/deep-ql/**','.github/workflows/ql-deep-runtime.yml']
+permissions:
+  contents: read
+jobs:
+  deep-ql:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ql-agent-experiments/deep-ql
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm test
+      - run: npm run conformance
