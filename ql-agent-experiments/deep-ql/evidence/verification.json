@@ -17,6 +17,6 @@
   "series1_ready":false,
   "series1_blockers":["ql-agent-spec §42 human review/adjudication of the 100-act typing corpus"],
   "research_extensions_blocking":false,
-  "verified_revision":null,
-  "note":"verified_revision is populated after the candidate commit exists; Series 1 readiness remains false until human review is complete"
+  "verified_revision":"f9c6b5204f445fe3d58d99a2719470aaf1430ea9",
+  "note":"verified_revision pins the locally tested Deep QL implementation tree before evidence/CI-only follow-up commits; Series 1 readiness remains false until human review is complete"
 }
