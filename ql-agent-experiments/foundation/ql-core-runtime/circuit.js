@@ -200,6 +200,9 @@ export function createClosureVerdict({ status, destination = null, task_success,
 }
 
 export function createReentryDelta(circuit, determination, values = {}) {
+  if (circuit.closure_state !== 'closed') {
+    throw new QLSemanticError('ReentryDelta can only be derived after positive QLClosure.');
+  }
   return {
     id: `${circuit.id}:reentry-delta`,
     source_circuit: circuit.id,
@@ -238,9 +241,12 @@ export function closeCircuit(circuit, determination, verdict) {
 }
 
 export function createReentry(circuit, delta, closure) {
+  if (circuit.closure_state !== 'closed' || !closure?.id) {
+    throw new QLSemanticError('QL re-entry requires a prior positive QLClosure.');
+  }
   return {
     prior_circuit: circuit.id,
-    closure_ref: closure?.id ?? null,
+    closure_ref: closure.id,
     delta_ref: delta.id,
     renewed_frame: {
       ...clone(circuit.frame),
