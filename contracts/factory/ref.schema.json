@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "factory.ref-schema/v1",
+  "refPattern": "factory:<kind>:<opaque-id>",
+  "identityStore": {
+    "required": ["schemaVersion", "records", "retiredRefs"],
+    "recordRequired": ["ref", "revision", "aliases", "tombstoned", "payload"],
+    "revisionMinimum": 1,
+    "noIdReuse": true
+  }
+}
