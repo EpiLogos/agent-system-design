@@ -1,0 +1,1 @@
+const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));const i=d.interop;if(i.version!=='factory.interop/v1-alpha')throw Error('version');if(i.actionDescriptor.actionRef===i.capabilityDescriptor.capabilityRef)throw Error('collapse');console.log('interop PASS');
