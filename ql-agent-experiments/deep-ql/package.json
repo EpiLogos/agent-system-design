@@ -1,0 +1,11 @@
+{
+  "name": "@epilogos/ql-deep-runtime-workbench",
+  "version": "0.1.0-deep-candidate",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "conformance": "node conformance/runner.js"
+  }
+}
