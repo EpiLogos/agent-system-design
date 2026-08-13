@@ -1,3 +1,3 @@
-# Native QL
+# Native QL condition
 
-Reserved directory for the Native QL condition after issue #100. It will consume the frozen Direct Core seam without copying Pi or Pydantic architecture.
+Active issue 103 QL condition using the unchanged frozen ql-core runtime. The local policy supplies task acts and interpretations only.
