@@ -1,0 +1,2 @@
+class VerificationContractError(ValueError):
+    pass
