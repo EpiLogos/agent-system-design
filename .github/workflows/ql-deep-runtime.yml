@@ -1,7 +1,7 @@
 name: QL Deep Runtime
 on:
   push:
-    branches: [agent/ql-deep-runtime]
+    branches: [ql/deep-runtime]
     paths: ['ql-agent-experiments/deep-ql/**','.github/workflows/ql-deep-runtime.yml']
   pull_request:
     paths: ['ql-agent-experiments/deep-ql/**','.github/workflows/ql-deep-runtime.yml']
