@@ -83,3 +83,96 @@ Software correspondences can include internal semantic formation, structured rep
 The module must not equate L5 with "final answer" or L5′ with "file write" universally.
 
 ---
+
+## 28. Square B — Encounter
+
+```text
+L1   Causal
+L1′  Phenomenal
+L4   Phenomenological
+L4′  Scientific
+```
+
+Square B is particularly fertile for **objective internality** and situated actor design.
+
+It can disclose:
+
+```text
+L1
+    what constitutes this event/actor/context causally?
+
+L4
+    what world is encountered from this situated perspective?
+
+L1′
+    how is the encounter undergone / what disposition is active?
+
+L4′
+    what does disciplined empirical investigation show?
+```
+
+This square can inform AIKit context cognition, model/Agency attunement, Execution Intelligence, and evidence analysis without becoming AIKit's own ontology.
+
+---
+
+## 29. L1 — causal constitution
+
+L1 should ask what causal role something plays in the present whole rather than assign permanent software types to causes.
+
+Canonical causal positions include material cause, efficient cause, formal cause, final cause, and will/determination.
+
+For an agent execution, a useful reading may distinguish model/context/compute as material conditions; harness/inference/tool transport as efficient conditions; Agency/seed/operative grammar as formal organisation; human/Project/Run telos as final relation; and explicit determination as will.
+
+This is a refracted account, not a new Factory schema.
+
+---
+
+## 30. L1′ — phenomenal/dispositional encounter
+
+L1′ carries:
+
+```text
+Introversion
+Sensation
+Feeling
+Thinking
+Intuition
+Extroversion
+```
+
+In agent-system research it may help describe model/Agency disposition or evaluation modes.
+
+Such descriptions are empirical and contextual. They must not become enduring Agent identity or untested model folklore.
+
+---
+
+## 31. L4 — lived situated world
+
+L4's canonical concerns include Being, thrownness, being-there, temporality, care, and releasement.
+
+Software correspondences can include current Project/world, scope and location, available versus concealed horizon, permissions and facticity, time/session relation, what matters from this position, and selective rather than totalising disclosure.
+
+This is a strong MEF route into context cognition and agent-world design.
+
+---
+
+## 32. L4′ — scientific/knowledge-work correction
+
+L4′ provides disciplined encounter with actual evidence.
+
+The integrated reference expresses an empirical loop through:
+
+```text
+Observe
+Think
+Plan
+Build evaluative apparatus
+Execute
+Verify
+```
+
+The Deep QL/Factory work also preserves a knowledge trajectory of prompt/trace/challenge/pattern/discovery/insight/renewed prompt.
+
+The important module role is **empirical correction**: model/Agency/Skill/QL claims are tested against what actually happened rather than hardened from intuition alone.
+
+---
