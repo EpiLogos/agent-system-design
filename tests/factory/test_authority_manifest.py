@@ -1,6 +1,7 @@
 import copy
 import importlib.util
 import json
+import sys
 import unittest
 from pathlib import Path
 
@@ -13,6 +14,7 @@ spec.loader.exec_module(authority)
 IDENTITY = ROOT / "contracts/factory/reference/identity.py"
 identity_spec = importlib.util.spec_from_file_location("factory_identity", IDENTITY)
 identity = importlib.util.module_from_spec(identity_spec)
+sys.modules[identity_spec.name] = identity
 identity_spec.loader.exec_module(identity)
 
 
