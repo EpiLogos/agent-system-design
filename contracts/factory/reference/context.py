@@ -1,0 +1,2 @@
+class ContextContractError(ValueError):
+    pass
