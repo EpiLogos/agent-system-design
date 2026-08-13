@@ -1,0 +1,2 @@
+class CandidateContractError(ValueError):
+    pass
