@@ -22,9 +22,11 @@ A semantic reading is not silently cached as eternal truth.
 
 # Part XIII — Package/service shape
 
-## 54. Recommended implementation decomposition
+## 54. Implementation language and decomposition
 
-The design can be implemented in one repository/package family while preserving internal modules such as:
+The standalone QL/MEF product is implemented as a **Rust Cargo workspace**. Rust is the production implementation language for this product; non-Rust prototypes are not implementation Closure evidence unless a later explicit architecture decision supersedes this requirement.
+
+The design can be implemented in one repository/package family while preserving internal Rust crates/modules such as:
 
 ```text
 ql-core
@@ -46,7 +48,7 @@ ql-fixtures
     deterministic providers, parity fixtures, conformance corpora
 ```
 
-These are architectural modules, not a requirement for six separate deployable packages.
+These are architectural modules, not a requirement for six separate deployable packages. Their Cargo-crate boundaries should be introduced when the Q1–Q7 dependency programme warrants them rather than pre-creating empty symmetry.
 
 ---
 
@@ -136,5 +138,3 @@ QL/MEF can ask:
 > What kind of whole, distinction, cause, contradiction, process, history, encounter, or articulation is present here?
 
 Therefore the module can inform Skill authoring, Skill discovery, Agent orientation, Context retrieval, Claim/Evidence analysis, model/Agency attunement, and reflection/growth without becoming twelve Skills or twelve workflow stages.
-
----
