@@ -1,5 +1,5 @@
-# Foundation Freeze blocker
+# Foundation Freeze blocker — resolved
 
-This historical blocker note is superseded: draft PR #112 exists and GitHub Actions now runs on the foundation branch.
+The historical publication and CI blocker is resolved. This file is retained only as a record of that superseded condition.
 
-Foundation Freeze remains pending until the amended closure-integrity fixtures and exact candidate revision are verified.
+The authoritative Foundation Freeze state is recorded in `foundation-freeze.json` and issue #100.
