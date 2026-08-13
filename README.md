@@ -1,98 +1,54 @@
-# Agent System Design — Software Factory Reference
+# Software Factory
 
-Reference material for building a **software factory** setup: transcripts, linked resources,
-working codebases, and distilled design principles from four source videos (2026-07/08).
-Collected 2026-08-11, graph-engineering video added 2026-08-12.
+This repository is the **Software Factory product repository**.
 
-**Intended use:** design a QL-aligned software factory — deterministic code wrapping
-non-deterministic agents, phased AI developer workflows with gate checks, out-of-the-loop
-operation, model-stack (not single-model) execution.
+The Factory develops software through durable, inspectable relations among Project, resolved Context, Run, canonical Run Map, Agent/Agency, AgentSession/Execution, Actions and Capabilities, Claims and Evidence, Candidates, material execution, encounter, Decision/Recognition, retained effects, and renewed Context/Ground.
 
----
+The canonical architecture and development programme are already established. Implementation proceeds from them; this repository is not a design-only reference collection.
 
-## The three videos
+## Current implementation surfaces
 
-| # | Video | Channel / guest | Date | What it gives you |
-|---|-------|-----------------|------|-------------------|
-| 1 | [Ex-NASA dev reveals his Agentic Engineering Workflow](https://youtu.be/xgkjtF89-44) | David Ondrej × Dexter Horthy (HumanLayer, coined "context engineering") | 2026-08-07 | Why benchmarks don't matter, program design before the agent cooks, the 4-month unattended software factory run, why pull requests are dead |
-| 2 | [Engineers… Your Software Factory NEEDS Agent Sandboxes to SCALE](https://youtu.be/SEI_qIW4o2c) | IndyDevDan | 2026-08-10 | Factory In A Box: three-tier architecture (out-loop orchestrator → in-sandbox orchestrator → Pi ADW agents), disposable provisioning keys, best-of-N fan-out, blast radius = the box |
-| 3 | [My Super Simple Software Factory](https://youtu.be/haUfb1ievTE) | IndyDevDan | 2026-08-03 | The SSSF skill: Observable / Customizable / Reusable, the core four (context, model, prompt, tool), phase gates, typed envelopes, in-distribution (Python + YAML + skills only) |
-| 4 | [Anthropic Just Fixed Graph Engineering's Greatest Flaw](https://youtu.be/H7t3uUp3HVw) | AI LABS | 2026-07-29 | Graph engineering: node/edge anatomy, shapes (diamond, fan-in at a barrier), verification as the load-bearing layer, three skill kinds (standalone / embedded / orchestrator), fresh-context second opinion, model-per-node economics — distilled in `seed-docs/QL-SOFTWARE-FACTORY-GRAPH-ENGINEERING-PRINCIPLES.md` |
+- `docs/canon/` — governing architectural corpus and current semantic determinations.
+- `docs/program/` — executable build programmes and dependency order.
+- `contracts/factory/` — language-neutral Factory contracts, schemas, provenance and fixtures.
+- `tests/factory/` — public-semantic and contract tests.
+- `scripts/factory_verify.py` — canonical repository-owned deterministic verification operation.
+- `factory/` — root Factory reference implementation as it is materialised by the build programme.
 
-**Cross-references:** both IndyDevDan videos point at the "Forget Loop Engineering"
-video ([VQy50fuxI34](https://youtu.be/VQy50fuxI34)) — the predecessor concept to the factory.
-The AI LABS graph-engineering video (04) sits at the far end of the same lineage: it documents
-the loop → graph transition the factory's phase pipeline must be able to promote into.
+Run the current deterministic Factory checks with:
 
----
-
-## Directory layout
-
-```
-Agent System Design/
-├── README.md                                  ← this file
-├── transcripts/
-│   ├── 01-david-ondrej-dexter-horthy-agentic-workflow.txt   (full, timestamped, ~85K)
-│   ├── 02-inkwell-agent-sandboxes-exe-dev.txt               (full, timestamped, ~51K)
-│   ├── 03-super-simple-software-factory.txt                 (full, timestamped, ~42K)
-│   └── 04-graph-engineering.txt                             (full, timestamped, ~19K)
-├── sites/                                     ← fetched content of description link sites
-│   ├── dex-factory-skill.md                   (email-gated landing page — see note)
-│   ├── exe-dev.md                             (sandbox/VPS/devbox platform, Shelley web agent)
-│   ├── openrouter-provisioning.md             (provisioning keys API — spend caps, revoke)
-│   └── humanlayer.md                          (Dexter's company — human-in-the-loop ops)
-├── seed-docs/                                 ← design docs + wayfinder maps
-│   ├── wayfinder-maps/                        (Map 1 semantic core A·C·G·J, Agentic Execution
-│   │                                           Body E·F·H·I, Map 2 Project World B·D·K·L)
-│   └── QL-SOFTWARE-FACTORY-GRAPH-ENGINEERING-PRINCIPLES.md  ← distilled from video 04
-├── super-simple-software-factory/             ← cloned repo (disler) — the SSSF skill
-└── inkwell-agent-sandboxes-and-software-factory/ ← cloned repo (disler) — Factory In A Box
+```bash
+python3 scripts/factory_verify.py
 ```
 
----
+A passing Check is evidence. It is not by itself an Assessment, human Review/Recognition, Gate decision, or Closure determination.
 
-## The codebases
+## Product boundaries
 
-### `super-simple-software-factory` (~1.6M)
-A Claude skill (`.claude/skills/sssf/`) that drops an entire factory into any codebase
-with one `/install`. Core assets:
-- **`SKILL.md`** — the factory playbook (observable / customizable / reusable)
-- **`references/`** — config.md (the core four: context, model, prompt, tool), observability.md, handoff.md (typed envelopes)
-- **`templates/adws/`** — the ADW (agent developer workflow) roster: `adw_scout`, `adw_plan_build`, `adw_build_test`, `adw_plan_build_test_quality`, `adw_quality`… each with prompt/build gates and shared `adw_modules/` (runner, gates, session, tracer, permissions, git_helper)
-- **`scripts/`** — `make_config.py`, `make_adw.py`, `install.py`
+The Factory owns the canonical developmental ontology and Run governance. Neighbor products remain separate:
 
-### `inkwell-agent-sandboxes-and-software-factory` (~52M, Factory In A Box)
-The factory + a blog app (Inkwell) + the sandbox mount system. Three nested tiers:
-1. **Out-loop orchestrator** on your machine — `just sbx` command surface, mounts a throwaway exe.dev VM
-2. **In-sandbox orchestrator** on each VM — drives the factory
-3. **Pi coding agents** running plan → build → test → review → document inside
+- **AIKit** supplies ContextResolution, resources, provider/harness projection and related operational resolution through public contracts.
+- **Workcell** supplies material execution-world realisation through public contracts.
+- **QL/MEF** supplies optional formal-semantic/refraction capabilities through a pluggable provider seam.
+- **QL Loop Runtime** is a separate recurrence-runtime programme under `ql-agent-experiments/`.
+- **Central** is an independent human-owned source product.
 
-Notable assets:
-- `adws/adw_sssf_config/` — **five model-stack configs**: `frontier`, `open-weights`, `top-speed`, `deepestseek` (all-DeepSeek), base — best-of-N against one prompt
-- `adws/adw_document.py`, `adw_build_review.py` — extended roster beyond SSSF
-- `.claude/commands/install` + `/prime` — agentic bootstrap; `just sbx manage doctor` preflight
-- Disposable OpenRouter provisioning keys with hard spend caps, revoked at teardown
+GitHub Issues, pull requests and Actions are projections/providers, never the canonical Factory ontology.
 
----
+## Historical and source-integration material
 
-## Notes / honest gaps
+This repository began by gathering substantial research and executable prior art. That material remains valuable and inspectable, but it is not silently promoted into the current Factory core:
 
-- **`sites/dex-factory-skill.md`** — the page at davidondrej.com/dex-podcast is an **email-capture gate**; the actual Dexter Software Factory skill content is only delivered by subscribing. Page text is what we got: "FREE — What you get: Website" + newsletter consent form. Do not expect the skill from this fetch; the repo clones above are the substantive code.
-- **PostHog / Skool / TAC links** in descriptions are sponsor/course pages — excluded.
-- HumanLayer page fetched for completeness (Dexter's company; agent ops with human sign-off).
+- `super-simple-software-factory/` — SSSF skill/source island.
+- `inkwell-agent-sandboxes-and-software-factory/` — Factory-In-A-Box/source island.
+- `transcripts/`, `seed-docs/`, `ideas/` — research and design-history material.
 
----
+Reuse from those sources is explicit: preserve provenance, name the adopted seam, and verify the actual integration. Historical vocabulary such as phase gates or local Run types does not override the current constitutional meanings of Run, Gate, Closure, Claim, Evidence, Decision, Candidate, Agent, Agency, Action or Capability.
 
-## QL alignment hooks (for the design pass)
+## Development entry point
 
-The factory's phase model maps onto QL structure without forcing:
-- **plan / build / test / review / document / commit** = a phase pipeline with deterministic gate checks between phases — natural analogue to position-driven phase transitions (each gate = a boundary condition, not a vibe)
-- **core four (context, model, prompt, tool)** = the configurable degrees of freedom per agent — candidates for coordinate-driven configuration
-- **typed envelopes / shared session dirs** = the handoff contract between phases — analogue of the envelope structure in QL messaging
-- **out-loop vs in-loop** = the observing system vs the operating system split
-- **graph engineering principles** (`seed-docs/QL-SOFTWARE-FACTORY-GRAPH-ENGINEERING-PRINCIPLES.md`,
-  distilled from video 04) = how the phase pipeline promotes into parallel Run Map topology:
-  node/edge semantics, fan-out shapes, verification as the load-bearing layer, and the
-  five-field skill stipulation contract (trigger · scope · measure · model · output)
+The root build programme is:
 
-Actual QL schema design (coordinate assignment, envelope typing, gate semantics) is the next step — this directory is the raw material for it.
+`docs/program/QL-SOFTWARE-FACTORY-ROOT-BUILD-PROGRAM.md`
+
+The GitHub issue graph is the executable development programme. Tickets close only against their actual acceptance and Closure conditions with evidence for the exact claimed state.
