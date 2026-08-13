@@ -1,0 +1,1 @@
+{"schemaVersion":"factory.human-authority-schema/v1","objects":["Decision","HumanRequest"],"recognition":"Decision(kind=recognition)","decisionOutlivesTransport":true,"reversibleEngineeringRequiresHumanByDefault":false}
