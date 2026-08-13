@@ -1,0 +1,18 @@
+{
+  "schema":"ql-harmonic-research/0.1",
+  "namespace":"ql.harmonic",
+  "status":"research",
+  "control_effect":"none",
+  "operator":{"name":"inspect_harmonic","arguments":{"family":["D","O","ABC"],"pair":[1,2,3]}},
+  "families":{
+    "D":[["P0","P1"],["P2","P3"],["P4","P5"]],
+    "O":[["P1","P2"],["P3","P4"],["P5","P0"]],
+    "ABC":[["P0","P5"],["P1","P4"],["P2","P3"]]
+  },
+  "invariants":[
+    "each family contains exactly three dyads",
+    "each family covers P0-P5 exactly once",
+    "inspection does not schedule or force traversal",
+    "inspection does not alter Core transition or closure semantics"
+  ]
+}
