@@ -1,0 +1,2 @@
+class ActorContractError(ValueError):
+    pass
