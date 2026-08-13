@@ -68,6 +68,55 @@ export function isAbortRequested(signal) {
   return Boolean(signal?.aborted);
 }
 
+/**
+ * Dispatch the mechanically shared host/carrier boundary without importing any
+ * runtime-specific semantic vocabulary. Loop logic remains responsible for
+ * deciding why the encounter occurs and what its return means.
+ */
+export async function dispatchHostCarrier({ host, carrier = {}, request, signal, payload = {} }) {
+  assertHost(host);
+  const kind = carrier.kind ?? 'model';
+
+  switch (kind) {
+    case 'model':
+      return host.callModel({
+        ...structuredClone(payload),
+        request,
+        signal
+      });
+    case 'tool':
+    case 'capability':
+      return host.executeCapability({
+        ...structuredClone(payload),
+        name: carrier.name,
+        args: structuredClone(carrier.args ?? {}),
+        request,
+        signal
+      });
+    case 'human':
+      return host.receiveExternalInput({
+        ...structuredClone(payload),
+        kind: carrier.inputKind ?? payload.kind ?? 'external_input',
+        request,
+        signal
+      });
+    case 'environment':
+    case 'artifact':
+    case 'external_evaluator':
+      return host.readContext({
+        ...structuredClone(payload),
+        kind,
+        input: structuredClone(carrier.input ?? null),
+        request,
+        signal
+      });
+    case 'internal_control':
+      return structuredClone(carrier.input ?? null);
+    default:
+      throw new RuntimeContractError(`Unsupported shared carrier kind '${kind}'.`);
+  }
+}
+
 export class RuntimeRegistry {
   #runtimes = new Map();
 
