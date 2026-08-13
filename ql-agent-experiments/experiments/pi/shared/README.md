@@ -1,3 +1,3 @@
-# Pi shared
+# Pi shared host
 
-Post-#100 surface for the Pi host adapter and host-only integration shared by its classic and QL conditions. No Pi adapter work is implemented in the foundation branch.
+Active issue 101 host integration. The adapter is QL-free and is used unchanged by both runtime conditions. Raw Pi-style lifecycle events are recorded on the host event channel.
