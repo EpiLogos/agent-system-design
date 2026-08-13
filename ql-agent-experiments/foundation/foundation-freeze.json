@@ -3,13 +3,24 @@
   "status": "blocked",
   "branch": "ql/runtime-foundation",
   "base_main_revision": "ac07e19e51fefce1d8bfec7429d2f9a4116a5c18",
+  "published_surface_revision": "4557fe3b23c17f9db6d1fd0154fd9876f36620a5",
   "spec_blob": "f9d056c54caf094eb672f005ce3c8cbde4de0a5b",
   "protocol_blob": "b60c2488fd2d1b21f3a0fc9ded4d3153672394dc",
+  "fixture_definition": "fixtures/foundation-cases.json",
+  "trace_manifest_schema": "optics/run-manifest.schema.json",
   "local_checks": {
     "node": "22.16.0",
     "tests_passed": 22,
+    "tests_failed": 0,
     "fixture_cases_passed": 20,
+    "network_required": false,
+    "model_api_required": false,
     "ci_verified": false
   },
+  "subsequent_required_work": [
+    "conjugation",
+    "recursive_depth",
+    "full_experiment_readiness"
+  ],
   "freeze_permitted": false
 }
