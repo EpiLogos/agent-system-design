@@ -1,3 +1,3 @@
 # Native runs
 
-Boundary marker for the run-record surface that becomes active only after Foundation Freeze and issue #103 begins.
+Issue #103 baseline run evidence is active. The Native smoke records matched Classic and ql-core execution and verifies replay from stored records.
