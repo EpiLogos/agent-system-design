@@ -49,6 +49,8 @@ The concise rule is:
 
 > **Alignment, not translation. Refraction, not renaming. Operational consequence, not decorative labels.**
 
+The cross-product distinction between `Run`, `Closure`, and `Gate`, including verification-oriented Runs and the L3/L3′/L1/L4′ alignment, is clarified in the sibling canonical note `../RUN-CLOSURE-VERIFICATION-ALIGNMENT.md` and reflected in the runtime integration section of this package.
+
 ---
 
 # Specification package
