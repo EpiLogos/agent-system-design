@@ -8,5 +8,12 @@
   ],
   "staleWrite": {"currentRevision": 3, "attemptedExpectedRevision": 2, "mustReject": true},
   "tombstone": {"revisionBefore": 3, "revisionAfter": 4, "mustRemainResolvable": true, "mustRejectReuse": true},
-  "projectionLoss": {"provider": "github", "externalId": "repo-100", "canonicalRefMissing": true, "mustRejectIdentityRecovery": true}
+  "projectionLoss": {"provider": "github", "externalId": "repo-100", "canonicalRefMissing": true, "mustRejectIdentityRecovery": true},
+  "runMap": {
+    "projectRef": "factory:project:factory",
+    "runRef": "factory:run:r-1",
+    "runMapRef": "factory:run-map:r-1",
+    "duplicateMapRef": "factory:run-map:r-1-duplicate",
+    "staleExpectedRevision": 1
+  }
 }
