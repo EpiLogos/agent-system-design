@@ -1,0 +1,168 @@
+{
+  "schemaVersion": "factory.authority-manifest/v1",
+  "repository": {
+    "id": "EpiLogos/agent-system-design",
+    "product": "Software Factory",
+    "baselineRef": "main",
+    "baselineCommit": "ac07e19e51fefce1d8bfec7429d2f9a4116a5c18"
+  },
+  "determinationStatuses": [
+    "CONSTITUTIONAL DETERMINATION",
+    "CURRENT DESIGN",
+    "OBSERVED",
+    "VERIFIED",
+    "SOURCE-INSPECTION BLOCKED",
+    "OPEN DECISION",
+    "GENUINE HUMAN AUTHORSHIP",
+    "OPEN SOCKET",
+    "RESEARCH CLAIM",
+    "SUPERSEDED"
+  ],
+  "documentStatuses": {
+    "constitutional": "Governing architectural intent or invariant unless explicitly superseded.",
+    "current design": "Current detailed design determination; may be refined by later program design.",
+    "module specification": "Authoritative within its module boundary, subordinate to suite-level constitution.",
+    "refined by": "Earlier statement remains useful but a later document gives the governing interpretation.",
+    "superseded": "Do not implement the earlier formulation as canonical; preserve it as design history.",
+    "experimental / research claim": "Candidate reasoning or experiment material; evidence for design, not requirement by formatting alone.",
+    "reference/source material": "External or upstream material used to ground integration decisions."
+  },
+  "sources": [
+    {
+      "id": "constitutional-index",
+      "path": "docs/canon/QL-SOFTWARE-FACTORY-CONSTITUTIONAL-INDEX.md",
+      "status": "constitutional",
+      "determinationStatus": "CONSTITUTIONAL DETERMINATION",
+      "precedence": 100,
+      "scope": "suite",
+      "governs": true,
+      "provenance": {"ref": "main", "blobSha": "f89ea36b9c83556f4ae43c5a7e16008a8ac4165f"}
+    },
+    {
+      "id": "architecture-spec",
+      "path": "docs/canon/QL-SOFTWARE-FACTORY-ARCHITECTURE-SPEC.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 80,
+      "scope": "factory-product-architecture",
+      "governs": true,
+      "refinedBy": ["constitutional-index", "deep-ql-foundations"],
+      "provenance": {"ref": "main", "blobSha": "fbb52325dbc95eac8fa7974184c6ab6352fbe621"}
+    },
+    {
+      "id": "primitive-relations",
+      "path": "docs/canon/QL-SOFTWARE-FACTORY-PRIMITIVE-RELATIONS.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 85,
+      "scope": "factory-experienced-ontology",
+      "governs": true,
+      "refinedBy": ["constitutional-index", "deep-ql-foundations"],
+      "provenance": {"ref": "main", "blobSha": "9c326df712320fdbae9c83d0ff2b9bcc3ad9f00a"}
+    },
+    {
+      "id": "workcell-module-spec",
+      "path": "docs/canon/QL-SOFTWARE-FACTORY-WORKCELL-MODULE-SPEC.md",
+      "status": "module specification",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 70,
+      "scope": "workcell-module-boundary",
+      "governs": true,
+      "provenance": {"ref": "main", "blobSha": "98990f93d24b66a38e2d7707eeaad31d6cfa5883"}
+    },
+    {
+      "id": "deep-ql-foundations",
+      "path": "docs/canon/QL-SOFTWARE-FACTORY-DEEP-QL-INTEGRATION-FOUNDATIONS.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 90,
+      "scope": "deep-form-and-agent-native-framing",
+      "governs": true,
+      "provenance": {"ref": "main", "blobSha": "5e4ba28204ef2c52a1fc4d1413f576b922ed5ac2"}
+    },
+    {
+      "id": "execution-intelligence-integration",
+      "path": "docs/canon/EXECUTION-INTELLIGENCE-INTEGRATION.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 88,
+      "scope": "execution-intelligence-integration",
+      "governs": true,
+      "provenance": {"ref": "main", "blobSha": "4f4982fa4d4f14428096a37244d5f23df0c3d73e"}
+    },
+    {
+      "id": "wayfinder-semantic-core-run-spine",
+      "path": "docs/canon/wayfinders/01-SEMANTIC-CORE-RUN-SPINE.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 60,
+      "scope": "architectural-claim-set",
+      "governs": false,
+      "provenance": {"ref": "main", "blobSha": "e12df9d1ba7133a1c4cc948bf7e14655afff87e4"}
+    },
+    {
+      "id": "wayfinder-project-world",
+      "path": "docs/canon/wayfinders/02-PROJECT-WORLD.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 60,
+      "scope": "architectural-claim-set",
+      "governs": false,
+      "provenance": {"ref": "main", "blobSha": "dd9dde65545a8bbb9d24784728f6030e890ebd31"}
+    },
+    {
+      "id": "wayfinder-agentic-execution-body",
+      "path": "docs/canon/wayfinders/03-AGENTIC-EXECUTION-BODY.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 60,
+      "scope": "architectural-claim-set",
+      "governs": false,
+      "provenance": {"ref": "main", "blobSha": "5a03896f9c00d110615aab3ec371aa1ba9950664"}
+    },
+    {
+      "id": "root-build-program",
+      "path": "docs/program/QL-SOFTWARE-FACTORY-ROOT-BUILD-PROGRAM.md",
+      "status": "current design",
+      "determinationStatus": "CURRENT DESIGN",
+      "precedence": 75,
+      "scope": "development-order-and-ticket-source",
+      "governs": true,
+      "authorityUnder": "constitutional-index",
+      "provenance": {"ref": "main", "blobSha": "ecc08fe0d75f76c890d9ff6b0e2ca8db1d7912ac"}
+    }
+  ],
+  "retrievedReferences": [
+    {
+      "id": "run-closure-verification-alignment-unmerged",
+      "path": "docs/canon/RUN-CLOSURE-VERIFICATION-ALIGNMENT.md",
+      "status": "reference/source material",
+      "determinationStatus": "RESEARCH CLAIM",
+      "governs": false,
+      "reason": "Requested for implementation context but absent from main at the pinned baseline; issue #114 is the executable ticket authority for its standing semantics.",
+      "provenance": {"ref": "agent/ql-mef-module-vision-spec", "blobSha": "8ded059e"}
+    },
+    {
+      "id": "coordination-pr-123",
+      "path": "PR #123",
+      "status": "reference/source material",
+      "determinationStatus": "CURRENT DESIGN",
+      "governs": false,
+      "reason": "Draft coordination surface; preserves product boundaries but is not merged into the pinned main baseline.",
+      "provenance": {"ref": "program/coordinated-build-2026-08-13", "head": "991af0"}
+    }
+  ],
+  "promotionRules": [
+    {"from": "RESEARCH CLAIM", "to": "CURRENT DESIGN", "allowedSilently": false},
+    {"from": "CURRENT DESIGN", "to": "CONSTITUTIONAL DETERMINATION", "allowedSilently": false},
+    {"from": "CURRENT DESIGN", "to": "OBSERVED", "allowedSilently": false},
+    {"from": "OBSERVED", "to": "VERIFIED", "allowedSilently": false}
+  ],
+  "invariants": {
+    "indexGovernsSuite": true,
+    "agreementIsNotAuthority": true,
+    "generatedPlacementDoesNotPromoteAuthority": true,
+    "providerLimitationDoesNotDefineProductBoundary": true,
+    "implementationConvenienceDoesNotDefineOntology": true
+  }
+}
