@@ -1,0 +1,15 @@
+{
+  "schema": "ql-foundation-freeze/0.1",
+  "status": "blocked",
+  "branch": "ql/runtime-foundation",
+  "base_main_revision": "ac07e19e51fefce1d8bfec7429d2f9a4116a5c18",
+  "spec_blob": "f9d056c54caf094eb672f005ce3c8cbde4de0a5b",
+  "protocol_blob": "b60c2488fd2d1b21f3a0fc9ded4d3153672394dc",
+  "local_checks": {
+    "node": "22.16.0",
+    "tests_passed": 22,
+    "fixture_cases_passed": 20,
+    "ci_verified": false
+  },
+  "freeze_permitted": false
+}
