@@ -1,0 +1,2 @@
+class InvocationContractError(ValueError):
+    pass
