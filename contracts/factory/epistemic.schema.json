@@ -1,1 +1,1 @@
-{"schemaVersion":"factory.epistemic-schema/v1","objects":["Claim","Evidence","Assessment"]}
+{"schemaVersion":"factory.epistemic-schema/v1","objects":["Claim","Evidence","Assessment"],"claimRelations":["intended","observed","verified"],"evidencePolarities":["supports","challenges","contextualizes"],"assessmentConclusions":["supports","challenges","indeterminate"],"confidenceDoesNotPromoteClaim":true,"evidenceRequiresPurposeAndProvenance":true,"assessmentIsNotBareToolResult":true}
