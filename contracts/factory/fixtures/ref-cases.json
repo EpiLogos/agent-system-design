@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "factory.ref-fixtures/v1",
+  "canonicalRef": "factory:project:epi-logos",
+  "aliases": ["project:legacy-epi"],
+  "projectionChanges": [
+    {"provider": "github", "externalId": "repo-100", "canonicalRef": "factory:project:epi-logos"},
+    {"provider": "local", "externalId": "checkout-7", "canonicalRef": "factory:project:epi-logos"}
+  ],
+  "staleWrite": {"currentRevision": 3, "attemptedExpectedRevision": 2, "mustReject": true},
+  "tombstone": {"revisionBefore": 3, "revisionAfter": 4, "mustRemainResolvable": true, "mustRejectReuse": true},
+  "projectionLoss": {"provider": "github", "externalId": "repo-100", "canonicalRefMissing": true, "mustRejectIdentityRecovery": true}
+}
