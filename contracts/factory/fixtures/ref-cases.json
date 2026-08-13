@@ -23,16 +23,19 @@
     "executionEnvelope": {"executionRef": "factory:execution:e-1", "agentRef": "factory:agent:generic-builder", "agencyRef": "factory:agency:generic-build", "sessionRef": "factory:agent-session:s-1"},
     "evidenceEnvelope": {"evidenceRef": "factory:evidence:e-1", "claimRef": "factory:claim:c-1", "purpose": "verification", "source": "check:factory", "producerExecutionRef": "factory:execution:e-1"},
     "assessmentEnvelope": {"assessmentRef": "factory:assessment:a-1", "claimRef": "factory:claim:c-1", "evidenceRefs": ["factory:evidence:e-1"], "producerExecutionRef": "factory:execution:e-2"},
+    "closureEnvelope": {"closureRef": "factory:closure:c-1", "subjectRef": "factory:candidate:c-1", "subjectState": "rev-2", "evidenceRefs": ["factory:evidence:e-1"]},
+    "gateDecisionEnvelope": {"gateDecisionRef": "factory:gate-decision:g-1", "transition": "promote", "allowed": true, "closureRef": "factory:closure:c-1"},
     "actionDescriptor": {"actionRef": "factory:action:update", "projectRef": "factory:project:factory", "handlerRef": "handler:update"},
     "capabilityDescriptor": {"capabilityRef": "factory:capability:browser", "provider": "browser"},
     "contextResolution": {"contextRef": "factory:context:c-1", "resolutionRef": "factory:context-resolution:cr-1", "resolver": "AIKit", "generation": "gen-1"},
     "candidateEnvelope": {"candidateRef": "factory:candidate:c-1", "projectRef": "factory:project:factory"},
-    "pendingOwners": ["ExecutionDemand", "WorkcellOffer", "Binding", "Closure", "GateDecision"]
+    "pendingOwners": ["ExecutionDemand", "WorkcellOffer", "Binding"]
   },
   "antiFixtures": {
     "actionAsCapabilitySameRef": {"ref": "factory:action:update", "mustReject": true},
     "modelAsAgent": {"agentRef": "model:gpt", "mustReject": true},
     "providerAsProject": {"projectRef": "github:EpiLogos/agent-system-design", "mustReject": true},
-    "sessionAsAgent": {"agentRef": "factory:agent-session:s-1", "mustReject": true}
+    "sessionAsAgent": {"agentRef": "factory:agent-session:s-1", "mustReject": true},
+    "staleEvidenceAsCurrent": {"evidenceRef": "factory:evidence:stale", "subjectRef": "factory:candidate:c-1", "subjectState": "rev-1", "claimedCurrentState": "rev-2", "mustReject": true}
   }
 }
