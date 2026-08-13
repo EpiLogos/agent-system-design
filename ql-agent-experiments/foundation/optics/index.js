@@ -93,6 +93,9 @@ export function closureSummaryForResult(result, runId) {
     closure_id: result.closure.id,
     circuit_id: result.closure.circuit_id,
     run_refs: [runId],
+    evidence_refs: Array.isArray(result.determination?.evidence_refs)
+      ? [...result.determination.evidence_refs]
+      : [],
     evaluation_refs: Array.isArray(result.closure.evaluation_refs)
       ? [...result.closure.evaluation_refs]
       : [],
