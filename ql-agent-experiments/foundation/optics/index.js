@@ -71,6 +71,35 @@ export function runIdForManifest(manifest) {
   return `run_${digest(manifest)}`;
 }
 
+export function deriveRunStatus(result) {
+  // QL-free projection: execution/chronology status and semantic closure
+  // status are distinct facts about a run. Runtimes that carry no closure
+  // semantics (Classic) are reported as not_applicable rather than being
+  // forced to pretend to a QLClosure.
+  const execution = result?.status ?? 'unknown';
+  const semantic = result?.circuit?.closureState
+    ? (result.circuit.closureState === 'closed' ? 'closed' : 'open')
+    : result?.closure
+      ? 'closed'
+      : 'not_applicable';
+  return { execution, semantic };
+}
+
+export function closureSummaryForResult(result, runId) {
+  if (!result?.closure) {
+    return null;
+  }
+  return {
+    closure_id: result.closure.id,
+    circuit_id: result.closure.circuit_id,
+    run_refs: [runId],
+    evaluation_refs: Array.isArray(result.closure.evaluation_refs)
+      ? [...result.closure.evaluation_refs]
+      : [],
+    success_state: structuredClone(result.closure.success_state ?? null)
+  };
+}
+
 export async function executeRun({ runtime, host, request, manifest, signal }) {
   const observer = new MemoryObserver();
   const runId = runIdForManifest(manifest);
@@ -83,6 +112,8 @@ export async function executeRun({ runtime, host, request, manifest, signal }) {
   const record = {
     manifest: structuredClone(manifest),
     run_id: runId,
+    status: deriveRunStatus(result),
+    closure: closureSummaryForResult(result, runId),
     result: structuredClone(result),
     events: observer.events
   };
@@ -96,8 +127,9 @@ export function replayRun(record) {
   return {
     run_id: record.run_id,
     manifest: structuredClone(record.manifest),
-    status: record.result.status,
-    runtime: record.manifest.runtime,
+    status: structuredClone(record.status ?? deriveRunStatus(record.result)),
+    closure: structuredClone(record.closure ?? null),
+    execution_status: record.status?.execution ?? record.result?.status,
     event_count: ordered.length,
     events: ordered
   };
@@ -105,8 +137,11 @@ export function replayRun(record) {
 
 export function formatReplay(record) {
   const replay = replayRun(record);
+  const status = replay.status
+    ? `execution=${replay.status.execution} semantic=${replay.status.semantic}`
+    : `status=${replay.execution_status ?? 'unknown'}`;
   const lines = [
-    `${replay.run_id}  runtime=${replay.runtime.id}@${replay.runtime.revision}  status=${replay.status}`
+    `${replay.run_id}  runtime=${replay.manifest.runtime.id}@${replay.manifest.runtime.revision}  ${status}`
   ];
   for (const event of replay.events) {
     const relation = event.ql?.relation ? ` ${event.ql.relation}` : '';
@@ -136,8 +171,16 @@ export function compareRunRecords(classic, ql) {
       }
     },
     results: {
-      classic: { run_id: classic.run_id, status: classic.result.status },
-      ql: { run_id: ql.run_id, status: ql.result.status }
+      classic: {
+        run_id: classic.run_id,
+        execution_status: classic.status.execution,
+        semantic_status: classic.status.semantic
+      },
+      ql: {
+        run_id: ql.run_id,
+        execution_status: ql.status.execution,
+        semantic_status: ql.status.semantic
+      }
     },
     event_counts: {
       classic: classic.events.length,

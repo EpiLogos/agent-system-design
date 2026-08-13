@@ -25,7 +25,7 @@ import {
   runFoundationGate,
   runABDemo
 } from '../fixtures/index.js';
-import { replayRun, formatReplay } from '../optics/index.js';
+import { replayRun, formatReplay, deriveRunStatus } from '../optics/index.js';
 
 function observer() {
   const events = [];
@@ -231,9 +231,58 @@ test('positive closure is explicit and re-entry retains typed difference', async
   assert.equal(evidence.passed, true, evidence.failures.join('\n'));
   assert.equal(run.result.closure.closed_at_position, 'P5');
   assert.equal(run.result.reentry.renewed_frame.inherited_delta, run.result.reentryDelta.id);
+  assert.equal(run.result.reentry.closure_ref, run.result.closure.id);
+  assert.equal(run.result.closure.reentry_delta_ref, run.result.reentryDelta.id);
   assert.deepEqual(run.result.reentryDelta.achieved_artifact_refs, ['artifact:A']);
   assert.ok(run.result.reentryDelta.established_material_refs.includes('evidence:E'));
   assert.ok(run.result.reentryDelta.unresolved_refs.includes('question:Q'));
+});
+
+test('re-entry material is derived and emitted only after positive closure', async () => {
+  const fixture = FOUNDATION_FIXTURES.find((item) => item.id === 'QLF-017');
+  const run = await runQLFixture(fixture);
+  const closedIndex = run.events.findIndex((event) => event.event_type === 'circuit_closed');
+  const reentryIndex = run.events.findIndex((event) => event.event_type === 'reentry_created');
+  assert.ok(closedIndex >= 0, 'circuit_closed must exist');
+  assert.ok(reentryIndex > closedIndex, 'reentry_created must follow circuit_closed');
+
+  // At the moment QLClosure is emitted the delta does not exist yet: the
+  // closure record is created before re-entry derivation and its linkage slot
+  // is filled only afterwards, on the run result.
+  const closedEvent = run.events[closedIndex];
+  assert.equal(closedEvent.payload.closure.reentry_delta_ref, null);
+  const reentryEvent = run.events[reentryIndex];
+  assert.equal(reentryEvent.payload.reentry.closure_ref, run.result.closure.id);
+  assert.equal(reentryEvent.payload.reentry.delta_ref, run.result.reentryDelta.id);
+  assert.equal(run.result.closure.reentry_delta_ref, run.result.reentryDelta.id);
+});
+
+test('QLF-018: current subject/state-matched verification can warrant positive closure', async () => {
+  const fixture = FOUNDATION_FIXTURES.find((item) => item.id === 'QLF-018');
+  const run = await runQLFixture(fixture);
+  const evidence = evaluateFixtureRun(run);
+  assert.equal(evidence.passed, true, evidence.failures.join('\n'));
+  assert.equal(evidence.positive_closure, true);
+  assert.equal(run.result.status, RUN_STATUS.COMPLETED);
+  assert.equal(run.result.closure.closed_at_position, 'P5');
+  assert.deepEqual(run.result.determination.evidence_refs, ['ver:qlf018']);
+  assert.equal(run.result.determination.claimed_subject, 'parser-v2');
+  assert.equal(run.result.determination.claimed_state, 'rev-7');
+  assert.equal(run.result.reentryDelta.established_material_refs.includes('ver:qlf018'), true);
+});
+
+test('QLN-007: stale or subject/state-mismatched verification cannot warrant closure', async () => {
+  const fixture = NEGATIVE_FIXTURES.find((item) => item.id === 'QLN-007');
+  const run = await runQLFixture(fixture);
+  const evidence = evaluateFixtureRun(run);
+  assert.equal(evidence.passed, true, evidence.failures.join('\n'));
+  assert.equal(evidence.positive_closure, false);
+  assert.equal(run.result.status, RUN_STATUS.EXHAUSTED);
+  assert.equal(run.events.some((event) => event.event_type === 'circuit_closed'), false);
+  const reopenEvents = run.events.filter((event) => event.event_type === 'circuit_reopened');
+  assert.deepEqual(reopenEvents.map((event) => event.ql?.relation), ['R51', 'R54']);
+  assert.match(reopenEvents[0].payload.verdict.rationale, /stale/);
+  assert.match(reopenEvents[1].payload.verdict.rationale, /does not match/);
 });
 
 test('no-tool candidate without closure evaluation cannot auto-close', async () => {
@@ -295,9 +344,77 @@ test('stored A/B run record replays without live host/session', async () => {
   const serialized = JSON.parse(JSON.stringify(ab.ql));
   const replay = replayRun(serialized);
   assert.equal(replay.run_id, serialized.run_id);
-  assert.equal(replay.status, serialized.result.status);
+  assert.equal(replay.status.execution, serialized.status.execution);
+  assert.equal(replay.status.semantic, serialized.status.semantic);
   assert.ok(replay.events.length > 0);
   assert.match(formatReplay(serialized), /R03/);
+});
+
+test('Run status and Closure status are distinct in shared optics', async () => {
+  // An exhausted QL Run terminates without closure: execution exhausted,
+  // semantic closure still open.
+  const exhaustedFixture = NEGATIVE_FIXTURES.find((item) => item.id === 'QLN-001');
+  const exhaustedRun = await runQLFixture(exhaustedFixture);
+  const exhaustedStatus = deriveRunStatus(exhaustedRun.result);
+  assert.equal(exhaustedStatus.execution, RUN_STATUS.EXHAUSTED);
+  assert.equal(exhaustedStatus.semantic, 'open');
+
+  // A positively closed QL Run reports execution completion and semantic
+  // closure as two distinct facts.
+  const closedFixture = FOUNDATION_FIXTURES.find((item) => item.id === 'QLF-013');
+  const closedRun = await runQLFixture(closedFixture);
+  const closedStatus = deriveRunStatus(closedRun.result);
+  assert.equal(closedStatus.execution, RUN_STATUS.COMPLETED);
+  assert.equal(closedStatus.semantic, 'closed');
+
+  // Classic remains representable without importing QL semantic types.
+  const ab = await runABDemo();
+  assert.equal(ab.classic.status.execution, RUN_STATUS.COMPLETED);
+  assert.equal(ab.classic.status.semantic, 'not_applicable');
+  assert.equal('closure' in ab.classic.result, false);
+  assert.equal('circuit' in ab.classic.result, false);
+  assert.equal(ab.classic.closure, null);
+  assert.equal(ab.ql.status.execution, RUN_STATUS.COMPLETED);
+  assert.equal(ab.ql.status.semantic, 'closed');
+  // Closure evidence references the Run(s) it depends on.
+  assert.deepEqual(ab.ql.closure.run_refs, [ab.ql.run_id]);
+  assert.ok(Array.isArray(ab.ql.closure.evaluation_refs));
+  assert.equal(ab.comparison.results.classic.execution_status, RUN_STATUS.COMPLETED);
+  assert.equal(ab.comparison.results.classic.semantic_status, 'not_applicable');
+  assert.equal(ab.comparison.results.ql.semantic_status, 'closed');
+});
+
+test('shared carrier seam is QL-free and carries opaque payloads for both runtimes', async () => {
+  const received = [];
+  const recordingHost = {
+    id: 'recording-host',
+    revision: '1',
+    async callModel(input) { received.push({ method: 'callModel', input }); return { content: 'done', capabilityCalls: [] }; },
+    async executeCapability(input) { received.push({ method: 'executeCapability', input }); return { ok: true }; },
+    async receiveExternalInput() { return null; },
+    async readContext(input) { received.push({ method: 'readContext', input }); return {}; }
+  };
+  const silentObserver = { emit() {} };
+
+  const classic = new ClassicRuntime();
+  await classic.run({ taskId: 'seam-classic', input: 'x', maxSteps: 1 }, recordingHost, silentObserver);
+  const classicModel = received.find((entry) => entry.method === 'callModel');
+  assert.ok(classicModel.input.request);
+  assert.ok(Array.isArray(classicModel.input.history));
+
+  received.length = 0;
+  const ql = new QLDirectCoreRuntime({
+    policy: new ScriptedQLPolicy([
+      { source: 'P0', carrier: { kind: 'model' }, difference: 'form', destination: 'P3' },
+      { source: 'P3', carrier: { kind: 'environment' }, difference: 'context', destination: 'P4' }
+    ])
+  });
+  await ql.run({ taskId: 'seam-ql', input: 'x', maxSteps: 2 }, recordingHost, silentObserver);
+  const qlModel = received.find((entry) => entry.method === 'callModel');
+  assert.ok(qlModel.input.qlAct, 'QL act rides the shared seam as an opaque payload');
+  const qlContext = received.find((entry) => entry.method === 'readContext');
+  assert.equal(qlContext.input.kind, 'environment');
+  assert.ok(qlContext.input.qlAct);
 });
 
 test('foundation gate and A/B CLI entry points are executable', () => {

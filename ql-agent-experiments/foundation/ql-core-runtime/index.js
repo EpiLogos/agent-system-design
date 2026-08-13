@@ -1,7 +1,8 @@
 import {
   RUN_STATUS,
   isAbortRequested,
-  normalizeRunRequest
+  normalizeRunRequest,
+  dispatchHostCarrier
 } from '../runtime-contract/index.js';
 
 import {
@@ -318,6 +319,8 @@ export class QLDirectCoreRuntime {
       synthesis: clone(proposed.synthesis),
       intent_ref: proposed.intent_ref ?? circuit.frame.id,
       claimed_adequacy: clone(proposed.claimed_adequacy ?? 'unknown'),
+      claimed_subject: clone(proposed.claimed_subject ?? null),
+      claimed_state: clone(proposed.claimed_state ?? null),
       evidence_refs: clone(proposed.evidence_refs ?? []),
       evaluation_refs: clone(proposed.evaluation_refs ?? []),
       unresolved_refs: clone(proposed.unresolved_refs ?? []),
@@ -365,7 +368,7 @@ export class QLDirectCoreRuntime {
     };
   }
 
-  close(circuit, determination, verdict, reentryDelta) {
+  close(circuit, determination, verdict) {
     circuit.closureState = 'closed';
     circuit.successState = createSuccessState({
       ...circuit.successState,
@@ -382,11 +385,14 @@ export class QLDirectCoreRuntime {
         .map((residue) => residue.id),
       success_state: clone(circuit.successState),
       closed_at_position: 'P5',
-      reentry_delta_ref: reentryDelta.id
+      // ReentryDelta is derived only after positive closure. The closure is
+      // created before the delta exists; the caller fills this slot after
+      // derivation, never before the circuit closed.
+      reentry_delta_ref: null
     };
   }
 
-  async reenter(circuit, determination, verdict, request) {
+  async reenter(circuit, determination, verdict, request, closure) {
     const policyDelta = typeof this.policy.createReentryDelta === 'function'
       ? await this.policy.createReentryDelta({
           circuit: this.currentState(circuit),
@@ -429,6 +435,7 @@ export class QLDirectCoreRuntime {
       delta,
       reentry: {
         prior_circuit: circuit.id,
+        closure_ref: closure?.id ?? null,
         delta_ref: delta.id,
         renewed_frame: renewedFrame
       }
@@ -437,46 +444,22 @@ export class QLDirectCoreRuntime {
 
   async #executeCarrier(act, host, request, signal) {
     const carrier = act.carrier;
-    switch (carrier.kind) {
-      case 'model':
-        return host.callModel({
-          qlAct: clone(act),
-          request,
-          signal
-        });
-      case 'tool':
-      case 'capability':
-        return host.executeCapability({
-          name: carrier.name,
-          args: clone(carrier.args ?? {}),
-          qlAct: clone(act),
-          request,
-          signal
-        });
-      case 'human':
-        return host.receiveExternalInput({
-          kind: 'ql_act',
-          qlAct: clone(act),
-          request,
-          signal
-        });
-      case 'environment':
-      case 'artifact':
-      case 'external_evaluator':
-        return host.readContext({
-          kind: carrier.kind,
-          input: clone(carrier.input),
-          qlAct: clone(act),
-          request,
-          signal
-        });
-      case 'internal_control':
-        return clone(carrier.input);
-      case 'child_circuit':
-        return this.openChild({ act, request });
-      default:
-        throw new QLSemanticError(`Unsupported carrier kind '${carrier.kind}'.`);
+    if (carrier.kind === 'child_circuit') {
+      return this.openChild({ act, request });
     }
+    // Mechanically shared host/carrier boundary from the QL-free contract.
+    // The QL act rides along as an opaque payload; interpretation of the
+    // return remains QL loop logic, not carrier mechanics.
+    const dispatchCarrier = carrier.kind === 'human'
+      ? { ...carrier, inputKind: carrier.inputKind ?? 'ql_act' }
+      : carrier;
+    return dispatchHostCarrier({
+      host,
+      carrier: dispatchCarrier,
+      request,
+      signal,
+      payload: { qlAct: clone(act) }
+    });
   }
 
   async run(inputRequest, host, observer, signal) {
@@ -687,12 +670,19 @@ export class QLDirectCoreRuntime {
           continue;
         }
 
-        const { delta, reentry } = await this.reenter(circuit, determination, verdict, request);
-        const closure = this.close(circuit, determination, verdict, delta);
+        // Semantic order: positive ClosureVerdict -> QLClosure closes the
+        // circuit -> only then derive ReentryDelta -> only then construct and
+        // emit renewed P0+ / QLReentry. No re-entry material exists before the
+        // circuit is closed.
+        const closure = this.close(circuit, determination, verdict);
         this.#emit(observer, circuit, runId, 'circuit_closed', {
           ql: { from: 'P5', to: 'P5', relation: 'R55', lens: [...DEFAULT_LENSES] },
           payload: { closure }
         });
+
+        const { delta, reentry } = await this.reenter(circuit, determination, verdict, request, closure);
+        closure.reentry_delta_ref = delta.id;
+
         this.#emit(observer, circuit, runId, 'reentry_created', {
           ql: { from: 'P5', to: 'P0', relation: 'R50', lens: [...DEFAULT_LENSES] },
           payload: { delta, reentry }

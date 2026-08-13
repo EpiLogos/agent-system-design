@@ -62,11 +62,16 @@ test('P5 determination, typed reopening and positive closure remain distinct', (
   assert.equal(circuit.closure_state, 'open');
 
   const close = createClosureVerdict({ status: 'close', task_success: 'true' });
-  const delta = createReentryDelta(circuit, determination, { achieved_artifact_refs: ['artifact:A'], unresolved_refs: ['question:Q'] });
-  const closure = closeCircuit(circuit, determination, close, delta);
-  const reentry = createReentry(circuit, delta);
+  const closure = closeCircuit(circuit, determination, close);
   assert.equal(closure.closed_at_position, 'P5');
   assert.equal(circuit.closure_state, 'closed');
+  // Closure is created before any re-entry material exists; the linkage slot
+  // is only filled after the delta is derived from the closed circuit.
+  assert.equal(closure.reentry_delta_ref, null);
+  const delta = createReentryDelta(circuit, determination, { achieved_artifact_refs: ['artifact:A'], unresolved_refs: ['question:Q'] });
+  const reentry = createReentry(circuit, delta, closure);
+  assert.equal(closure.reentry_delta_ref, null);
+  assert.equal(reentry.closure_ref, closure.id);
   assert.equal(reentry.renewed_frame.inherited_delta, delta.id);
   assert.deepEqual(delta.achieved_artifact_refs, ['artifact:A']);
   assert.deepEqual(delta.unresolved_refs, ['question:Q']);

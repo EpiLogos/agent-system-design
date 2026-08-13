@@ -17,10 +17,12 @@
     {"id":"QLF-013","expect":{"trajectory":["P0","P3","P4","P5"],"tool_calls":0,"positive_closure":true}},
     {"id":"QLF-014","expect":{"successful_tool_calls_min":3,"positive_closure":false}},
     {"id":"QLF-017","expect":{"reentry":true,"retained":["artifact:A","evidence:E","question:Q"]}},
+    {"id":"QLF-018","expect":{"positive_closure":true,"reentry":true,"verification_warranted":true}},
     {"id":"QLN-001","expect":{"no_tools_auto_close":false}},
     {"id":"QLN-002","expect":{"carrier_fixed_typing":false}},
     {"id":"QLN-003","expect":{"p5_implies_stop":false}},
     {"id":"QLN-004","expect":{"restart_without_delta_is_reentry":false}},
-    {"id":"QLN-006","expect":{"mandatory_six_step_traversal":false}}
+    {"id":"QLN-006","expect":{"mandatory_six_step_traversal":false}},
+    {"id":"QLN-007","expect":{"stale_or_mismatched_verification_closes":false}}
   ]
 }

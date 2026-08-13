@@ -1,7 +1,8 @@
 import {
   RUN_STATUS,
   isAbortRequested,
-  normalizeRunRequest
+  normalizeRunRequest,
+  dispatchHostCarrier
 } from '../runtime-contract/index.js';
 
 function commonEvent(runId, sequence, eventType, payload = {}) {
@@ -52,11 +53,12 @@ export class ClassicRuntime {
         }
 
         iteration += 1;
-        const modelResult = await host.callModel({
+        const modelResult = await dispatchHostCarrier({
+          host,
+          carrier: { kind: 'model' },
           request,
-          history: structuredClone(history),
-          iteration,
-          signal
+          signal,
+          payload: { history: structuredClone(history), iteration }
         });
         modelCalls += 1;
         history.push({ role: 'assistant', ...structuredClone(modelResult) });
@@ -83,9 +85,13 @@ export class ClassicRuntime {
 
             let result;
             try {
-              result = await host.executeCapability({
-                name: call.name,
-                args: structuredClone(call.args ?? {}),
+              result = await dispatchHostCarrier({
+                host,
+                carrier: {
+                  kind: 'capability',
+                  name: call.name,
+                  args: structuredClone(call.args ?? {})
+                },
                 request,
                 signal
               });
@@ -106,11 +112,12 @@ export class ClassicRuntime {
           continue;
         }
 
-        const followUp = await host.receiveExternalInput({
-          kind: 'follow_up',
+        const followUp = await dispatchHostCarrier({
+          host,
+          carrier: { kind: 'human', inputKind: 'follow_up' },
           request,
-          history: structuredClone(history),
-          signal
+          signal,
+          payload: { history: structuredClone(history) }
         });
 
         if (followUp !== null && followUp !== undefined) {

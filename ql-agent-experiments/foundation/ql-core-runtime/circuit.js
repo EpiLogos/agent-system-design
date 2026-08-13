@@ -216,7 +216,7 @@ export function createReentryDelta(circuit, determination, values = {}) {
   };
 }
 
-export function closeCircuit(circuit, determination, verdict, delta) {
+export function closeCircuit(circuit, determination, verdict) {
   if (circuit.active_position.id !== 'P5' || verdict.status !== 'close') {
     throw new QLSemanticError('Positive QL closure requires a P5 close verdict.');
   }
@@ -230,13 +230,17 @@ export function closeCircuit(circuit, determination, verdict, delta) {
     evaluation_refs: circuit.residues.filter((r) => r.kind === 'evaluation' && !r.invalidated).map((r) => r.id),
     success_state: clone(circuit.success_state),
     closed_at_position: 'P5',
-    reentry_delta_ref: delta.id
+    // ReentryDelta is derived only after positive closure. The closure record
+    // is created before the delta exists; the slot is filled by the caller once
+    // the delta has been produced, never before the circuit closed.
+    reentry_delta_ref: null
   };
 }
 
-export function createReentry(circuit, delta) {
+export function createReentry(circuit, delta, closure) {
   return {
     prior_circuit: circuit.id,
+    closure_ref: closure?.id ?? null,
     delta_ref: delta.id,
     renewed_frame: {
       ...clone(circuit.frame),

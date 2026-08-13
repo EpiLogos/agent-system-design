@@ -4,12 +4,69 @@ import { runAB } from '../optics/index.js';
 
 import { ScriptedHost } from './scripted-host.js';
 export { ScriptedHost } from './scripted-host.js';
+
+/**
+ * Deterministic closure-integrity check over verification evidence.
+ *
+ * Models just enough verification identity for the Foundation fixtures:
+ * result identity (id), Subject identity (subject), Subject state/revision
+ * identity (state), current/stale applicability (current), and the candidate
+ * state being claimed complete (determination.claimed_subject/claimed_state).
+ *
+ * Invariant: a completion claim that cites verification results may only be
+ * warranted while every cited result is current AND its Subject/state matches
+ * the candidate state being claimed complete. Stale or mismatched evidence
+ * cannot by itself warrant closure; it forces the semantically appropriate
+ * P5 continuation instead (re-verify material by default; re-check
+ * whole-relative adequacy for subject/state mismatch, overridable per result).
+ */
+export function evaluateVerificationIntegrity({ determination, verification }) {
+  if (!verification || typeof verification !== 'object') {
+    return { ok: true, problems: [] };
+  }
+  const results = verification.results ?? {};
+  const cited = Array.isArray(determination?.evidence_refs) ? determination.evidence_refs : [];
+  const problems = [];
+  let destination = 'P1';
+
+  for (const ref of cited) {
+    const result = results[ref];
+    if (!result) {
+      problems.push(`cited verification '${ref}' does not exist`);
+      destination = 'P1';
+      continue;
+    }
+    if (result.current !== true) {
+      problems.push(`verification '${ref}' is stale (current=${String(result.current)})`);
+      destination = result.continuation ?? 'P1';
+      continue;
+    }
+    const subjectMatches = result.subject === determination.claimed_subject;
+    const stateMatches = result.state === determination.claimed_state;
+    if (!subjectMatches) {
+      problems.push(`verification '${ref}' subject '${result.subject}' does not match claimed subject '${determination.claimed_subject}'`);
+    }
+    if (!stateMatches) {
+      problems.push(`verification '${ref}' state '${result.state}' does not match claimed state '${determination.claimed_state}'`);
+    }
+    if (!subjectMatches || !stateMatches) {
+      destination = result.continuation ?? 'P4';
+    }
+  }
+
+  if (problems.length > 0) {
+    return { ok: false, problems, destination, reason: problems.join('; ') };
+  }
+  return { ok: true, problems: [] };
+}
+
 export class ScriptedQLPolicy {
-  constructor(steps, { reentryDelta = {} } = {}) {
+  constructor(steps, { reentryDelta = {}, verification = null } = {}) {
     this.steps = structuredClone(steps);
     this.cursor = 0;
     this.lastStep = null;
     this.reentryDelta = structuredClone(reentryDelta);
+    this.verification = verification;
   }
 
   async nextAct({ circuit }) {
@@ -55,7 +112,23 @@ export class ScriptedQLPolicy {
     return structuredClone(this.lastStep?.determination ?? null);
   }
 
-  async evaluateClosure() {
+  async evaluateClosure({ determination }) {
+    const integrity = evaluateVerificationIntegrity({
+      determination,
+      verification: this.verification
+    });
+    if (!integrity.ok) {
+      // Verification is cited on the closure warrant but is stale or
+      // subject/state-mismatched: the candidate cannot close on it. Produce
+      // the semantically appropriate P5 continuation instead of QLClosure.
+      return {
+        status: 'reopen',
+        destination: integrity.destination,
+        task_success: 'false',
+        rationale: integrity.reason,
+        retained_delta_preview: null
+      };
+    }
     const verdict = this.lastStep?.verdict;
     if (!verdict) {
       throw new Error('Fixture reached explicit P5 determination without a closure verdict.');
@@ -81,6 +154,8 @@ const determination = (requestedOutcome = 'reopen', overrides = {}) => ({
   synthesis: overrides.synthesis ?? 'fixture candidate determination',
   intent_ref: 'fixture-intent',
   claimed_adequacy: overrides.claimed_adequacy ?? 'unknown',
+  claimed_subject: overrides.claimed_subject ?? null,
+  claimed_state: overrides.claimed_state ?? null,
   evidence_refs: overrides.evidence_refs ?? [],
   evaluation_refs: overrides.evaluation_refs ?? [],
   unresolved_refs: overrides.unresolved_refs ?? [],
@@ -252,6 +327,54 @@ export const FOUNDATION_FIXTURES = Object.freeze([
       { source: 'P3', carrier: { kind: 'model' }, difference: 'evaluation', destination: 'P4', residueDelta: { create: [{ kind: 'evaluation', position: 'P4', value: 'evidence:E', provenance: { fixture: 'QLF-017' } }] } },
       { source: 'P4', carrier: { kind: 'model' }, difference: 'determined with retained question', destination: 'P5', determination: determination('close', { synthesis: 'artifact:A', unresolved_refs: ['question:Q'] }), verdict: { status: 'close', task_success: 'true' }, reentryDelta: { achieved_artifact_refs: ['artifact:A'], established_material_refs: ['evidence:E'], retained_form_refs: ['form:A'], unresolved_refs: ['question:Q'], provenance: { fixture: 'QLF-017' } } }
     ]
+  },
+  {
+    id: 'QLF-018',
+    expected: { closure: 'closed', reentry: true },
+    verification: {
+      results: {
+        'ver:qlf018': {
+          id: 'ver:qlf018',
+          subject: 'parser-v2',
+          state: 'rev-7',
+          current: true,
+          outcome: 'pass',
+          provenance: { fixture: 'QLF-018' }
+        }
+      }
+    },
+    steps: [
+      {
+        source: 'P0',
+        carrier: { kind: 'internal_control', input: 'candidate parser-v2 rev-7' },
+        difference: 'Candidate form ready for contextual evaluation',
+        destination: 'P4',
+        residueDelta: { create: [{ kind: 'evaluation', position: 'P4', value: 'requirements satisfied', provenance: { fixture: 'QLF-018' } }] }
+      },
+      {
+        source: 'P4',
+        carrier: { kind: 'internal_control', input: 'verified' },
+        difference: 'Current subject/state-matched verification supports determination',
+        destination: 'P5',
+        determination: determination('close', {
+          synthesis: 'parser-v2 rev-7 accepted',
+          claimed_subject: 'parser-v2',
+          claimed_state: 'rev-7',
+          evidence_refs: ['ver:qlf018'],
+          evaluation_refs: ['e:requirements']
+        }),
+        verdict: { status: 'close', task_success: 'true', rationale: 'verification current and subject/state-matched' },
+        reentryDelta: {
+          achieved_artifact_refs: ['artifact:parser-v2'],
+          established_material_refs: ['ver:qlf018'],
+          retained_form_refs: ['form:parser'],
+          changed_assumptions: [],
+          unresolved_refs: [],
+          opened_questions: [],
+          provenance: { fixture: 'QLF-018' }
+        }
+      }
+    ]
   }
 ]);
 
@@ -292,6 +415,59 @@ export const NEGATIVE_FIXTURES = Object.freeze([
       { source: 'P3', carrier: { kind: 'model' }, difference: 'contextually adequate', destination: 'P4' },
       { source: 'P4', carrier: { kind: 'model' }, difference: 'determined', destination: 'P5', determination: determination('close', { synthesis: 'direct route' }), verdict: { status: 'close', task_success: 'true' } }
     ]
+  },
+  {
+    id: 'QLN-007',
+    expected: { no_closure: true, closure: 'open', reopen_relations: ['R51', 'R54'] },
+    verification: {
+      results: {
+        'ver:stale': {
+          id: 'ver:stale',
+          subject: 'parser-v2',
+          state: 'rev-7',
+          current: false,
+          outcome: 'pass',
+          continuation: 'P1'
+        },
+        'ver:mismatch': {
+          id: 'ver:mismatch',
+          subject: 'parser-v1',
+          state: 'rev-6',
+          current: true,
+          outcome: 'pass',
+          continuation: 'P4'
+        }
+      }
+    },
+    steps: [
+      setup('P5'),
+      {
+        source: 'P5',
+        carrier: { kind: 'internal_control', input: 'candidate parser-v2 rev-7' },
+        difference: 'Candidate claims completion on stale verification',
+        destination: 'P5',
+        determination: determination('close', {
+          synthesis: 'parser-v2 rev-7 complete',
+          claimed_subject: 'parser-v2',
+          claimed_state: 'rev-7',
+          evidence_refs: ['ver:stale']
+        }),
+        verdict: { status: 'close', task_success: 'true' }
+      },
+      {
+        source: 'P1',
+        carrier: { kind: 'tool', name: 'read', args: { path: 'parser-v2.js' } },
+        difference: 'Fresh verification gathered for a different subject/state',
+        destination: 'P5',
+        determination: determination('close', {
+          synthesis: 'parser-v2 rev-7 complete',
+          claimed_subject: 'parser-v2',
+          claimed_state: 'rev-7',
+          evidence_refs: ['ver:mismatch']
+        }),
+        verdict: { status: 'close', task_success: 'true' }
+      }
+    ]
   }
 ]);
 
@@ -308,7 +484,9 @@ export function defaultFixtureHost() {
 }
 
 export async function runQLFixture(fixture) {
-  const policy = new ScriptedQLPolicy(fixture.steps);
+  const policy = new ScriptedQLPolicy(fixture.steps, {
+    verification: fixture.verification ?? null
+  });
   const runtime = new QLDirectCoreRuntime({ policy });
   const host = defaultFixtureHost();
   const events = [];
@@ -364,6 +542,13 @@ export function evaluateFixtureRun(run) {
   }
   if (expected.reentry && !types.includes('reentry_created')) {
     failures.push('expected reentry_created event');
+  }
+  if (expected.reopen_relations) {
+    for (const relation of expected.reopen_relations) {
+      if (!relations.includes(relation)) {
+        failures.push(`expected P5 continuation relation ${relation}; got ${relations.join(', ')}`);
+      }
+    }
   }
   if (expected.trajectory) {
     const filtered = relations.filter((relation) => expected.trajectory.includes(relation));
