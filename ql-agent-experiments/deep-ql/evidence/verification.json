@@ -1,22 +1,60 @@
 {
-  "schema":"ql-deep-verification/0.1",
-  "status":"candidate",
-  "foundation_merge_revision":"7690069846eb6fc89f6aa78dcf7aab886ac7c737",
-  "foundation_runtime_candidate":"11c7be5767735c25f49139906b59398bcdf3bf42",
-  "local_node":"22.16.0",
-  "test_command":"npm test",
-  "tests_passed":7,
-  "tests_failed":0,
-  "conformance_command":"npm run conformance",
-  "qlc_required":61,
-  "qlc_passed":61,
-  "qlc_failed":0,
-  "fixture_results":{"QLF-015":"pass","QLF-016":"pass"},
-  "typing_corpus_count":100,
-  "typing_human_review_status":"pending",
-  "series1_ready":false,
-  "series1_blockers":["ql-agent-spec §42 human review/adjudication of the 100-act typing corpus"],
-  "research_extensions_blocking":false,
-  "verified_revision":"f9c6b5204f445fe3d58d99a2719470aaf1430ea9",
-  "note":"verified_revision pins the locally tested Deep QL implementation tree before evidence/CI-only follow-up commits; Series 1 readiness remains false until human review is complete"
+  "schema": "ql-deep-verification/0.2",
+  "status": "experiment-ready",
+  "foundation_merge_revision": "7690069846eb6fc89f6aa78dcf7aab886ac7c737",
+  "foundation_runtime_candidate": "11c7be5767735c25f49139906b59398bcdf3bf42",
+  "spec_revision": "f9d056c54caf094eb672f005ce3c8cbde4de0a5b",
+  "verified_deep_revision": "9a6e87ef9b0e3144d76aa211e5a2f53be7edf283",
+  "verified_ci_run": 31788143085,
+  "node": "22",
+  "tests": {
+    "command": "npm test",
+    "passed": 9,
+    "failed": 0
+  },
+  "conformance": {
+    "command": "npm run conformance",
+    "qlc_required": 61,
+    "qlc_passed": 61,
+    "qlc_failed": 0,
+    "fixtures": {
+      "QLF-015": "pass",
+      "QLF-016": "pass"
+    }
+  },
+  "operators": {
+    "whole_conjugation": "pass",
+    "current_position_conjugation": "pass",
+    "fresh_context": "pass",
+    "reopen_relation": "R53",
+    "recursive_depth": "pass",
+    "summary_only_reintegration": "pass",
+    "portable_observable_events": 9
+  },
+  "hosts": {
+    "pi": { "revision": "9d2ec7ffabe927bfad2214c1cee25b6632a78dcf", "shallow_direct_deep_semantic_mismatches": 0 },
+    "pydantic_ai": { "revision": "00db3a4b391eb9a46f3d6e704070bcf725121f75", "shallow_direct_deep_semantic_mismatches": 0 },
+    "native": { "revision": "native-host-contract-v1", "shallow_direct_deep_semantic_mismatches": 0 }
+  },
+  "typing_benchmark": {
+    "schema": "ql-typing-benchmark/0.2",
+    "count": 100,
+    "stable_ids": true,
+    "benchmark_provenance": true,
+    "profiles_replayed": ["pi", "pydantic-ai", "native"],
+    "cross_profile_semantic_equivalent": true,
+    "human_annotation_required": false,
+    "human_witnesses": 0
+  },
+  "product_review": {
+    "scenario_count": 8,
+    "host_count": 3,
+    "recorded_run_count": 24,
+    "all_completed": true,
+    "artifact_name": "ql-product-review-9a6e87ef9b0e3144d76aa211e5a2f53be7edf283",
+    "artifact_id": 9214320364
+  },
+  "research_extensions_blocking": false,
+  "series1_ready": true,
+  "note": "The verified revision contains the runtime/operator/conformance/review implementation. Later documentation/manifest-only commits may advance the branch head without changing this verified semantic implementation. Human review is product-level; individual benchmark annotation is optional evidence."
 }
