@@ -205,7 +205,7 @@ pub fn render_markdown(manifest: &AuthorityManifest) -> String {
     ];
 
     let mut sources = manifest.sources.iter().collect::<Vec<_>>();
-    sources.sort_by(|left, right| right.precedence.cmp(&left.precedence));
+    sources.sort_by_key(|source| std::cmp::Reverse(source.precedence));
     for source in sources {
         lines.push(format!(
             "| {} | `{}` | {} | {} | {} | {} |",
