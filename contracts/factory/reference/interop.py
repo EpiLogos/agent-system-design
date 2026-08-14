@@ -13,6 +13,7 @@ from typing import Any, Mapping
 
 CANONICAL_REF = re.compile(r"^factory:[a-z][a-z0-9-]*:[A-Za-z0-9][A-Za-z0-9._-]*$")
 KIND_REF = lambda kind: re.compile(rf"^factory:{re.escape(kind)}:[A-Za-z0-9][A-Za-z0-9._-]*$")
+QL_COORDINATE_KEYS = ("qlFormRef", "qlAddress", "lensRef", "sublensRef")
 
 
 class InteropError(ValueError):
@@ -34,7 +35,7 @@ def _validate_ref(value: Any, kind: str | None = None) -> None:
 
 
 def schema_owner_failures(schema: Mapping[str, Any]) -> list[str]:
-    """Every declared instance field in the schema has exactly one semantic owner."""
+    """Every declared Factory instance field in the schema has exactly one semantic owner."""
     failures: list[str] = []
 
     def walk(node: Any, path: str) -> None:
@@ -59,7 +60,34 @@ def schema_owner_failures(schema: Mapping[str, Any]) -> list[str]:
     return failures
 
 
-def validate_contract(contract: Mapping[str, Any], schema: Mapping[str, Any]) -> None:
+def _validate_ql_composition(
+    ql: Mapping[str, Any], schema: Mapping[str, Any], ql_schema: Mapping[str, Any]
+) -> None:
+    parent = schema.get("properties", {}).get("qlComposition", {})
+    _require(parent.get("$ref") == ql_schema.get("$id"), "parent QL schema reference drift")
+    _require(parent.get("x-semantic-owner") == "Standalone QL/MEF module", "QL semantic owner drift")
+    _require("qlComposition" not in schema.get("$defs", {}), "Factory must not duplicate QL composition definition")
+
+    properties = ql_schema.get("properties")
+    _require(isinstance(properties, dict), "QL schema properties missing")
+    _require(set(ql).issubset(properties), "QL composition contains fields outside the standalone schema")
+    _require(isinstance(ql.get("targetRef"), str) and bool(ql["targetRef"]), "QL targetRef is required")
+    _require(any(key in ql for key in QL_COORDINATE_KEYS), "QL composition requires at least one coordinate")
+
+    for key in QL_COORDINATE_KEYS:
+        if key not in ql:
+            continue
+        pattern = properties.get(key, {}).get("pattern")
+        _require(isinstance(pattern, str), f"QL schema pattern missing for {key}")
+        value = ql[key]
+        _require(isinstance(value, str) and re.fullmatch(pattern, value) is not None, f"invalid {key}: {value!r}")
+
+    _validate_ref(ql["targetRef"])
+
+
+def validate_contract(
+    contract: Mapping[str, Any], schema: Mapping[str, Any], ql_schema: Mapping[str, Any]
+) -> None:
     _require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "interop schema must use JSON Schema 2020-12")
     owner_failures = schema_owner_failures(schema)
     _require(not owner_failures, "; ".join(owner_failures))
@@ -167,10 +195,7 @@ def validate_contract(contract: Mapping[str, Any], schema: Mapping[str, Any]) ->
         external_ids.add(projection["externalId"])
     _require(len(providers) >= 2 and len(external_ids) >= 2, "provider/projection-change fixture must actually change provider and external identity")
 
-    ql = contract["qlComposition"]
-    for key in ("qlFormRef", "qlAddress", "lensRef", "qlTarget"):
-        _require(isinstance(ql[key], str) and ql[key], f"{key} is an opaque QL-owned reference and must be present")
-    _validate_ref(ql["targetRef"])
+    _validate_ql_composition(contract["qlComposition"], schema, ql_schema)
 
 
 def reject_anti_fixture(item: Mapping[str, Any]) -> None:
@@ -196,9 +221,11 @@ def reject_anti_fixture(item: Mapping[str, Any]) -> None:
     raise InteropError(f"unknown anti-fixture: {fixture_id}")
 
 
-def validate_fixture_document(document: Mapping[str, Any], schema: Mapping[str, Any]) -> None:
+def validate_fixture_document(
+    document: Mapping[str, Any], schema: Mapping[str, Any], ql_schema: Mapping[str, Any]
+) -> None:
     _require(document.get("fixtureVersion") == "factory.interop-fixtures/v1", "unsupported fixture corpus version")
-    validate_contract(document["contract"], schema)
+    validate_contract(document["contract"], schema, ql_schema)
     anti = document.get("antiFixtures")
     _require(isinstance(anti, list) and anti, "anti-fixture corpus is required")
     required_ids = {
@@ -219,14 +246,17 @@ def validate_fixture_document(document: Mapping[str, Any], schema: Mapping[str, 
         raise InteropError(f"anti-fixture unexpectedly accepted: {item['id']}")
 
 
-def round_trip(document: Mapping[str, Any], schema: Mapping[str, Any]) -> dict[str, Any]:
+def round_trip(
+    document: Mapping[str, Any], schema: Mapping[str, Any], ql_schema: Mapping[str, Any]
+) -> dict[str, Any]:
     encoded = json.dumps(document, sort_keys=True, separators=(",", ":"))
     decoded = json.loads(encoded)
-    validate_fixture_document(decoded, schema)
+    validate_fixture_document(decoded, schema, ql_schema)
     return decoded
 
 
-def load_default(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+def load_default(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     schema = json.loads((root / "contracts/factory/interop.schema.json").read_text(encoding="utf-8"))
+    ql_schema = json.loads((root / "contracts/factory/ql-mef-composition.schema.json").read_text(encoding="utf-8"))
     document = json.loads((root / "contracts/factory/fixtures/interop-v1.json").read_text(encoding="utf-8"))
-    return schema, document
+    return schema, ql_schema, document
