@@ -104,6 +104,8 @@ async function runProfile(profile) {
 
   return {
     profile: profile.id,
+    provider_mode:'fixture',
+    evidence_class:'structural-only',
     host_revision: deep.manifest.host.revision,
     direct_runtime: direct.manifest.runtime,
     deep_runtime: deep.manifest.runtime,
@@ -252,8 +254,11 @@ const operatorResults = exerciseDeepOperators();
 const exactDeepRevision = process.env.DEEP_REVISION ?? process.env.GITHUB_HEAD_SHA ?? process.env.GITHUB_SHA ?? 'working-tree';
 
 const report = {
-  schema:'ql-experiment-readiness/0.2',
-  ready:true,
+  schema:'ql-structural-readiness/0.3',
+  structural_ready:true,
+  capability_effect_evidence_ready:false,
+  evidence_class:'deterministic-structural-conformance',
+  capability_effect_evidence:'requires live Series 1 / issue #110; fixture-model runs are ineligible for performance claims',
   revisions:{
     deep_ql:exactDeepRevision,
     foundation_merge:FOUNDATION_MERGE,
@@ -272,10 +277,10 @@ const report = {
     cross_profile_semantic_equivalent:true,
     human_annotation_required:false
   },
-  product_review:{
+  structural_review:{
     dry_run_catalog:dryRuns.cases.map(({ id, kind, review }) => ({ id, kind, review })),
     renderer_available_for:[...hostResults.map((result) => result.profile), 'deep-operator-session'],
-    note:'Review the working traces, operator session and representative dry-run semantics; individual benchmark annotation is optional.'
+    note:'These runs are deterministic structural fixtures. Review them for QL semantics and observability; do not use them as evidence of LLM capability improvement.'
   }
 };
 
