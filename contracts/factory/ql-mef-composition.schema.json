@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://epilogos.dev/factory/ql-mef-composition.schema.json",
+  "title": "Factory projection of standalone QL-MEF composition",
+  "description": "Factory transports standalone QL-MEF-owned coordinates while preserving the client-owned target reference verbatim. This schema is alignment, not translation.",
+  "type": "object",
+  "required": ["targetRef"],
+  "properties": {
+    "targetRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque client-owned subject reference. Factory remains semantic owner of Factory refs."
+    },
+    "qlFormRef": {
+      "type": "string",
+      "pattern": "^qlform:(sixfold|four-plus-two|direct-conjugate)@1$"
+    },
+    "qlAddress": {
+      "type": "string",
+      "pattern": "^qladdr:sixfold@1/(direct|conjugate)/P[0-5]/d[0-9]+$"
+    },
+    "lensRef": {
+      "type": "string",
+      "pattern": "^mef:lens:L[0-5]'?@1$"
+    },
+    "sublensRef": {
+      "type": "string",
+      "pattern": "^mef:sublens:L[0-5]'?\\.[0-5]@1$"
+    }
+  },
+  "anyOf": [
+    {"required": ["qlFormRef"]},
+    {"required": ["qlAddress"]},
+    {"required": ["lensRef"]},
+    {"required": ["sublensRef"]}
+  ],
+  "additionalProperties": false
+}
