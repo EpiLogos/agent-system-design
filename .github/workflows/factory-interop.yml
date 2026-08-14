@@ -1,0 +1,40 @@
+name: Factory interoperability
+
+on:
+  pull_request:
+    paths:
+      - "contracts/factory/interop/**"
+      - "contracts/factory/fixtures/interop/**"
+      - "tests/factory/**"
+      - "scripts/validate_factory_interop.py"
+      - ".github/workflows/factory-interop.yml"
+  push:
+    branches:
+      - main
+      - "agent/**"
+    paths:
+      - "contracts/factory/interop/**"
+      - "contracts/factory/fixtures/interop/**"
+      - "tests/factory/**"
+      - "scripts/validate_factory_interop.py"
+      - ".github/workflows/factory-interop.yml"
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Validate Draft 2020-12 schemas and field ownership
+        run: |
+          python3 -m pip install --disable-pip-version-check 'jsonschema>=4,<5'
+          python3 scripts/validate_factory_interop.py
+      - name: Node reference consumer
+        run: node tests/factory/interop.js
+      - name: TypeScript reference consumer
+        run: node --experimental-strip-types tests/factory/interop.ts
+      - name: Rust reference consumer
+        run: cargo run --quiet --manifest-path tests/factory/rust-interop/Cargo.toml
