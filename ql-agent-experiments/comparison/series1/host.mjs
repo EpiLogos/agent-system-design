@@ -109,6 +109,7 @@ export class LiveRuntimeHost {
   async callModel(payload = {}) {
     let system = LIVE_RESPONSE_SYSTEM;
     let prompt;
+    const mode = payload.series1Control ? 'control' : 'turn';
 
     if (payload.series1Control) {
       system = payload.series1Control.system;
@@ -126,10 +127,10 @@ export class LiveRuntimeHost {
       prompt = JSON.stringify(payload.request?.input ?? payload, null, 2);
     }
 
-    this.emit('model_requested', { provider: this.provider.id, purpose: payload.series1Control?.purpose ?? (payload.qlAct ? 'ql-act' : 'classic-turn') });
-    const result = await this.provider.complete({ system, prompt, signal: payload.signal });
+    this.emit('model_requested', { provider: this.provider.id, purpose: payload.series1Control?.purpose ?? (payload.qlAct ? 'ql-act' : 'classic-turn'), mode });
+    const result = await this.provider.complete({ system, prompt, signal: payload.signal, mode });
     this.absorbUsage(result.usage);
-    this.emit('model_returned', { provider: this.provider.id, usage: result.usage, capability_call_count: result.capabilityCalls.length });
+    this.emit('model_returned', { provider: this.provider.id, usage: result.usage, capability_call_count: result.capabilityCalls?.length ?? 0, mode });
     return result;
   }
 
