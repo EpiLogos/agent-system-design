@@ -5,6 +5,13 @@ import { LIVE_RESPONSE_SYSTEM } from './providers.mjs';
 
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
 
+const CAPABILITY_CONTRACTS = Object.freeze([
+  { name: 'list_files', description: 'List one directory inside the task workspace.', args: { path: 'optional relative directory, default .' } },
+  { name: 'read_file', description: 'Read one UTF-8 file inside the task workspace.', args: { path: 'required relative file path' } },
+  { name: 'write_file', description: 'Replace one UTF-8 file inside the task workspace.', args: { path: 'required relative file path', content: 'complete new file content' } },
+  { name: 'run_tests', description: 'Run Node test files inside the task workspace. With no files, run the Node test discovery.', args: { files: 'optional array of relative test paths' } }
+]);
+
 function ensureInside(root, relativePath = '.') {
   const resolved = path.resolve(root, relativePath);
   const prefix = `${path.resolve(root)}${path.sep}`;
@@ -32,7 +39,11 @@ export class Series1Workspace {
   }
 
   list() {
-    return ['list_files', 'read_file', 'write_file', 'run_tests'];
+    return CAPABILITY_CONTRACTS.map((entry) => entry.name);
+  }
+
+  describe() {
+    return clone(CAPABILITY_CONTRACTS);
   }
 
   async execute(name, args = {}) {
@@ -110,17 +121,19 @@ export class LiveRuntimeHost {
     let system = LIVE_RESPONSE_SYSTEM;
     let prompt;
     const mode = payload.series1Control ? 'control' : 'turn';
+    const capabilities = this.workspace.describe();
 
     if (payload.series1Control) {
       system = payload.series1Control.system;
       prompt = payload.series1Control.prompt;
     } else if (payload.history) {
-      prompt = historyPrompt(payload.history, payload.request, this.workspace.list());
+      prompt = historyPrompt(payload.history, payload.request, capabilities);
     } else if (payload.qlAct) {
-      system = `${LIVE_RESPONSE_SYSTEM}\nFor this QL act, perform only the stated intent. Do not invent a capability call unless the act itself asks for one.`;
+      system = `${LIVE_RESPONSE_SYSTEM}\nFor this QL act, perform only the stated intent. A model-carried QL act cannot itself execute a capability; capability acts are selected by the controller. Return no capability call unless explicitly requested for observation only.`;
       prompt = JSON.stringify({
         task: payload.request?.input,
         success_conditions: payload.request?.successConditions,
+        capabilities,
         ql_act: payload.qlAct
       }, null, 2);
     } else {
@@ -150,9 +163,9 @@ export class LiveRuntimeHost {
 
   async readContext({ kind, input } = {}) {
     if (kind === 'environment' || kind === 'artifact') {
-      return { root: this.workspace.root, input: clone(input), capabilities: this.workspace.list() };
+      return { root: this.workspace.root, input: clone(input), capabilities: this.workspace.describe() };
     }
-    return { kind, input: clone(input), capabilities: this.workspace.list() };
+    return { kind, input: clone(input), capabilities: this.workspace.describe() };
   }
 
   snapshotUsage() { return clone(this.usage); }
