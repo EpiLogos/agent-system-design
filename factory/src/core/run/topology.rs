@@ -349,13 +349,13 @@ fn validate_semantic_ref(
     node: &TopologyNode,
     expected_kind: &'static str,
 ) -> Result<(), TopologyError> {
-    let reference = node
-        .semantic_ref
-        .as_ref()
-        .ok_or_else(|| TopologyError::MissingSemanticRef {
-            node: node.id.clone(),
-            expected_kind,
-        })?;
+    let reference =
+        node.semantic_ref
+            .as_ref()
+            .ok_or_else(|| TopologyError::MissingSemanticRef {
+                node: node.id.clone(),
+                expected_kind,
+            })?;
     if reference.kind() != expected_kind {
         return Err(TopologyError::WrongSemanticRef {
             node: node.id.clone(),
@@ -379,7 +379,9 @@ fn validate_requires_acyclic(
         .iter()
         .filter(|edge| edge.relation == EdgeKind::Requires)
     {
-        *indegree.get_mut(&edge.to).expect("edge endpoints validated") += 1;
+        *indegree
+            .get_mut(&edge.to)
+            .expect("edge endpoints validated") += 1;
     }
     let mut queue = indegree
         .iter()
