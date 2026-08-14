@@ -9,6 +9,7 @@
     "conformance": "node conformance/runner.js",
     "corpus": "node typing-corpus/export.mjs",
     "corpus:ndjson": "node typing-corpus/export.mjs --ndjson",
-    "readiness": "node convergence/run-readiness.mjs"
+    "readiness": "node convergence/run-readiness.mjs",
+    "review": "node convergence/run-product-review.mjs"
   }
 }
