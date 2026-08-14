@@ -5,7 +5,14 @@ import os from 'node:os';
 import path from 'node:path';
 import { assertLiveManifest, classifyEffect, compareHeldConstant, stableDigest } from '../../comparison/series1/contract.mjs';
 import { Series1Workspace } from '../../comparison/series1/host.mjs';
-import { normalizeEnvelope, parseJsonObject } from '../../comparison/series1/providers.mjs';
+import {
+  normalizeEnvelope,
+  parseJsonObject,
+  SERIES1_PROVIDER,
+  SERIES1_DEFAULT_MODEL,
+  SERIES1_DEFAULT_JUDGE_MODEL,
+  DEEPSEEK_BASE_URL
+} from '../../comparison/series1/providers.mjs';
 import { SERIES1_TASKS, evaluateTask, setupTask } from '../../comparison/series1/tasks.mjs';
 
 test('Series 1 refuses fixture-shaped evidence', () => {
@@ -21,13 +28,20 @@ test('Series 1 refuses fixture-shaped evidence', () => {
   }), /not evidence eligible/);
 });
 
+test('Series 1 uses provider-native DeepSeek defaults', () => {
+  assert.equal(SERIES1_PROVIDER, 'deepseek');
+  assert.equal(SERIES1_DEFAULT_MODEL, 'deepseek-v4-flash');
+  assert.equal(SERIES1_DEFAULT_JUDGE_MODEL, 'deepseek-v4-pro');
+  assert.equal(DEEPSEEK_BASE_URL, 'https://api.deepseek.com');
+});
+
 test('held-constant comparison uses stable nested digests', () => {
   const records = ['classic','ql-direct','ql-deep'].map((condition) => ({
     condition,
     task_digest: stableDigest({ b: { y: 2, x: 1 }, a: 0 }),
     start_state_digest: 'same-start',
     capability_digest: stableDigest([{ id: 'read_file', args: { path: 'x' } }]),
-    model: { provider: 'openai', id: 'model', parameters: { temperature: 0 } }
+    model: { provider: 'deepseek', id: 'deepseek-v4-flash', parameters: { temperature: 0 } }
   }));
   assert.deepEqual(compareHeldConstant(records), { task: true, start_state: true, model: true, capabilities: true });
   assert.equal(stableDigest({ a: { x: 1, y: 2 }, b: 3 }), stableDigest({ b: 3, a: { y: 2, x: 1 } }));
