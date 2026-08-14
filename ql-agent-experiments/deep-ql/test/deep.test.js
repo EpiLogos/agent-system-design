@@ -5,7 +5,7 @@ import { qlPosition } from '../../foundation/ql-core-runtime/semantics.js';
 import { createDeepQLRuntimeClass } from '../index.js';
 import { createConjugatePacket, createConjugateDelta, reintegrateConjugateDelta, openChildCircuit, closeChildCircuit, reintegrateChildSummary } from '../operators.js';
 import { REQUIRED_QLC_IDS, runConformanceSuite, validatePortableEvent } from '../conformance/runner.js';
-import { corpusStats, agreementMetrics } from '../typing-corpus/corpus.js';
+import { corpus, corpusStats, agreementMetrics } from '../typing-corpus/corpus.js';
 import { renderRun } from '../render/index.js';
 import { compareTraces } from '../comparison/comparator.js';
 
@@ -16,7 +16,7 @@ const direct = (active = 'P5', closed = false) => ({
   closure_state: closed ? 'closed' : 'open', children: [], conjugates: []
 });
 
-test('all 61 stable QLC IDs pass', () => {
+test('all 61 stable QLC IDs pass substantive checks', () => {
   const r = runConformanceSuite();
   assert.equal(REQUIRED_QLC_IDS.length, 61);
   assert.equal(r.failed, 0);
@@ -28,7 +28,9 @@ test('QLF-016 reconstructs fresh conjugate context and R53 reopens open direct P
   const p = createConjugatePacket({ directCircuit: d, scope: 'whole' });
   assert.equal(p.provenance.complete_direct_transcript_inherited, false);
   const x = createConjugateDelta({ status: 'reopen', targetPosition: 'P3' });
-  assert.equal(reintegrateConjugateDelta({ directCircuit: d, delta: x }).circuit.active_position.id, 'P3');
+  const reintegrated = reintegrateConjugateDelta({ directCircuit: d, delta: x });
+  assert.equal(reintegrated.circuit.active_position.id, 'P3');
+  assert.equal(reintegrated.circuit.trajectory.at(-1).relation, 'R53');
 });
 
 test('positive closure cannot be retroactively reopened by conjugation', () => {
@@ -59,21 +61,31 @@ test('frozen Direct Core rejects deeper operators while Deep profile exposes the
   assert.equal(deep.openChild({ parentCircuit: direct('P4'), localWholeIntent: 'local' }).active_position.id, 'P0');
 });
 
-test('typing corpus has required shape and remains pending human review', () => {
+test('typing benchmark is meaningful, stable, provenance-bearing and does not invent human judgement', () => {
   const s = corpusStats();
   assert.equal(s.count, 100);
-  assert.equal(s.human_reviewed, 0);
-  assert.equal(s.pending_human_review, 100);
-  assert.ok(agreementMetrics().claimed_human.position_exact_agreement < 1);
+  assert.equal(s.stable_ids, true);
+  assert.equal(s.benchmark_provenance, true);
+  assert.equal(s.human_witnesses, 0);
+  assert.ok(corpus.every((record) => record.title && !record.title.startsWith('Deterministic semantic typing act')));
+  assert.ok(corpus.every((record) => record.human_witness === null));
+  assert.equal(agreementMetrics().claimed_human, null);
+  assert.ok(agreementMetrics().claimed_benchmark.position_exact_agreement < 1);
 });
 
-test('invalid relation fails portable validator', () => {
-  const x = { spec: 'ql-agent/0.1', schema_version: 'x', event_id: 'e', event_type: 'transition', run_id: 'r', circuit_id: 'c', sequence: 0, face: 'direct', ql: { relation: 'R99' }, payload: {}, witness: {} };
-  assert.equal(validatePortableEvent(x).valid, false);
+test('invalid and unsupported semantic claims fail explicitly', () => {
+  const badRelation = { spec: 'ql-agent/0.1', schema_version: 'x', event_id: 'e', event_type: 'transition', run_id: 'r', circuit_id: 'c', sequence: 0, face: 'direct', ql: { relation: 'R99' }, payload: {}, witness: {} };
+  const badFace = { ...badRelation, ql: { relation: 'R11' }, face: 'sideways' };
+  assert.equal(validatePortableEvent(badRelation).valid, false);
+  assert.equal(validatePortableEvent(badFace).valid, false);
 });
 
-test('renderer and comparator are portable', () => {
-  const e = { spec: 'ql-agent/0.1', schema_version: 'x', event_id: 'e', event_type: 'run_started', run_id: 'r', circuit_id: 'c', parent_circuit_id: null, sequence: 0, face: 'direct', ql: { to: 'P0', lens: ['L1', 'L4′'] }, payload: {}, witness: {} };
-  assert.match(renderRun([e]), /CLOSURE/);
-  assert.equal(compareTraces([e], [e]).equal, true);
+test('renderer and comparator remain portable and preserve visible disagreement', () => {
+  const first = { spec: 'ql-agent/0.1', schema_version: 'x', event_id: 'e0', event_type: 'run_started', run_id: 'r', circuit_id: 'c', parent_circuit_id: null, sequence: 0, face: 'direct', ql: { to: 'P0', lens: ['L1', 'L4′'] }, payload: {}, witness: {} };
+  const second = { ...first, event_id: 'e1', sequence: 1, event_type: 'transition', ql: { from: 'P0', to: 'P3', relation: 'R03' }, witness: { claimed: 'P0', retrospective: 'P3' } };
+  const rendered = renderRun([first, second]);
+  assert.match(rendered, /ACTIVE  P3/);
+  assert.match(rendered, /RELATION  R03/);
+  assert.equal(compareTraces([first, second], [first, second]).equal, true);
+  assert.equal(compareTraces([first], [first, second]).equal, false);
 });
