@@ -1,10 +1,38 @@
 {
-  "schemaVersion": "factory.ref-schema/v1",
-  "refPattern": "factory:<kind>:<opaque-id>",
-  "identityStore": {
-    "required": ["schemaVersion", "records", "retiredRefs"],
-    "recordRequired": ["ref", "revision", "aliases", "tombstoned", "payload"],
-    "revisionMinimum": 1,
-    "noIdReuse": true
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://epilogos.dev/contracts/factory/ref.schema.json",
+  "title": "Factory canonical identity store",
+  "description": "Language-neutral serialization contract for stable Factory Ref identity, revision, aliases, tombstones and no-ID-reuse evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "records", "retiredRefs"],
+  "properties": {
+    "schemaVersion": {"const": "factory.identity-store/v1"},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/identityRecord"}},
+    "retiredRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/canonicalRef"}}
+  },
+  "$defs": {
+    "canonicalRef": {"type": "string", "pattern": "^factory:[a-z][a-z0-9-]*:[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "alias": {"type": "string", "minLength": 1, "not": {"pattern": "^factory:"}},
+    "identityRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "revision", "aliases", "tombstoned", "tombstoneReason", "payload"],
+      "properties": {
+        "ref": {"$ref": "#/$defs/canonicalRef"},
+        "revision": {"type": "integer", "minimum": 1},
+        "aliases": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/alias"}},
+        "tombstoned": {"type": "boolean"},
+        "tombstoneReason": {"type": ["string", "null"]},
+        "payload": {}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"tombstoned": {"const": true}}, "required": ["tombstoned"]},
+          "then": {"properties": {"tombstoneReason": {"type": "string", "minLength": 1}}},
+          "else": {"properties": {"tombstoneReason": {"type": "null"}}}
+        }
+      ]
+    }
   }
 }
