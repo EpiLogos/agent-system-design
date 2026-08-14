@@ -6,7 +6,13 @@ import { QLDirectCoreRuntime } from '../../foundation/ql-core-runtime/index.js';
 import { createRunManifest, executeRun, runIdForManifest } from '../../foundation/optics/index.js';
 import { createDeepQLRuntimeClass } from '../../deep-ql/index.js';
 import { createModelDrivenQLPolicy, bindSeries1Host } from './policy.mjs';
-import { NativeOpenAICompatibleProvider, providerForHost } from './providers.mjs';
+import {
+  NativeOpenAICompatibleProvider,
+  providerForHost,
+  SERIES1_PROVIDER,
+  series1JudgeModelId,
+  series1ModelId
+} from './providers.mjs';
 import { Series1Workspace, createLiveHost } from './host.mjs';
 import { CONDITIONS, SERIES1_SCHEMA, assertLiveManifest, classifyEffect, compareHeldConstant, stableDigest } from './contract.mjs';
 import { evaluateTask, getTask, setupTask } from './tasks.mjs';
@@ -50,9 +56,11 @@ async function snapshot(root) {
 }
 
 function canonicalModel() {
-  const provider = process.env.QL_SERIES1_PROVIDER ?? 'openai';
-  const id = process.env.QL_SERIES1_MODEL;
-  if (!id) throw new Error('QL_SERIES1_MODEL is required.');
+  const provider = process.env.QL_SERIES1_PROVIDER ?? SERIES1_PROVIDER;
+  if (provider !== SERIES1_PROVIDER) {
+    throw new Error(`Series 1 is currently stipulated to provider '${SERIES1_PROVIDER}', not '${provider}'.`);
+  }
+  const id = series1ModelId();
   return { provider, id, parameters: { temperature: 0 } };
 }
 
@@ -74,9 +82,9 @@ function createRuntime(condition, runId) {
 }
 
 async function judgeSemantic({ task, output, candidateModel }) {
-  const judgeModel = process.env.QL_SERIES1_JUDGE_MODEL;
-  if (!judgeModel) throw new Error(`Task ${task.id} is semantic and requires QL_SERIES1_JUDGE_MODEL.`);
-  if (judgeModel === candidateModel.id) throw new Error('QL_SERIES1_JUDGE_MODEL must differ from QL_SERIES1_MODEL for blinded semantic scoring.');
+  const judgeModel = series1JudgeModelId();
+  if (!judgeModel) throw new Error(`Task ${task.id} is semantic and requires a distinct judge model.`);
+  if (judgeModel === candidateModel.id) throw new Error('Blinded semantic judge model must differ from the candidate model.');
   const judge = new NativeOpenAICompatibleProvider({ model: judgeModel });
   judge.assertReady();
   const result = await judge.complete({
@@ -86,7 +94,7 @@ async function judgeSemantic({ task, output, candidateModel }) {
   });
   const score = Number(result.control?.score);
   if (!Number.isFinite(score) || score < 0 || score > 1) throw new Error(`Judge returned invalid score '${result.control?.score}'.`);
-  return { quality_score: score, judge_model: judgeModel, rationale: result.control?.rationale ?? null, usage: result.usage };
+  return { quality_score: score, judge_model: judgeModel, judge_provider: SERIES1_PROVIDER, rationale: result.control?.rationale ?? null, usage: result.usage };
 }
 
 async function runCondition({ hostId, task, condition, repetition, model, maxSteps }) {
@@ -200,6 +208,7 @@ async function main() {
   const config = args();
   if (!Number.isInteger(config.repetitions) || config.repetitions < 1) throw new Error('--repetitions must be a positive integer.');
   if (!Number.isInteger(config.maxSteps) || config.maxSteps < 1) throw new Error('--max-steps must be a positive integer.');
+  if (!process.env.DEEPSEEK_API_KEY) throw new Error('DEEPSEEK_API_KEY is required for live Series 1 runs.');
   const task = getTask(config.task);
   const model = canonicalModel();
   const records = [];
@@ -215,11 +224,16 @@ async function main() {
     schema: SERIES1_SCHEMA,
     provider_mode: 'live',
     fixture_provider: false,
+    credential_contract: 'DEEPSEEK_API_KEY',
     host: records[0].host,
     model,
     conditions: CONDITIONS,
     held_constant: held,
-    quality: { kind: task.quality.kind, judge_model: task.quality.kind === 'semantic' ? process.env.QL_SERIES1_JUDGE_MODEL ?? null : null },
+    quality: {
+      kind: task.quality.kind,
+      judge_provider: task.quality.kind === 'semantic' ? SERIES1_PROVIDER : null,
+      judge_model: task.quality.kind === 'semantic' ? series1JudgeModelId() : null
+    },
     task: { id: task.id, category: task.category, anti_overengineering: Boolean(task.anti_overengineering) },
     repetitions: config.repetitions,
     records,
