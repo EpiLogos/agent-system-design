@@ -3,8 +3,8 @@ use std::cell::Cell;
 use epilogos_factory::ql::{
     FactoryQlAdapter, FactoryRecord, FactorySubject, InputRefRevision, ProviderCapabilities,
     ProviderFailure, ProviderHealth, ProviderRef, ProviderState, QlAttachment, QlError, QlMode,
-    QlProvenance, QlProviderClient, QlReading, QL_MEF_REGISTRY_VERSION,
-    QL_OUTPUT_SCHEMA_VERSION, QL_PROVENANCE_SCHEMA_VERSION,
+    QlProvenance, QlProviderClient, QlReading, QL_MEF_REGISTRY_VERSION, QL_OUTPUT_SCHEMA_VERSION,
+    QL_PROVENANCE_SCHEMA_VERSION,
 };
 use serde_json::json;
 
@@ -121,11 +121,8 @@ impl QlProviderClient for FixtureQl {
 
 fn record() -> FactoryRecord<String> {
     FactoryRecord {
-        subject: FactorySubject::new(
-            "factory:claim:c-1",
-            Some("sha256:claim-c-1-r1".into()),
-        )
-        .unwrap(),
+        subject: FactorySubject::new("factory:claim:c-1", Some("sha256:claim-c-1-r1".into()))
+            .unwrap(),
         value: "ordinary Factory payload after mutation".into(),
     }
 }
@@ -187,7 +184,10 @@ fn degraded_fixture_provider_enriches_same_ref_and_revision_with_inspectable_ver
             assert_eq!(reading.lens_ref, "mef:lens:L3@1");
             assert_eq!(reading.provenance.provider.provider, "fixture-ql");
             assert_eq!(reading.provenance.provider.version, "0.1.0");
-            assert_eq!(reading.provenance.input_refs[0].reference, "factory:claim:c-1");
+            assert_eq!(
+                reading.provenance.input_refs[0].reference,
+                "factory:claim:c-1"
+            );
             assert_eq!(
                 reading.provenance.input_refs[0].revision.as_deref(),
                 Some("sha256:claim-c-1-r1")
@@ -211,7 +211,10 @@ fn incompatible_provider_is_nonfatal_in_optional_mode_and_not_executed() {
 
     assert_eq!(result.client, original);
     assert_eq!(provider.calls(), 0);
-    assert!(matches!(result.attachment, QlAttachment::Unavailable { .. }));
+    assert!(matches!(
+        result.attachment,
+        QlAttachment::Unavailable { .. }
+    ));
 }
 
 #[test]
