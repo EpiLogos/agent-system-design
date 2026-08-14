@@ -1,0 +1,1 @@
+{"contractVersion":"factory.interop/v1","binding":{"workcellRef":"workcell:ubuntu-worker-1","bindingKey":"graph-1","logicalRef":"state:graph","concreteRef":"resource:graph-instance","providerRef":"materializer:reference","createdAt":"2026-08-14T00:40:00Z","expiresAt":null}}
