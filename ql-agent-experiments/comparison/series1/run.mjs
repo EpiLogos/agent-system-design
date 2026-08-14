@@ -6,18 +6,19 @@ import { QLDirectCoreRuntime } from '../../foundation/ql-core-runtime/index.js';
 import { createRunManifest, executeRun, runIdForManifest } from '../../foundation/optics/index.js';
 import { createDeepQLRuntimeClass } from '../../deep-ql/index.js';
 import { createModelDrivenQLPolicy, bindSeries1Host } from './policy.mjs';
-import {
-  NativeOpenAICompatibleProvider,
-  providerForHost,
-  SERIES1_PROVIDER,
-  series1JudgeModelId,
-  series1ModelId
-} from './providers.mjs';
+import { providerForHost, SERIES1_PROVIDER, series1ModelId } from './providers.mjs';
 import { Series1Workspace, createLiveHost } from './host.mjs';
-import { CONDITIONS, SERIES1_SCHEMA, assertLiveManifest, classifyEffect, compareHeldConstant, stableDigest } from './contract.mjs';
-import { evaluateTask, getTask, setupTask } from './tasks.mjs';
+import {
+  CONDITIONS,
+  DETERMINATION,
+  SERIES1_SCHEMA,
+  assertLiveManifest,
+  compareHeldConstant,
+  stableDigest
+} from './contract.mjs';
+import { getTask, setupTask, verifyTask } from './tasks.mjs';
 
-const SPEC_REVISION = 'f9d056c54caf094eb672f005ce3c8cbde4de0a5b+QL-PAIRING-SQUARES-CLARIFICATION-08-14-2026';
+const SPEC_REVISION = 'f9d056c54caf094eb672f005ce3c8cbde4de0a5b+QL-PAIRING-SQUARES-CLARIFICATION-08-14-2026+SERIES1-BENCHMARK-V0.1';
 const DEEP_CLASS = createDeepQLRuntimeClass(QLDirectCoreRuntime);
 const CAPABILITIES = Object.freeze([
   { id: 'list_files', args: { path: 'optional relative directory' } },
@@ -35,24 +36,24 @@ function args() {
   return {
     host: read('host', process.env.QL_SERIES1_HOST ?? 'native'),
     task: read('task', process.env.QL_SERIES1_TASK ?? 'S1-CODE-001'),
-    repetitions: Number(read('repetitions', process.env.QL_SERIES1_REPETITIONS ?? '3')),
+    repetitions: Number(read('repetitions', process.env.QL_SERIES1_REPETITIONS ?? '1')),
     maxSteps: Number(read('max-steps', process.env.QL_SERIES1_MAX_STEPS ?? '16'))
   };
 }
 
 async function snapshot(root) {
+  const out = {};
   async function walk(relative = '.') {
     const absolute = path.join(root, relative);
     const entries = await fs.readdir(absolute, { withFileTypes: true });
-    const out = {};
     for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
       const child = relative === '.' ? entry.name : path.join(relative, entry.name);
-      if (entry.isDirectory()) out[child] = await walk(child);
-      else out[child] = await fs.readFile(path.join(root, child), 'utf8');
+      if (entry.isDirectory()) await walk(child);
+      else out[child.split(path.sep).join('/')] = await fs.readFile(path.join(root, child), 'utf8');
     }
-    return out;
   }
-  return walk();
+  await walk();
+  return out;
 }
 
 function canonicalModel() {
@@ -60,8 +61,7 @@ function canonicalModel() {
   if (provider !== SERIES1_PROVIDER) {
     throw new Error(`Series 1 is currently stipulated to provider '${SERIES1_PROVIDER}', not '${provider}'.`);
   }
-  const id = series1ModelId();
-  return { provider, id, parameters: { temperature: 0 } };
+  return { provider, id: series1ModelId(), parameters: { temperature: 0 } };
 }
 
 function runtimeDescriptor(condition) {
@@ -81,22 +81,6 @@ function createRuntime(condition, runId) {
   return { runtime: new DEEP_CLASS({ policy }), policy };
 }
 
-async function judgeSemantic({ task, output, candidateModel }) {
-  const judgeModel = series1JudgeModelId();
-  if (!judgeModel) throw new Error(`Task ${task.id} is semantic and requires a distinct judge model.`);
-  if (judgeModel === candidateModel.id) throw new Error('Blinded semantic judge model must differ from the candidate model.');
-  const judge = new NativeOpenAICompatibleProvider({ model: judgeModel });
-  judge.assertReady();
-  const result = await judge.complete({
-    mode: 'control',
-    system: 'You are an independent blinded evaluator. Score only the supplied answer against the task, success conditions and rubric. Return JSON {"score":0.0,"rationale":"..."}. Score must be between 0 and 1.',
-    prompt: JSON.stringify({ task: task.prompt, success_conditions: task.successConditions, rubric: task.quality.rubric, answer: output }, null, 2)
-  });
-  const score = Number(result.control?.score);
-  if (!Number.isFinite(score) || score < 0 || score > 1) throw new Error(`Judge returned invalid score '${result.control?.score}'.`);
-  return { quality_score: score, judge_model: judgeModel, judge_provider: SERIES1_PROVIDER, rationale: result.control?.rationale ?? null, usage: result.usage };
-}
-
 async function runCondition({ hostId, task, condition, repetition, model, maxSteps }) {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), `ql-series1-${task.id}-${condition}-`));
   try {
@@ -108,18 +92,23 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
     await provider.assertReady();
     const host = createLiveHost({ hostId, provider, workspace });
     const descriptor = runtimeDescriptor(condition);
-    const logicalEnvironment = { kind: 'isolated-series1-workspace', task_id: task.id };
+    const logicalEnvironment = {
+      kind: 'isolated-series1-workspace',
+      task_id: task.id,
+      network: 'model-provider-only',
+      workspace_network_tools: false
+    };
     const baseRequest = {
       taskId: task.id,
       input: task.prompt,
       successConditions: task.successConditions,
       capabilities: CAPABILITIES,
       maxSteps,
-      provenance: { series: 1, repetition, condition }
+      provenance: { series: 1, benchmark: 'v0.1', repetition, condition }
     };
     const manifest = createRunManifest({
       taskId: task.id,
-      fixtureId: `series1:${task.id}:r${repetition}`,
+      fixtureId: `series1:v0.1:${task.id}:r${repetition}`,
       host,
       runtime: descriptor,
       specRevision: SPEC_REVISION,
@@ -144,10 +133,9 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
 
     const after = await snapshot(temp);
     const output = typeof record.result?.outcome === 'string' ? record.result.outcome : JSON.stringify(record.result?.outcome ?? '');
-    const quality = task.quality.kind === 'semantic'
-      ? await judgeSemantic({ task, output, candidateModel: model })
-      : await evaluateTask(task, temp);
+    const verification = await verifyTask(task, temp, { before, after, output, record });
     const usage = host.snapshotUsage();
+    const executionBudget = { max_steps: maxSteps };
 
     return {
       schema: SERIES1_SCHEMA,
@@ -163,11 +151,17 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       start_state_digest: startStateDigest,
       end_state_digest: stableDigest(after),
       capability_digest: stableDigest(CAPABILITIES),
+      verification_protocol_digest: stableDigest(task.verificationProtocol),
+      execution_budget_digest: stableDigest(executionBudget),
+      execution_budget: executionBudget,
+      prompt: task.prompt,
+      success_conditions: task.successConditions,
+      starting_workspace: before,
+      final_workspace: after,
       outcome: output,
+      verification,
       execution_status: record.status.execution,
       semantic_status: record.status.semantic,
-      quality_score: quality.quality_score,
-      quality,
       elapsed_ms: elapsedMs,
       model_calls: usage.model_calls,
       total_tokens: usage.total_tokens,
@@ -189,19 +183,21 @@ function rotation(repetition) {
   return [...CONDITIONS.slice(n), ...CONDITIONS.slice(0, n)];
 }
 
-function summarizeEffects(records) {
+function processSummary(records) {
   const byRepetition = new Map();
   for (const record of records) {
     if (!byRepetition.has(record.repetition)) byRepetition.set(record.repetition, {});
-    byRepetition.get(record.repetition)[record.condition] = record;
+    byRepetition.get(record.repetition)[record.condition] = {
+      verification_pass: record.verification?.objective_checks_pass ?? null,
+      model_calls: record.model_calls,
+      capability_calls: record.capability_calls,
+      total_tokens: record.total_tokens,
+      elapsed_ms: record.elapsed_ms,
+      ql_semantic_events: record.ql_semantic_events,
+      operator_events: record.operator_events
+    };
   }
-  return [...byRepetition.entries()].map(([repetition, group]) => ({
-    repetition,
-    direct: classifyEffect({ classic: group.classic, candidate: group['ql-direct'] }),
-    deep: classifyEffect({ classic: group.classic, candidate: group['ql-deep'] }),
-    quality: Object.fromEntries(CONDITIONS.map((condition) => [condition, group[condition]?.quality_score ?? null])),
-    tokens: Object.fromEntries(CONDITIONS.map((condition) => [condition, group[condition]?.total_tokens ?? null]))
-  }));
+  return [...byRepetition.entries()].map(([repetition, conditions]) => ({ repetition, conditions }));
 }
 
 async function main() {
@@ -222,6 +218,7 @@ async function main() {
   const held = compareHeldConstant(records);
   const manifest = {
     schema: SERIES1_SCHEMA,
+    benchmark: 'series1-v0.1-human-review',
     provider_mode: 'live',
     fixture_provider: false,
     credential_contract: 'DEEPSEEK_API_KEY',
@@ -229,15 +226,19 @@ async function main() {
     model,
     conditions: CONDITIONS,
     held_constant: held,
-    quality: {
-      kind: task.quality.kind,
-      judge_provider: task.quality.kind === 'semantic' ? SERIES1_PROVIDER : null,
-      judge_model: task.quality.kind === 'semantic' ? series1JudgeModelId() : null
-    },
-    task: { id: task.id, category: task.category, anti_overengineering: Boolean(task.anti_overengineering) },
+    determination: DETERMINATION,
+    task: { id: task.id, category: task.category },
     repetitions: config.repetitions,
-    records,
-    effects: summarizeEffects(records)
+    review: {
+      prompt: task.prompt,
+      success_conditions: task.successConditions,
+      verification_protocol: task.verificationProtocol,
+      focus: task.reviewFocus,
+      human_reference: task.reviewReference,
+      instruction: 'Inspect prompt apprehension, epistemic conduct, action/tool selection, recovery, closure, output/artifact fulfilment, friction and QL-specific behaviour. Objective verification supports but does not determine the judgement.'
+    },
+    process_summary: processSummary(records),
+    records
   };
   assertLiveManifest(manifest);
   process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);
