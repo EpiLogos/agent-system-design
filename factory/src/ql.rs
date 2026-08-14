@@ -71,7 +71,9 @@ impl FactorySubject {
     pub fn new(reference: impl Into<String>, revision: Option<String>) -> Result<Self, QlError> {
         let reference = reference.into();
         if reference.trim().is_empty() {
-            return Err(QlError::InvalidSubject("subject Ref cannot be empty".into()));
+            return Err(QlError::InvalidSubject(
+                "subject Ref cannot be empty".into(),
+            ));
         }
         Ok(Self {
             reference,
@@ -237,10 +239,7 @@ impl<'a> FactoryQlAdapter<'a> {
             }
             return Ok(FactoryQlResult {
                 client,
-                attachment: QlAttachment::Unavailable {
-                    health,
-                    reason,
-                },
+                attachment: QlAttachment::Unavailable { health, reason },
                 capabilities: Some(capabilities),
             });
         }
@@ -265,12 +264,9 @@ impl<'a> FactoryQlAdapter<'a> {
                     capabilities: Some(capabilities),
                 }),
             },
-            Err(failure) if self.mode == QlMode::Required => {
-                Err(QlError::RequiredProviderFailure(format!(
-                    "{}: {}",
-                    failure.code, failure.message
-                )))
-            }
+            Err(failure) if self.mode == QlMode::Required => Err(QlError::RequiredProviderFailure(
+                format!("{}: {}", failure.code, failure.message),
+            )),
             Err(failure) => Ok(FactoryQlResult {
                 client,
                 attachment: QlAttachment::Failed {
@@ -347,9 +343,10 @@ fn validate_reading(
             "QL provenance operation is not refract".into(),
         ));
     }
-    let exact_input = reading.provenance.input_refs.iter().any(|input| {
-        input.reference == subject.reference && input.revision == subject.revision
-    });
+    let exact_input =
+        reading.provenance.input_refs.iter().any(|input| {
+            input.reference == subject.reference && input.revision == subject.revision
+        });
     if !exact_input {
         return Err(QlError::ProviderContractViolation(
             "QL provenance does not preserve Factory subject Ref/revision".into(),
