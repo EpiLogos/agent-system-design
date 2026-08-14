@@ -3,15 +3,10 @@ import { fileURLToPath } from 'node:url';
 
 export const SERIES1_PROVIDER = 'deepseek';
 export const SERIES1_DEFAULT_MODEL = 'deepseek-v4-flash';
-export const SERIES1_DEFAULT_JUDGE_MODEL = 'deepseek-v4-pro';
 export const DEEPSEEK_BASE_URL = 'https://api.deepseek.com';
 
 export function series1ModelId() {
   return process.env.QL_SERIES1_MODEL ?? SERIES1_DEFAULT_MODEL;
-}
-
-export function series1JudgeModelId() {
-  return process.env.QL_SERIES1_JUDGE_MODEL ?? SERIES1_DEFAULT_JUDGE_MODEL;
 }
 
 function parseJsonObject(text) {
