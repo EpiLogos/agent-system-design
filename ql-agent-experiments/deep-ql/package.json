@@ -8,6 +8,7 @@
     "test": "node --test test/*.test.js",
     "conformance": "node conformance/runner.js",
     "corpus": "node typing-corpus/export.mjs",
-    "corpus:ndjson": "node typing-corpus/export.mjs --ndjson"
+    "corpus:ndjson": "node typing-corpus/export.mjs --ndjson",
+    "readiness": "node convergence/run-readiness.mjs"
   }
 }
