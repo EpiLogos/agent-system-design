@@ -1,13 +1,107 @@
-const clone=v=>v===undefined?undefined:structuredClone(v);
-export function replayState(events){
-  const state={run_id:null,circuit_id:null,parent_circuit_id:null,depth:0,face:null,active_position:null,relation:null,exchange:null,closure_state:'open',child_count:0,conjugate_state:'available'};
-  for(const e of events){ state.run_id=e.run_id??state.run_id; state.circuit_id=e.circuit_id??state.circuit_id; state.parent_circuit_id=e.parent_circuit_id??state.parent_circuit_id; state.face=e.face??state.face;
-    if(e.event_type==='circuit_started') state.depth=e.payload?.depth??state.depth;
-    if(e.ql?.to) state.active_position=e.ql.to; if(e.ql?.relation) state.relation=e.ql.relation;
-    if(e.event_type==='projection') state.exchange={projection:e.payload?.projection??e.ql?.projection};
-    if(e.event_type==='return_received') state.exchange={...(state.exchange??{}),return:e.payload?.returned?.difference??e.ql?.return};
-    if(e.event_type==='circuit_closed') state.closure_state='closed'; if(e.event_type==='circuit_reopened') state.closure_state='open';
-    if(e.event_type==='child_started') state.child_count++; if(e.event_type==='conjugate_started') state.conjugate_state='active'; if(e.event_type==='conjugate_completed') state.conjugate_state='completed'; }
-  return clone(state);
+const clone = (value) => value === undefined ? undefined : structuredClone(value);
+
+function blankState({ runId = null, circuitId = null, parentCircuitId = null, face = null } = {}) {
+  return {
+    run_id: runId,
+    circuit_id: circuitId,
+    parent_circuit_id: parentCircuitId,
+    depth: 0,
+    face,
+    active_position: null,
+    relation: null,
+    exchange: null,
+    closure_state: 'open',
+    child_count: 0,
+    conjugate_state: 'available',
+    event_count: 0,
+    last_event: null
+  };
 }
-export function renderRun(events){const s=replayState(events); return [`QL  ${s.run_id} / ${s.circuit_id}  depth=${s.depth}`,`FACE  ${(s.face??'unknown').toUpperCase()}`,`ACTIVE  ${s.active_position??'-'}`,`RELATION  ${s.relation??'-'}`,`EXCHANGE  ${JSON.stringify(s.exchange??{})}`,`CLOSURE  ${s.closure_state}`,`CHILDREN  ${s.child_count}`,`CONJUGATE  ${s.conjugate_state}`].join('\n');}
+
+export function replayCircuits(events) {
+  const states = new Map();
+  const order = [];
+
+  const ensure = (circuitId, defaults = {}) => {
+    if (!circuitId) return null;
+    if (!states.has(circuitId)) {
+      states.set(circuitId, blankState({ circuitId, ...defaults }));
+      order.push(circuitId);
+    }
+    return states.get(circuitId);
+  };
+
+  for (const event of events) {
+    const state = ensure(event.circuit_id, {
+      runId: event.run_id ?? null,
+      parentCircuitId: event.parent_circuit_id ?? null,
+      face: event.face ?? null
+    });
+    if (!state) continue;
+
+    state.run_id = event.run_id ?? state.run_id;
+    state.parent_circuit_id = event.parent_circuit_id ?? state.parent_circuit_id;
+    state.face = event.face ?? state.face;
+    state.event_count += 1;
+    state.last_event = event.event_type;
+
+    if (event.event_type === 'circuit_started' || event.event_type === 'child_started' || event.event_type === 'conjugate_started') {
+      state.depth = event.payload?.depth ?? state.depth;
+    }
+    if (event.ql?.to) state.active_position = event.ql.to;
+    if (event.ql?.relation) state.relation = event.ql.relation;
+
+    if (event.event_type === 'projection') {
+      state.exchange = { projection: event.payload?.projection ?? event.ql?.projection };
+    }
+    if (event.event_type === 'return_received') {
+      state.exchange = { ...(state.exchange ?? {}), return: event.payload?.returned?.difference ?? event.ql?.return };
+    }
+
+    if (event.event_type === 'circuit_closed' || event.event_type === 'child_completed') state.closure_state = 'closed';
+    if (event.event_type === 'circuit_reopened') state.closure_state = 'open';
+
+    if (event.event_type === 'child_started' && event.parent_circuit_id) {
+      const parent = ensure(event.parent_circuit_id, { runId:event.run_id, face:'direct' });
+      parent.child_count += 1;
+    }
+    if (event.event_type === 'conjugate_started' && event.parent_circuit_id) {
+      const parent = ensure(event.parent_circuit_id, { runId:event.run_id, face:'direct' });
+      parent.conjugate_state = 'active';
+    }
+    if (event.event_type === 'conjugate_completed' && event.parent_circuit_id) {
+      const parent = ensure(event.parent_circuit_id, { runId:event.run_id, face:'direct' });
+      parent.conjugate_state = 'completed';
+    }
+  }
+
+  return order.map((id) => clone(states.get(id)));
+}
+
+export function replayState(events, circuitId = null) {
+  const states = replayCircuits(events);
+  if (circuitId) return states.find((state) => state.circuit_id === circuitId) ?? null;
+  return states[0] ?? blankState();
+}
+
+export function renderCircuit(state) {
+  return [
+    `QL  ${state.run_id ?? '-'} / ${state.circuit_id ?? '-'}  depth=${state.depth}`,
+    `PARENT  ${state.parent_circuit_id ?? '-'}`,
+    `FACE  ${(state.face ?? 'unknown').toUpperCase()}`,
+    `ACTIVE  ${state.active_position ?? '-'}`,
+    `RELATION  ${state.relation ?? '-'}`,
+    `EXCHANGE  ${JSON.stringify(state.exchange ?? {})}`,
+    `CLOSURE  ${state.closure_state}`,
+    `CHILDREN  ${state.child_count}`,
+    `CONJUGATE  ${state.conjugate_state}`,
+    `EVENTS  ${state.event_count}`,
+    `LAST  ${state.last_event ?? '-'}`
+  ].join('\n');
+}
+
+export function renderRun(events) {
+  const states = replayCircuits(events);
+  if (!states.length) return renderCircuit(blankState());
+  return states.map(renderCircuit).join('\n\n---\n\n');
+}
