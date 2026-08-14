@@ -196,10 +196,7 @@
       }
     ],
     "qlComposition": {
-      "qlFormRef": "qlform:factory-development/v1",
-      "qlAddress": "day:2.3",
-      "lensRef": "lens:L3",
-      "qlTarget": "qltarget:claim-whole",
+      "lensRef": "mef:lens:L3@1",
       "targetRef": "factory:claim:c-1"
     }
   },
