@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://epilogos.dev/contracts/factory/interop.schema.json",
+  "title": "Factory cross-repository semantic interoperability contract",
+  "description": "Language-neutral CR-001 contract. x-semantic-owner declares the sole semantic owner of every instance field; this schema transports meanings and does not transfer ownership to consumers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contractVersion",
+    "identityEnvelope",
+    "actionDescriptor",
+    "capabilityDescriptor",
+    "projectBinding",
+    "runEnvelope",
+    "executionEnvelope",
+    "evidenceEnvelope",
+    "assessmentEnvelope",
+    "closureEnvelope",
+    "gateDecisionEnvelope",
+    "executionDemand",
+    "workcellOffer",
+    "binding",
+    "generationProvenance",
+    "projectionProvenance",
+    "qlComposition"
+  ],
+  "properties": {
+    "contractVersion": {"const": "factory.interop/v1", "x-semantic-owner": "Factory CR-001"},
+    "identityEnvelope": {"$ref": "#/$defs/identityEnvelope", "x-semantic-owner": "Factory RC-002"},
+    "actionDescriptor": {"$ref": "#/$defs/actionDescriptor", "x-semantic-owner": "Factory RC-008"},
+    "capabilityDescriptor": {"$ref": "#/$defs/capabilityDescriptor", "x-semantic-owner": "Factory RC-008"},
+    "projectBinding": {"$ref": "#/$defs/projectBinding", "x-semantic-owner": "Factory RC-003"},
+    "runEnvelope": {"$ref": "#/$defs/runEnvelope", "x-semantic-owner": "Factory RC-003"},
+    "executionEnvelope": {"$ref": "#/$defs/executionEnvelope", "x-semantic-owner": "Factory RC-007"},
+    "evidenceEnvelope": {"$ref": "#/$defs/evidenceEnvelope", "x-semantic-owner": "Factory RC-005"},
+    "assessmentEnvelope": {"$ref": "#/$defs/assessmentEnvelope", "x-semantic-owner": "Factory RC-005"},
+    "closureEnvelope": {"$ref": "#/$defs/closureEnvelope", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+    "gateDecisionEnvelope": {"$ref": "#/$defs/gateDecisionEnvelope", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+    "executionDemand": {"$ref": "#/$defs/executionDemand", "x-semantic-owner": "Factory RC-010"},
+    "workcellOffer": {"$ref": "#/$defs/workcellOffer", "x-semantic-owner": "Workcell module"},
+    "binding": {"$ref": "#/$defs/binding", "x-semantic-owner": "Workcell module"},
+    "generationProvenance": {"$ref": "#/$defs/generationProvenance", "x-semantic-owner": "Factory RC-009"},
+    "projectionProvenance": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/projectionProvenance"}, "x-semantic-owner": "Factory projection/provenance contract"},
+    "qlComposition": {"$ref": "#/$defs/qlComposition", "x-semantic-owner": "Standalone QL/MEF module"}
+  },
+  "$defs": {
+    "canonicalRef": {"type": "string", "pattern": "^factory:[a-z][a-z0-9-]*:[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "projectRef": {"type": "string", "pattern": "^factory:project:[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "runRef": {"type": "string", "pattern": "^factory:run:[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "executionRef": {"type": "string", "pattern": "^factory:execution:[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "evidenceRef": {"type": "string", "pattern": "^factory:evidence:[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "assessmentRef": {"type": "string", "pattern": "^factory:assessment:[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "nonEmpty": {"type": "string", "minLength": 1},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRef", "sourceRevision", "producerExecutionRef", "generationRef"],
+      "properties": {
+        "sourceRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory CR-001 provenance floor"},
+        "sourceRevision": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory CR-001 provenance floor"},
+        "producerExecutionRef": {"$ref": "#/$defs/executionRef", "x-semantic-owner": "Factory RC-007"},
+        "generationRef": {"$ref": "#/$defs/canonicalRef", "x-semantic-owner": "Factory RC-009"}
+      }
+    },
+    "subjectState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subjectRef", "stateRef", "revision"],
+      "properties": {
+        "subjectRef": {"$ref": "#/$defs/canonicalRef", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "stateRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "revision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Factory verification semantics (RC-015)"}
+      }
+    },
+    "identityEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "revision", "provenance", "subjectState"],
+      "properties": {
+        "ref": {"$ref": "#/$defs/canonicalRef", "x-semantic-owner": "Factory RC-002"},
+        "revision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Factory RC-002"},
+        "provenance": {"$ref": "#/$defs/provenance", "x-semantic-owner": "Factory CR-001 provenance floor"},
+        "subjectState": {"$ref": "#/$defs/subjectState", "x-semantic-owner": "Factory verification semantics (RC-015)"}
+      }
+    },
+    "actionDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actionRef", "ownerProjectRef", "catalogRef", "definitionRevision", "name", "description", "inputContractRef", "provenance"],
+      "properties": {
+        "actionRef": {"type": "string", "pattern": "^factory:action:", "x-semantic-owner": "Factory RC-008"},
+        "ownerProjectRef": {"$ref": "#/$defs/projectRef", "x-semantic-owner": "Factory RC-008"},
+        "catalogRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "definitionRevision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Factory RC-008"},
+        "name": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "description": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "inputContractRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "outputContractRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "provenance": {"$ref": "#/$defs/provenance", "x-semantic-owner": "Factory CR-001 provenance floor"}
+      }
+    },
+    "capabilityDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capabilityRef", "ownerRef", "kind", "definitionRevision", "name", "provenance"],
+      "properties": {
+        "capabilityRef": {"type": "string", "pattern": "^factory:capability:", "x-semantic-owner": "Factory RC-008"},
+        "ownerRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "kind": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "definitionRevision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Factory RC-008"},
+        "name": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "providerRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-008"},
+        "provenance": {"$ref": "#/$defs/provenance", "x-semantic-owner": "Factory CR-001 provenance floor"}
+      }
+    },
+    "projectBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projectBindingRef", "projectRef", "sourceRef", "sourceRevision", "relationship", "resolvedBy", "provenance"],
+      "properties": {
+        "projectBindingRef": {"type": "string", "pattern": "^factory:project-binding:", "x-semantic-owner": "Factory RC-003"},
+        "projectRef": {"$ref": "#/$defs/projectRef", "x-semantic-owner": "Factory RC-003"},
+        "sourceRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Source owner; Factory stores only the reference"},
+        "sourceRevision": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Source owner; Factory stores only the reference"},
+        "relationship": {"enum": ["primary", "constituent", "reference"], "x-semantic-owner": "Factory RC-003"},
+        "resolvedBy": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-009"},
+        "provenance": {"$ref": "#/$defs/provenance", "x-semantic-owner": "Factory CR-001 provenance floor"}
+      }
+    },
+    "runEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runRef", "projectRef", "runMapRef", "runRevision", "runMapRevision"],
+      "properties": {
+        "runRef": {"$ref": "#/$defs/runRef", "x-semantic-owner": "Factory RC-003"},
+        "projectRef": {"$ref": "#/$defs/projectRef", "x-semantic-owner": "Factory RC-003"},
+        "runMapRef": {"type": "string", "pattern": "^factory:run-map:", "x-semantic-owner": "Factory RC-003"},
+        "runRevision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Factory RC-003"},
+        "runMapRevision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Factory RC-003"}
+      }
+    },
+    "executionEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["executionRef", "runRef", "agentRef", "agencyRef", "agentSessionRef", "modelRef", "harnessRef", "providerRef", "generationRef"],
+      "properties": {
+        "executionRef": {"$ref": "#/$defs/executionRef", "x-semantic-owner": "Factory RC-007"},
+        "runRef": {"$ref": "#/$defs/runRef", "x-semantic-owner": "Factory RC-003"},
+        "agentRef": {"type": "string", "pattern": "^factory:agent:", "x-semantic-owner": "Factory RC-007"},
+        "agencyRef": {"type": "string", "pattern": "^factory:agency:", "x-semantic-owner": "Factory RC-007"},
+        "agentSessionRef": {"type": "string", "pattern": "^factory:agent-session:", "x-semantic-owner": "Factory RC-007"},
+        "modelRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-007 execution provenance"},
+        "harnessRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-007 execution provenance"},
+        "providerRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-007 execution provenance"},
+        "generationRef": {"$ref": "#/$defs/canonicalRef", "x-semantic-owner": "Factory RC-009"}
+      }
+    },
+    "evidenceEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceRef", "claimRef", "subjectState", "purpose", "sourceRef", "producerExecutionRef", "producedAt"],
+      "properties": {
+        "evidenceRef": {"$ref": "#/$defs/evidenceRef", "x-semantic-owner": "Factory RC-005"},
+        "claimRef": {"type": "string", "pattern": "^factory:claim:", "x-semantic-owner": "Factory RC-005"},
+        "subjectState": {"$ref": "#/$defs/subjectState", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "purpose": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-005"},
+        "sourceRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-005"},
+        "producerExecutionRef": {"$ref": "#/$defs/executionRef", "x-semantic-owner": "Factory RC-005"},
+        "producedAt": {"type": "string", "format": "date-time", "x-semantic-owner": "Factory RC-005"}
+      }
+    },
+    "assessmentEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assessmentRef", "claimRef", "subjectState", "evidenceRefs", "producerExecutionRef", "independentFromExecutionRefs"],
+      "properties": {
+        "assessmentRef": {"$ref": "#/$defs/assessmentRef", "x-semantic-owner": "Factory RC-005"},
+        "claimRef": {"type": "string", "pattern": "^factory:claim:", "x-semantic-owner": "Factory RC-005"},
+        "subjectState": {"$ref": "#/$defs/subjectState", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "evidenceRefs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidenceRef"}, "x-semantic-owner": "Factory RC-005"},
+        "producerExecutionRef": {"$ref": "#/$defs/executionRef", "x-semantic-owner": "Factory RC-005"},
+        "independentFromExecutionRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/executionRef"}, "x-semantic-owner": "Factory verification semantics (RC-015)"}
+      }
+    },
+    "closureEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["closureRef", "subjectState", "evidenceRefs", "assessmentRefs", "reviewRefs"],
+      "properties": {
+        "closureRef": {"type": "string", "pattern": "^factory:closure:", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "subjectState": {"$ref": "#/$defs/subjectState", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "evidenceRefs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidenceRef"}, "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "assessmentRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/assessmentRef"}, "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "reviewRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/canonicalRef"}, "x-semantic-owner": "Factory verification semantics (RC-015)"}
+      }
+    },
+    "gateDecisionEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateDecisionRef", "subjectState", "transition", "allowed", "closureRef"],
+      "properties": {
+        "gateDecisionRef": {"type": "string", "pattern": "^factory:gate-decision:", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "subjectState": {"$ref": "#/$defs/subjectState", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "transition": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "allowed": {"type": "boolean", "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "closureRef": {"type": ["string", "null"], "pattern": "^factory:closure:", "x-semantic-owner": "Factory verification semantics (RC-015)"}
+      }
+    },
+    "executionDemand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["demandRef", "projectRef", "runRef", "candidateRef", "requiredAffordances", "preferredAffordances", "optionalAffordances", "resourceRequirements", "connectivity", "workspaceSemantics", "persistenceSemantics", "exposureRequirements", "isolationRequirement", "retentionPolicy"],
+      "properties": {
+        "demandRef": {"type": "string", "pattern": "^factory:execution-demand:", "x-semantic-owner": "Factory RC-010"},
+        "projectRef": {"$ref": "#/$defs/projectRef", "x-semantic-owner": "Factory RC-010"},
+        "runRef": {"$ref": "#/$defs/runRef", "x-semantic-owner": "Factory RC-010"},
+        "candidateRef": {"type": ["string", "null"], "pattern": "^factory:candidate:", "x-semantic-owner": "Factory RC-010"},
+        "requiredAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "preferredAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "optionalAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "resourceRequirements": {"type": "array", "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "connectivity": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "workspaceSemantics": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-010"},
+        "persistenceSemantics": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "exposureRequirements": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "isolationRequirement": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-010"},
+        "retentionPolicy": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-010"}
+      }
+    },
+    "workcellOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workcellRef", "offerRevision", "affordances", "resourceClasses", "connectivity", "persistenceScopes", "exposureModes", "isolationModes"],
+      "properties": {
+        "workcellRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Workcell module"},
+        "offerRevision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Workcell module"},
+        "affordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "resourceClasses": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "connectivity": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "persistenceScopes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "exposureModes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "isolationModes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bindingId", "workcellRef", "logicalRef", "concreteRef", "materializedWorldRef", "executionRef", "providerRef", "createdAt"],
+      "properties": {
+        "bindingId": {"type": "string", "pattern": "^binding:[A-Za-z0-9][A-Za-z0-9._-]*$", "x-semantic-owner": "Workcell module"},
+        "workcellRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Workcell module"},
+        "logicalRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Workcell module"},
+        "concreteRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Workcell module"},
+        "materializedWorldRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Workcell module"},
+        "executionRef": {"$ref": "#/$defs/executionRef", "x-semantic-owner": "Factory RC-007"},
+        "providerRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Workcell module"},
+        "createdAt": {"type": "string", "format": "date-time", "x-semantic-owner": "Workcell module"},
+        "expiresAt": {"type": ["string", "null"], "format": "date-time", "x-semantic-owner": "Workcell module"}
+      }
+    },
+    "generationProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generationRef", "contextResolutionRef", "projectRef", "profileRefs", "capabilityRefs", "actionRefs", "resolverRef", "createdAt"],
+      "properties": {
+        "generationRef": {"type": "string", "pattern": "^factory:generation:", "x-semantic-owner": "Factory RC-009"},
+        "contextResolutionRef": {"type": "string", "pattern": "^factory:context-resolution:", "x-semantic-owner": "Factory RC-009"},
+        "projectRef": {"$ref": "#/$defs/projectRef", "x-semantic-owner": "Factory RC-009"},
+        "profileRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-009"},
+        "capabilityRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^factory:capability:"}, "x-semantic-owner": "Factory RC-009"},
+        "actionRefs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^factory:action:"}, "x-semantic-owner": "Factory RC-009"},
+        "resolverRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-009"},
+        "createdAt": {"type": "string", "format": "date-time", "x-semantic-owner": "Factory RC-009"}
+      }
+    },
+    "projectionProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projectionRef", "canonicalRef", "projectedRevision", "providerRef", "externalId", "generationRef", "reversible", "createdAt"],
+      "properties": {
+        "projectionRef": {"type": "string", "pattern": "^factory:projection:", "x-semantic-owner": "Factory projection/provenance contract"},
+        "canonicalRef": {"$ref": "#/$defs/canonicalRef", "x-semantic-owner": "Factory RC-002"},
+        "projectedRevision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Factory RC-002"},
+        "providerRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Projection provider; not semantic identity owner"},
+        "externalId": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Projection provider; not semantic identity owner"},
+        "generationRef": {"type": "string", "pattern": "^factory:generation:", "x-semantic-owner": "Factory RC-009"},
+        "reversible": {"type": "boolean", "x-semantic-owner": "Factory projection/provenance contract"},
+        "createdAt": {"type": "string", "format": "date-time", "x-semantic-owner": "Factory projection/provenance contract"}
+      }
+    },
+    "qlComposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["qlFormRef", "qlAddress", "lensRef", "qlTarget", "targetRef"],
+      "properties": {
+        "qlFormRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Standalone QL/MEF module"},
+        "qlAddress": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Standalone QL/MEF module"},
+        "lensRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Standalone QL/MEF module"},
+        "qlTarget": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Standalone QL/MEF module"},
+        "targetRef": {"$ref": "#/$defs/canonicalRef", "x-semantic-owner": "Factory RC-002"}
+      }
+    }
+  }
+}
