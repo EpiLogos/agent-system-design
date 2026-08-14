@@ -140,10 +140,27 @@ export class LiveRuntimeHost {
       prompt = JSON.stringify(payload.request?.input ?? payload, null, 2);
     }
 
-    this.emit('model_requested', { provider: this.provider.id, purpose: payload.series1Control?.purpose ?? (payload.qlAct ? 'ql-act' : 'classic-turn'), mode });
+    const purpose = payload.series1Control?.purpose ?? (payload.qlAct ? 'ql-act' : 'classic-turn');
+    this.emit('model_requested', {
+      provider: this.provider.id,
+      purpose,
+      mode,
+      input: { system, prompt }
+    });
     const result = await this.provider.complete({ system, prompt, signal: payload.signal, mode });
     this.absorbUsage(result.usage);
-    this.emit('model_returned', { provider: this.provider.id, usage: result.usage, capability_call_count: result.capabilityCalls?.length ?? 0, mode });
+    this.emit('model_returned', {
+      provider: this.provider.id,
+      purpose,
+      mode,
+      output: {
+        content: result.content ?? '',
+        capabilityCalls: clone(result.capabilityCalls ?? []),
+        control: clone(result.control ?? null),
+        usage: clone(result.usage ?? null),
+        raw: clone(result.raw ?? null)
+      }
+    });
     return result;
   }
 
@@ -151,7 +168,7 @@ export class LiveRuntimeHost {
     this.emit('capability_requested', { name, args: clone(args ?? {}) });
     try {
       const result = await this.workspace.execute(name, args ?? {});
-      this.emit('capability_returned', { name, ok: result?.ok !== false });
+      this.emit('capability_returned', { name, ok: result?.ok !== false, result: clone(result) });
       return result;
     } catch (error) {
       this.emit('capability_returned', { name, ok: false, error: error.message });
@@ -183,7 +200,7 @@ export function createLiveHost({ hostId, provider, workspace }) {
     },
     native: {
       revision: 'native-series1-host-v1',
-      path: 'repo-owned OpenAI-compatible HTTP transport'
+      path: 'repo-owned DeepSeek OpenAI-compatible HTTP transport'
     }
   };
   const config = table[hostId];
