@@ -1,0 +1,35 @@
+name: Factory contracts
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/factory/**'
+      - 'tests/factory/**'
+      - 'scripts/factory_verify.py'
+      - 'scripts/validate_factory_authority.py'
+      - '.github/workflows/factory-contracts.yml'
+  workflow_dispatch:
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Factory Python verification
+        run: python3 scripts/factory_verify.py
+
+      - name: Node interoperability consumer
+        run: node tests/factory/interop.js contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json
+
+      - name: TypeScript interoperability consumer
+        run: node --experimental-strip-types tests/factory/interop.ts contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json
+
+      - name: Rust interoperability consumer
+        run: cargo run --quiet --manifest-path tests/factory/rust-interop/Cargo.toml -- contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json
