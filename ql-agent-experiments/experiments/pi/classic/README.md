@@ -1,3 +1,3 @@
-# Pi classic
+# Pi classic condition
 
-Post-#100 surface for the Pi classical control condition. It will preserve Pi host mechanics while selecting the shared `classic` recurrence runtime.
+Active issue 101 control condition. It selects the frozen Foundation ClassicRuntime against the Pi host and therefore has ordinary execution completion with semantic closure reported as not_applicable.

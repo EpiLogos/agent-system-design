@@ -1,3 +1,3 @@
-# Pi QL
+# Pi QL condition
 
-Post-#100 surface for the Pi QL condition. It will adapt Pi to the frozen `LoopRuntime` seam; it does not define or fork QL semantics locally.
+Active issue 101 QL condition. The unchanged frozen QLDirectCoreRuntime owns circuit state, interpreted return, Rij movement, P5 determination, positive closure, and post-closure re-entry. policy.js supplies deterministic task policy only.

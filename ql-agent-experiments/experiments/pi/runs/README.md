@@ -1,3 +1,4 @@
-# Pi runs
+# Pi experiment baseline
 
-Reserved storage surface for later Pi run records after issue #100. No run record is produced here by the foundation branch.
+Issue: #101
+Foundation: 7690069846eb6fc89f6aa78dcf7aab886ac7c737

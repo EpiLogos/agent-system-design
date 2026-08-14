@@ -101,6 +101,6 @@ jobs:
       - name: Publish Series 1 evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ql-series1-${{ inputs.task }}-${{ inputs.ref }}-${{ github.run_id }}
+          name: ql-series1-${{ inputs.task }}-${{ github.run_id }}
           path: series1-evidence/*.json
           if-no-files-found: error

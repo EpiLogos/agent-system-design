@@ -1,3 +1,3 @@
-# Native classic
+# Native classic condition
 
-Reserved directory for the classical Native control after issue #100. No Native implementation is included in the foundation branch.
+Active issue 103 control condition using the frozen ClassicRuntime. Execution completion does not imply semantic Closure.
