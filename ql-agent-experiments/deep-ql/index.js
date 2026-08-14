@@ -1,5 +1,6 @@
 import { openConjugateCircuit, openChildCircuit } from './operators.js';
 export * from './operators.js';
+export * from './operator-session.js';
 
 export function createDeepQLRuntimeClass(BaseRuntime) {
   if (typeof BaseRuntime !== 'function') throw new TypeError('BaseRuntime constructor required.');
