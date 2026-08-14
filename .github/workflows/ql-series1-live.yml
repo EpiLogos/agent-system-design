@@ -3,6 +3,11 @@ name: QL Series 1 Live
 on:
   workflow_dispatch:
     inputs:
+      ref:
+        description: Experiment ref to execute
+        required: true
+        default: ql/deep-runtime
+        type: string
       host:
         description: Host profile to execute
         required: true
@@ -42,8 +47,10 @@ jobs:
       QL_SERIES1_API_KEY: ${{ secrets.QL_SERIES1_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.QL_SERIES1_API_KEY }}
     steps:
-      - name: Checkout experiment branch
+      - name: Checkout experiment ref
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -67,7 +74,9 @@ jobs:
           path: .series1/pydantic-ai
 
       - name: Install pinned Pydantic AI model stack
-        run: python -m pip install -e '.series1/pydantic-ai/pydantic_ai_slim[openai]'
+        run: |
+          python -m pip install -e '.series1/pydantic-ai/pydantic_graph'
+          python -m pip install -e '.series1/pydantic-ai/pydantic_ai_slim[openai]'
 
       - name: Preflight and execute requested hosts
         shell: bash
@@ -92,6 +101,6 @@ jobs:
       - name: Publish Series 1 evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ql-series1-${{ inputs.task }}-${{ github.sha }}
+          name: ql-series1-${{ inputs.task }}-${{ inputs.ref }}-${{ github.run_id }}
           path: series1-evidence/*.json
           if-no-files-found: error
