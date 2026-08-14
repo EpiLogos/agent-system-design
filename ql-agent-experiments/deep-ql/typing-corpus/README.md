@@ -1,5 +1,17 @@
-# Semantic typing corpus
+# Semantic typing benchmark
 
-`corpus.js` deterministically materialises the 100-act §42 corpus with human-reference, model-claimed and retrospective types, structural facts, ambiguity notes and review status.
+`corpus.js` deterministically materialises the shared 100-act §42 benchmark under the 2026-08-14 typing-corpus clarification.
 
-The numerical/category shape is executable now. **Human adjudication is not claimed:** all records remain `pending-human-review`. This is deliberately the remaining #107 / Series 1 gate rather than fabricated evidence.
+The cases are meaningful semantic examples rather than numbered dummy acts. Every record has:
+
+- a stable `QLT-###` identity;
+- an act intent and carrier;
+- a deterministic `benchmark_reference` with provenance;
+- separately inspectable claimed and retrospective fixture witnesses;
+- structural facts;
+- ambiguity/category metadata;
+- an optional `human_witness` field.
+
+No generated value is represented as human judgement. `human_witness: null` means simply that nobody has manually adjudicated that case.
+
+The benchmark is executable evidence for coverage, replay, metrics and cross-host comparison. Human review is product-level and may selectively inspect or annotate corpus cases when useful; 100/100 manual annotation is not a readiness gate.
