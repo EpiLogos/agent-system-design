@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { ClassicRuntime } from '../../foundation/classic-runtime/index.js';
 import { QLDirectCoreRuntime } from '../../foundation/ql-core-runtime/index.js';
 import { createRunManifest, executeRun, replayRun } from '../../foundation/optics/index.js';
 import { qlPosition } from '../../foundation/ql-core-runtime/semantics.js';
@@ -10,8 +9,8 @@ import { createPydanticHost, PYDANTIC_UPSTREAM } from '../../experiments/pydanti
 import { createPydanticBaselinePolicy } from '../../experiments/pydantic/ql/policy.js';
 import { createNativeHost } from '../../experiments/native/shared/host.js';
 import { createNativeBaselinePolicy } from '../../experiments/native/ql/policy.js';
-import { createDeepQLRuntimeClass } from '../index.js';
-import { createConjugateDelta, closeChildCircuit, reintegrateConjugateDelta, reintegrateChildSummary } from '../operators.js';
+import { createDeepQLRuntimeClass, DeepQLOperatorSession } from '../index.js';
+import { createConjugateDelta } from '../operators.js';
 import { compareTraces } from '../comparison/comparator.js';
 import { renderRun } from '../render/index.js';
 import { runConformanceSuite, validatePortableEvent } from '../conformance/runner.js';
@@ -94,7 +93,7 @@ async function runProfile(profile) {
   const directSemantic = semanticEvents(direct);
   const deepSemantic = semanticEvents(deep);
   const shallowComparison = compareTraces(directSemantic, deepSemantic);
-  assert.equal(shallowComparison.equal, true, `${profile.id}: shallow Direct/Deep transition mismatch`);
+  assert.equal(shallowComparison.equal, true, `${profile.id}: shallow Direct/Deep semantic mismatch`);
   assert.ok(deepSemantic.every((event) => validatePortableEvent(event).valid), `${profile.id}: invalid portable Deep event`);
 
   const replay = replayRun(JSON.parse(JSON.stringify(deep)));
@@ -111,6 +110,7 @@ async function runProfile(profile) {
     direct_run_id: direct.run_id,
     deep_run_id: deep.run_id,
     shallow_direct_deep_equivalent: shallowComparison.equal,
+    semantic_signature_mismatches: shallowComparison.mismatches.length,
     deep_semantic_event_count: deepSemantic.length,
     replay_event_count: replay.event_count,
     rendered
@@ -119,46 +119,71 @@ async function runProfile(profile) {
 
 function exerciseDeepOperators() {
   const runtime = new DeepRuntime({ policy:createPiBaselinePolicy() });
+  const session = new DeepQLOperatorSession({ runId:'readiness:operators' });
   const frame = {
     id:'operator-frame',
     initiating_intent:'Verify deeper QL operator profile',
     operative_scope:'readiness',
     constraints:[],
     available_capabilities:[],
-    success_conditions:['conjugation and depth are typed and reintegrable'],
+    success_conditions:['conjugation and depth are typed, observable and reintegrable'],
     provenance:{ fixture:'deep-readiness' }
   };
 
-  const wholeCircuit = runtime.startCircuit(frame, { runId:'readiness:conjugate:whole' });
+  const wholeCircuit = runtime.startCircuit(frame, { runId:'readiness:operators', circuitId:'readiness:operators:whole' });
   wholeCircuit.activePosition = qlPosition('P5');
   wholeCircuit.residues.push({ id:'form-1', kind:'form', position:'P3', value:{ known_defect:true }, provenance:{ fixture:'QLF-016' } });
-  const whole = runtime.openConjugate({ directCircuit:wholeCircuit, scope:'whole', selectedResidueRefs:['form-1'] });
+  const whole = session.openConjugate({ directCircuit:wholeCircuit, scope:'whole', selectedResidueRefs:['form-1'] });
   assert.equal(whole.face, 'conjugate');
   assert.equal(whole.packet.requested_scope, 'whole');
   assert.equal(whole.packet.provenance.complete_direct_transcript_inherited, false);
+  session.completeConjugate({
+    directCircuit:wholeCircuit,
+    conjugateCircuit:whole,
+    delta:createConjugateDelta({ status:'confirm', discrepancyType:'none' })
+  });
 
-  const currentCircuit = runtime.startCircuit(frame, { runId:'readiness:conjugate:current' });
+  const currentCircuit = runtime.startCircuit(frame, { runId:'readiness:operators', circuitId:'readiness:operators:current' });
   currentCircuit.activePosition = qlPosition('P5');
-  const current = runtime.openConjugate({ directCircuit:currentCircuit, scope:'current_position' });
+  const current = session.openConjugate({ directCircuit:currentCircuit, scope:'current_position' });
   assert.equal(current.packet.requested_scope, 'current_position');
   const delta = createConjugateDelta({ status:'reopen', targetPosition:'P3', discrepancyType:'formal-defect' });
-  const reopened = reintegrateConjugateDelta({ directCircuit:currentCircuit, delta });
+  const reopened = session.completeConjugate({ directCircuit:currentCircuit, conjugateCircuit:current, delta });
   assert.equal(reopened.circuit.activePosition.id, 'P3');
   assert.equal(reopened.circuit.trajectory.at(-1).relation, 'R53');
 
-  const parent = runtime.startCircuit(frame, { runId:'readiness:depth' });
+  const parent = runtime.startCircuit(frame, { runId:'readiness:operators', circuitId:'readiness:operators:parent' });
   parent.activePosition = qlPosition('P4');
-  const child = runtime.openChild({ parentCircuit:parent, localWholeIntent:'Resolve bounded migration compatibility', successConditions:['compatibility determined'] });
+  const child = session.openChild({
+    parentCircuit:parent,
+    localWholeIntent:'Resolve bounded migration compatibility',
+    successConditions:['compatibility determined']
+  });
   assert.notEqual(child.id, parent.id);
   assert.equal(child.parent_id, parent.id);
   assert.equal(child.depth, 1);
   assert.equal(child.active_position.id, 'P0');
   child.active_position = qlPosition('P5');
-  const summary = closeChildCircuit({ childCircuit:child, returnedDelta:{ compatibility:'supported' } });
-  assert.equal('transcript' in summary, false);
-  const reintegrated = reintegrateChildSummary({ parentCircuit:parent, summary });
+  const reintegrated = session.completeChild({
+    parentCircuit:parent,
+    childCircuit:child,
+    returnedDelta:{ compatibility:'supported' }
+  });
+  assert.equal('transcript' in reintegrated.summary, false);
   assert.equal(reintegrated.residue.provenance.typed_summary_only, true);
   assert.equal(reintegrated.circuit.activePosition.id, 'P4');
+
+  const operatorEvents = session.snapshot();
+  assert.ok(operatorEvents.length >= 8);
+  assert.ok(operatorEvents.every((event) => validatePortableEvent(event).valid));
+  const types = new Set(operatorEvents.map((event) => event.event_type));
+  for (const required of ['conjugate_started','conjugate_completed','circuit_reopened','transition','child_started','child_completed','child_reintegrated']) {
+    assert.ok(types.has(required), `missing observable operator event ${required}`);
+  }
+  const rendered = renderRun(operatorEvents);
+  assert.match(rendered, /FACE  CONJUGATE/);
+  assert.match(rendered, /CHILDREN  1/);
+  assert.match(rendered, /RELATION  R53/);
 
   return {
     whole_conjugation: 'pass',
@@ -166,7 +191,10 @@ function exerciseDeepOperators() {
     fresh_context: 'pass',
     conjugate_reopen_relation: reopened.circuit.trajectory.at(-1).relation,
     recursive_depth: 'pass',
-    child_summary_only: reintegrated.residue.provenance.typed_summary_only
+    child_summary_only: reintegrated.residue.provenance.typed_summary_only,
+    observable_events: [...types].sort(),
+    portable_event_count: operatorEvents.length,
+    rendered
   };
 }
 
@@ -224,7 +252,7 @@ const operatorResults = exerciseDeepOperators();
 const exactDeepRevision = process.env.DEEP_REVISION ?? process.env.GITHUB_HEAD_SHA ?? process.env.GITHUB_SHA ?? 'working-tree';
 
 const report = {
-  schema:'ql-experiment-readiness/0.1',
+  schema:'ql-experiment-readiness/0.2',
   ready:true,
   revisions:{
     deep_ql:exactDeepRevision,
@@ -241,13 +269,13 @@ const report = {
   typing_benchmark:{
     count:corpus.length,
     profiles_replayed:profiles.map((profile) => profile.id),
-    cross_profile_transition_equivalent:true,
+    cross_profile_semantic_equivalent:true,
     human_annotation_required:false
   },
   product_review:{
     dry_run_catalog:dryRuns.cases.map(({ id, kind, review }) => ({ id, kind, review })),
-    renderer_available_for:hostResults.map((result) => result.profile),
-    note:'Review the working traces, renderers and representative dry-run semantics; individual benchmark annotation is optional.'
+    renderer_available_for:[...hostResults.map((result) => result.profile), 'deep-operator-session'],
+    note:'Review the working traces, operator session and representative dry-run semantics; individual benchmark annotation is optional.'
   }
 };
 
