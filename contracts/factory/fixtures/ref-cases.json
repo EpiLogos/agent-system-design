@@ -17,7 +17,9 @@
     "staleExpectedRevision": 1
   },
   "interop": {
-    "version": "factory.interop/v1-alpha",
+    "version": "factory.interop/v1",
+    "schema": "contracts/factory/interop.schema.json",
+    "fixtureCorpus": "contracts/factory/fixtures/interop-v1.json",
     "projectBinding": {"projectRef": "factory:project:factory", "sourceRef": "source:github:EpiLogos/agent-system-design", "provider": "github"},
     "runEnvelope": {"runRef": "factory:run:r-1", "runMapRef": "factory:run-map:r-1", "revision": 2},
     "executionEnvelope": {"executionRef": "factory:execution:e-1", "agentRef": "factory:agent:generic-builder", "agencyRef": "factory:agency:generic-build", "sessionRef": "factory:agent-session:s-1"},
@@ -28,8 +30,7 @@
     "actionDescriptor": {"actionRef": "factory:action:update", "projectRef": "factory:project:factory", "handlerRef": "handler:update"},
     "capabilityDescriptor": {"capabilityRef": "factory:capability:browser", "provider": "browser"},
     "contextResolution": {"contextRef": "factory:context:c-1", "resolutionRef": "factory:context-resolution:cr-1", "resolver": "AIKit", "generation": "gen-1"},
-    "candidateEnvelope": {"candidateRef": "factory:candidate:c-1", "projectRef": "factory:project:factory"},
-    "pendingOwners": ["ExecutionDemand", "WorkcellOffer", "Binding"]
+    "candidateEnvelope": {"candidateRef": "factory:candidate:c-1", "projectRef": "factory:project:factory"}
   },
   "antiFixtures": {
     "actionAsCapabilitySameRef": {"ref": "factory:action:update", "mustReject": true},
