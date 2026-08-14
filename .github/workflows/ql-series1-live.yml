@@ -25,12 +25,14 @@ on:
         default: '3'
         type: string
       model:
-        description: Candidate model id, identical across all host conditions
+        description: Candidate DeepSeek model id, identical across all host conditions
         required: true
+        default: deepseek-v4-flash
         type: string
       judge_model:
-        description: Independent judge model id; required for S1-CHAT-* tasks
-        required: false
+        description: Distinct blinded DeepSeek judge model for S1-CHAT-* tasks
+        required: true
+        default: deepseek-v4-pro
         type: string
 
 permissions:
@@ -41,11 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
-      QL_SERIES1_PROVIDER: openai
+      QL_SERIES1_PROVIDER: deepseek
       QL_SERIES1_MODEL: ${{ inputs.model }}
       QL_SERIES1_JUDGE_MODEL: ${{ inputs.judge_model }}
-      QL_SERIES1_API_KEY: ${{ secrets.QL_SERIES1_API_KEY }}
-      OPENAI_API_KEY: ${{ secrets.QL_SERIES1_API_KEY }}
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
     steps:
       - name: Checkout experiment ref
         uses: actions/checkout@v4
