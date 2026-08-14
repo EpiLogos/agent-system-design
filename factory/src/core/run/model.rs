@@ -242,10 +242,7 @@ impl Run {
         Ok(())
     }
 
-    fn validate_authority(
-        &self,
-        authority: &RunMutationAuthority,
-    ) -> Result<(), RunContractError> {
+    fn validate_authority(&self, authority: &RunMutationAuthority) -> Result<(), RunContractError> {
         if authority.run_ref != self.reference
             || authority.owner != self.write_authority.owner
             || authority.epoch != self.write_authority.epoch
@@ -306,11 +303,17 @@ pub enum RunContractError {
     InvalidWriteOwner,
     InvalidCommandId,
     InvalidMutationAuthority,
-    RevisionConflict { expected: Revision, actual: Revision },
+    RevisionConflict {
+        expected: Revision,
+        actual: Revision,
+    },
     DuplicateCanonicalRunMap(RunRef),
     RevisionOverflow,
     AuthorityEpochOverflow,
-    MissingCanonicalRunRef { provider: String, external_id: String },
+    MissingCanonicalRunRef {
+        provider: String,
+        external_id: String,
+    },
     CorruptRun,
     CorruptRegistry(String),
     Topology(TopologyError),
