@@ -230,9 +230,15 @@ pub enum IdentityError {
         actual: Revision,
     },
     Tombstoned(Ref),
-    AliasConflict { alias: String, existing: Ref },
+    AliasConflict {
+        alias: String,
+        existing: Ref,
+    },
     RevisionOverflow,
-    MissingCanonicalRef { provider: String, external_id: String },
+    MissingCanonicalRef {
+        provider: String,
+        external_id: String,
+    },
     CorruptStore(String),
 }
 
@@ -242,7 +248,10 @@ impl Display for IdentityError {
             Self::InvalidAlias => write!(formatter, "alias must not be empty"),
             Self::AlreadyExists(reference) => write!(formatter, "Ref already exists: {reference}"),
             Self::Retired(reference) => {
-                write!(formatter, "Ref is retired and may not be reused: {reference}")
+                write!(
+                    formatter,
+                    "Ref is retired and may not be reused: {reference}"
+                )
             }
             Self::NotFound(reference) => write!(formatter, "Ref not found: {reference}"),
             Self::RevisionMismatch {

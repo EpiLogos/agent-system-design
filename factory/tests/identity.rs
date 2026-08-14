@@ -34,7 +34,14 @@ fn store_at_revision_three() -> (IdentityStore, Ref) {
     store
         .update_payload(&reference, revision(2), json!({"source": "renamed"}))
         .expect("payload mutation must succeed");
-    assert_eq!(store.get(&reference).expect("record must exist").revision.get(), 3);
+    assert_eq!(
+        store
+            .get(&reference)
+            .expect("record must exist")
+            .revision
+            .get(),
+        3
+    );
     (store, reference)
 }
 
@@ -43,12 +50,19 @@ fn canonical_ref_round_trips_without_projection_material() {
     let value = fixture();
     let reference = canonical_ref();
     assert_eq!(reference.kind(), "project");
-    assert_eq!(reference.to_string(), value["canonicalRef"].as_str().unwrap());
+    assert_eq!(
+        reference.to_string(),
+        value["canonicalRef"].as_str().unwrap()
+    );
     let serialized = serde_json::to_string(&reference).expect("Ref must serialize");
     let round_trip: Ref = serde_json::from_str(&serialized).expect("Ref must deserialize");
     assert_eq!(round_trip, reference);
 
-    for anti in value["antiFixtures"].as_object().expect("antiFixtures object").values() {
+    for anti in value["antiFixtures"]
+        .as_object()
+        .expect("antiFixtures object")
+        .values()
+    {
         let invalid = anti["value"].as_str().expect("anti-fixture value string");
         assert!(invalid.parse::<Ref>().is_err(), "must reject {invalid}");
     }
@@ -62,8 +76,8 @@ fn identity_survives_provider_path_and_projection_change() {
         .as_array()
         .expect("projectionChanges array")
     {
-        let projection: ProjectionIdentity =
-            serde_json::from_value(projection.clone()).expect("projection fixture must deserialize");
+        let projection: ProjectionIdentity = serde_json::from_value(projection.clone())
+            .expect("projection fixture must deserialize");
         assert_eq!(resolve_projection_identity(&projection).unwrap(), expected);
     }
 }
@@ -103,7 +117,9 @@ fn aliases_advance_revision_and_cannot_cross_identity() {
     let alias = value["alias"].as_str().unwrap();
     let mut store = IdentityStore::new();
     store.create(reference.clone(), json!({})).unwrap();
-    let aliased = store.add_alias(&reference, Revision::INITIAL, alias).unwrap();
+    let aliased = store
+        .add_alias(&reference, Revision::INITIAL, alias)
+        .unwrap();
     assert_eq!(aliased.revision.get(), 2);
     assert_eq!(store.resolve_alias(alias).unwrap().reference, reference);
 
@@ -141,7 +157,10 @@ fn serialization_preserves_revision_alias_tombstone_and_no_reuse() {
     let serialized = store.to_json().expect("identity store must serialize");
     let restored = IdentityStore::from_json(&serialized).expect("identity store must restore");
     assert_eq!(restored, store);
-    assert_eq!(restored.resolve_alias("epi-logos").unwrap().reference, reference);
+    assert_eq!(
+        restored.resolve_alias("epi-logos").unwrap().reference,
+        reference
+    );
     assert!(restored.get(&reference).unwrap().tombstoned);
 }
 
