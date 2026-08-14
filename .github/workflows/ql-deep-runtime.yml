@@ -24,3 +24,15 @@ jobs:
         env:
           DEEP_REVISION: ${{ github.event.pull_request.head.sha }}
         run: npm run readiness
+      - name: Record product review bundle
+        if: github.event_name == 'pull_request'
+        env:
+          DEEP_REVISION: ${{ github.event.pull_request.head.sha }}
+        run: npm run review | tee review-bundle.json
+      - name: Publish product review bundle
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ql-product-review-${{ github.event.pull_request.head.sha }}
+          path: ql-agent-experiments/deep-ql/review-bundle.json
+          if-no-files-found: error
