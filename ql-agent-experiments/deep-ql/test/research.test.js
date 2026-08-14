@@ -2,14 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const fixture = JSON.parse(fs.readFileSync(new URL('../research/harmonics.json', import.meta.url), 'utf8'));
+const registry = JSON.parse(fs.readFileSync(new URL('../extensions/registry.json', import.meta.url), 'utf8'));
 
-test('harmonic research fixture is namespaced, complete and non-controlling', () => {
-  assert.equal(fixture.namespace, 'ql.harmonic');
-  assert.equal(fixture.status, 'research');
-  assert.equal(fixture.control_effect, 'none');
-  for (const pairs of Object.values(fixture.families)) {
-    assert.equal(pairs.length, 3);
-    assert.deepEqual(pairs.flat().sort(), ['P0', 'P1', 'P2', 'P3', 'P4', 'P5']);
+test('research registry excludes the specified pairing grammar', () => {
+  assert.equal(registry.schema, 'ql-extension-registry/0.2');
+  assert.equal(registry.unknown_extensions_ignorable, true);
+  assert.ok(registry.specified_formal_modules.some((entry) => entry.namespace === 'ql.pairing' && entry.status === 'specified-formal-structure'));
+  assert.equal(registry.extensions.some((entry) => entry.namespace === 'ql.harmonic'), false);
+
+  const open = new Set(registry.extensions.map((entry) => entry.namespace));
+  for (const namespace of ['ql.state64', 'ql.mef', 'ql.context', 'ql.epogdoon', 'ql.topology']) {
+    assert.ok(open.has(namespace));
   }
+  assert.ok(registry.extensions.every((entry) => entry.status === 'research' && entry.core_required === false));
 });
