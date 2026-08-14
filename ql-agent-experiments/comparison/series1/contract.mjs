@@ -4,8 +4,16 @@ export const SERIES1_SCHEMA = 'ql-series1-run/0.1';
 export const CONDITIONS = Object.freeze(['classic', 'ql-direct', 'ql-deep']);
 export const HOSTS = Object.freeze(['pi', 'pydantic-ai', 'native']);
 
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalize(value[key])]));
+  }
+  return value;
+}
+
 export function stableDigest(value) {
-  return crypto.createHash('sha256').update(JSON.stringify(value, Object.keys(value ?? {}).sort())).digest('hex');
+  return crypto.createHash('sha256').update(JSON.stringify(canonicalize(value))).digest('hex');
 }
 
 export function assertLiveManifest(manifest) {
@@ -41,7 +49,7 @@ export function compareHeldConstant(records) {
   return {
     task: values((record) => record.task_digest).size === 1,
     start_state: values((record) => record.start_state_digest).size === 1,
-    model: values((record) => `${record.model.provider}:${record.model.id}:${JSON.stringify(record.model.parameters ?? {})}`).size === 1,
+    model: values((record) => `${record.model.provider}:${record.model.id}:${JSON.stringify(canonicalize(record.model.parameters ?? {}))}`).size === 1,
     capabilities: values((record) => record.capability_digest).size === 1
   };
 }
