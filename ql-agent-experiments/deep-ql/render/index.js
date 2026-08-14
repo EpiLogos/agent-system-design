@@ -18,6 +18,12 @@ function blankState({ runId = null, circuitId = null, parentCircuitId = null, fa
   };
 }
 
+function differenceKind(value) {
+  if (value === null || value === undefined) return String(value);
+  if (Array.isArray(value)) return 'array';
+  return typeof value;
+}
+
 export function replayCircuits(events) {
   const states = new Map();
   const order = [];
@@ -52,10 +58,23 @@ export function replayCircuits(events) {
     if (event.ql?.relation) state.relation = event.ql.relation;
 
     if (event.event_type === 'projection') {
-      state.exchange = { projection: event.payload?.projection ?? event.ql?.projection };
+      const projection = event.payload?.projection ?? {};
+      state.exchange = {
+        projection: event.ql?.projection ?? projection.phase ?? '0/1',
+        carrier: {
+          kind: projection.carrier?.kind ?? null,
+          name: projection.carrier?.name ?? null
+        }
+      };
     }
     if (event.event_type === 'return_received') {
-      state.exchange = { ...(state.exchange ?? {}), return: event.payload?.returned?.difference ?? event.ql?.return };
+      const returned = event.payload?.returned ?? {};
+      state.exchange = {
+        ...(state.exchange ?? {}),
+        return: event.ql?.return ?? returned.phase ?? '1/0',
+        operation_success: returned.operation_success ?? null,
+        difference_kind: differenceKind(returned.difference)
+      };
     }
 
     if (event.event_type === 'circuit_closed' || event.event_type === 'child_completed') state.closure_state = 'closed';
