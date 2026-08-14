@@ -189,10 +189,9 @@
       "properties": {
         "closureRef": {"type": "string", "pattern": "^factory:closure:", "x-semantic-owner": "Factory verification semantics (RC-015)"},
         "subjectState": {"$ref": "#/$defs/subjectState", "x-semantic-owner": "Factory verification semantics (RC-015)"},
-        "evidenceRefs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidenceRef"},
-        "assessmentRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/assessmentRef"},
-        "reviewRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/canonicalRef"},
-        "x-semantic-owner": "Factory verification semantics (RC-015)"
+        "evidenceRefs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/evidenceRef"}, "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "assessmentRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/assessmentRef"}, "x-semantic-owner": "Factory verification semantics (RC-015)"},
+        "reviewRefs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/canonicalRef"}, "x-semantic-owner": "Factory verification semantics (RC-015)"}
       }
     },
     "gateDecisionEnvelope": {
@@ -216,17 +215,16 @@
         "projectRef": {"$ref": "#/$defs/projectRef", "x-semantic-owner": "Factory RC-010"},
         "runRef": {"$ref": "#/$defs/runRef", "x-semantic-owner": "Factory RC-010"},
         "candidateRef": {"type": ["string", "null"], "pattern": "^factory:candidate:", "x-semantic-owner": "Factory RC-010"},
-        "requiredAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "preferredAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "optionalAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "resourceRequirements": {"type": "array", "items": {"$ref": "#/$defs/nonEmpty"},
-        "connectivity": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "workspaceSemantics": {"$ref": "#/$defs/nonEmpty"},
-        "persistenceSemantics": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "exposureRequirements": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "isolationRequirement": {"$ref": "#/$defs/nonEmpty"},
-        "retentionPolicy": {"$ref": "#/$defs/nonEmpty"},
-        "x-semantic-owner": "Factory RC-010"
+        "requiredAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "preferredAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "optionalAffordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "resourceRequirements": {"type": "array", "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "connectivity": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "workspaceSemantics": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-010"},
+        "persistenceSemantics": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "exposureRequirements": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Factory RC-010"},
+        "isolationRequirement": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-010"},
+        "retentionPolicy": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Factory RC-010"}
       }
     },
     "workcellOffer": {
@@ -236,13 +234,12 @@
       "properties": {
         "workcellRef": {"$ref": "#/$defs/nonEmpty", "x-semantic-owner": "Workcell module"},
         "offerRevision": {"type": "integer", "minimum": 1, "x-semantic-owner": "Workcell module"},
-        "affordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "resourceClasses": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "connectivity": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "persistenceScopes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "exposureModes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "isolationModes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"},
-        "x-semantic-owner": "Workcell module"
+        "affordances": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "resourceClasses": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "connectivity": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "persistenceScopes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "exposureModes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"},
+        "isolationModes": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmpty"}, "x-semantic-owner": "Workcell module"}
       }
     },
     "binding": {
