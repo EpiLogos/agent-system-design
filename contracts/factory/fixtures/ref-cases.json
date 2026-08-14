@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "factory.ref-fixtures/v1",
+  "canonicalRef": "project:01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "competingRef": "project:01ARZ3NDEKTSV4RRFFQ69G5FAW",
+  "alias": "epi-logos",
+  "projectionChanges": [
+    {
+      "provider": "github",
+      "externalId": "EpiLogos/agent-system-design",
+      "canonicalRef": "project:01ARZ3NDEKTSV4RRFFQ69G5FAV"
+    },
+    {
+      "provider": "local",
+      "externalId": "/work/renamed-checkout",
+      "canonicalRef": "project:01ARZ3NDEKTSV4RRFFQ69G5FAV"
+    }
+  ],
+  "staleWrite": {
+    "currentRevision": 3,
+    "attemptedExpectedRevision": 2,
+    "mustReject": true
+  },
+  "tombstone": {
+    "revisionBefore": 3,
+    "revisionAfter": 4,
+    "mustRemainResolvable": true,
+    "mustRejectMutation": true,
+    "mustRejectReuse": true
+  },
+  "projectionLoss": {
+    "provider": "github",
+    "externalId": "EpiLogos/agent-system-design",
+    "mustRejectIdentityRecovery": true
+  },
+  "antiFixtures": {
+    "namespacedSpikeRef": {
+      "value": "factory:project:01ARZ3NDEKTSV4RRFFQ69G5FAV",
+      "mustReject": true
+    },
+    "providerIdentity": {
+      "value": "github:EpiLogos/agent-system-design",
+      "mustReject": true
+    },
+    "pathIdentity": {
+      "value": "project:/work/epi-logos",
+      "mustReject": true
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "factory.ref.schema/v1",
+  "title": "Factory canonical Ref identity store",
+  "type": "object",
+  "required": ["schemaVersion", "records", "retiredRefs"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "factory.identity-store/v1"},
+    "records": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/ref"},
+      "additionalProperties": {"$ref": "#/$defs/identityRecord"}
+    },
+    "retiredRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/ref"}
+    }
+  },
+  "$defs": {
+    "ref": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*:[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+      "description": "Stable typed semantic identity. Kind and immutable ULID-compatible ID only; no host, repository, path, provider, model, harness or projection identity."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "versionedRef": {
+      "type": "object",
+      "required": ["ref", "revision"],
+      "additionalProperties": false,
+      "properties": {
+        "ref": {"$ref": "#/$defs/ref"},
+        "revision": {"$ref": "#/$defs/revision"}
+      }
+    },
+    "identityRecord": {
+      "type": "object",
+      "required": ["ref", "revision", "aliases", "tombstoned", "payload"],
+      "additionalProperties": false,
+      "properties": {
+        "ref": {"$ref": "#/$defs/ref"},
+        "revision": {"$ref": "#/$defs/revision"},
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "tombstoned": {"type": "boolean"},
+        "payload": {}
+      }
+    },
+    "projectionIdentity": {
+      "type": "object",
+      "required": ["provider", "externalId"],
+      "additionalProperties": false,
+      "properties": {
+        "provider": {"type": "string", "minLength": 1},
+        "externalId": {"type": "string", "minLength": 1},
+        "canonicalRef": {"$ref": "#/$defs/ref"}
+      }
+    }
+  }
+}
