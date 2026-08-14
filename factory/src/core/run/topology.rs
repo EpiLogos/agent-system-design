@@ -81,7 +81,7 @@ pub enum NodeState {
     Abandoned,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum EdgeKind {
     Requires,
@@ -167,32 +167,45 @@ impl RunMap {
 
     pub(crate) fn apply(&self, mutation: TopologyMutation) -> Result<Self, TopologyError> {
         let mut next = self.clone();
-        match mutation {
-            TopologyMutation::AddNode(node) => {
-                if next.nodes.contains_key(&node.id) {
-                    return Err(TopologyError::DuplicateNode(node.id));
-                }
-                next.nodes.insert(node.id.clone(), node);
-            }
-            TopologyMutation::AddEdge(edge) => {
-                if !next.edges.insert(edge.clone()) {
-                    return Err(TopologyError::DuplicateEdge(edge));
-                }
-            }
-            TopologyMutation::SetNodeState { node_id, state } => {
-                let node = next
-                    .nodes
-                    .get_mut(&node_id)
-                    .ok_or_else(|| TopologyError::MissingNode(node_id.clone()))?;
-                node.state = Some(state);
-            }
-        }
+        next.apply_unvalidated(mutation)?;
         next.validate()?;
         next.topology_revision = next
             .topology_revision
             .next()
             .ok_or(TopologyError::RevisionOverflow)?;
         Ok(next)
+    }
+
+    fn apply_unvalidated(&mut self, mutation: TopologyMutation) -> Result<(), TopologyError> {
+        match mutation {
+            TopologyMutation::AddNode { node } => {
+                if self.nodes.contains_key(&node.id) {
+                    return Err(TopologyError::DuplicateNode(node.id));
+                }
+                self.nodes.insert(node.id.clone(), node);
+            }
+            TopologyMutation::AddEdge { edge } => {
+                if !self.edges.insert(edge.clone()) {
+                    return Err(TopologyError::DuplicateEdge(edge));
+                }
+            }
+            TopologyMutation::SetNodeState { node_id, state } => {
+                let node = self
+                    .nodes
+                    .get_mut(&node_id)
+                    .ok_or_else(|| TopologyError::MissingNode(node_id.clone()))?;
+                node.state = Some(state);
+            }
+            TopologyMutation::Batch { mutations } => {
+                if mutations.is_empty() {
+                    return Err(TopologyError::EmptyBatch);
+                }
+                for mutation in mutations {
+                    self.apply_unvalidated(mutation)?;
+                }
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn validate(&self) -> Result<(), TopologyError> {
@@ -255,15 +268,17 @@ impl RunMap {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum TopologyMutation {
-    AddNode(TopologyNode),
-    AddEdge(TopologyEdge),
+    AddNode { node: TopologyNode },
+    AddEdge { edge: TopologyEdge },
     SetNodeState { node_id: NodeId, state: NodeState },
+    Batch { mutations: Vec<TopologyMutation> },
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TopologyError {
     InvalidNodeId(String),
     EmptyDestination,
+    EmptyBatch,
     DestinationCount(usize),
     DuplicateNode(NodeId),
     DuplicateEdge(TopologyEdge),
@@ -271,9 +286,19 @@ pub enum TopologyError {
     SelfEdge(NodeId),
     UnreachableNode(NodeId),
     RequiresCycle,
-    InvalidNodeState { node: NodeId, kind: NodeKind },
-    MissingSemanticRef { node: NodeId, expected_kind: &'static str },
-    WrongSemanticRef { node: NodeId, expected_kind: &'static str, actual_kind: String },
+    InvalidNodeState {
+        node: NodeId,
+        kind: NodeKind,
+    },
+    MissingSemanticRef {
+        node: NodeId,
+        expected_kind: &'static str,
+    },
+    WrongSemanticRef {
+        node: NodeId,
+        expected_kind: &'static str,
+        actual_kind: String,
+    },
     SelfNestedRun(NodeId),
     NodeKeyMismatch(NodeId),
     RevisionOverflow,
@@ -307,11 +332,11 @@ fn validate_node(run_ref: &RunRef, node: &TopologyNode) -> Result<(), TopologyEr
             Ok(())
         }
         NodeKind::Destination | NodeKind::Work | NodeKind::Gate | NodeKind::Authority => {
-            if node.semantic_ref.is_some() {
+            if let Some(reference) = &node.semantic_ref {
                 return Err(TopologyError::WrongSemanticRef {
                     node: node.id.clone(),
                     expected_kind: "none",
-                    actual_kind: node.semantic_ref.as_ref().unwrap().kind().to_owned(),
+                    actual_kind: reference.kind().to_owned(),
                 });
             }
             Ok(())
@@ -320,7 +345,10 @@ fn validate_node(run_ref: &RunRef, node: &TopologyNode) -> Result<(), TopologyEr
     }
 }
 
-fn validate_semantic_ref(node: &TopologyNode, expected_kind: &'static str) -> Result<(), TopologyError> {
+fn validate_semantic_ref(
+    node: &TopologyNode,
+    expected_kind: &'static str,
+) -> Result<(), TopologyError> {
     let reference = node
         .semantic_ref
         .as_ref()
@@ -347,7 +375,10 @@ fn validate_requires_acyclic(
         .cloned()
         .map(|node| (node, 0usize))
         .collect::<BTreeMap<_, _>>();
-    for edge in edges.iter().filter(|edge| edge.relation == EdgeKind::Requires) {
+    for edge in edges
+        .iter()
+        .filter(|edge| edge.relation == EdgeKind::Requires)
+    {
         *indegree.get_mut(&edge.to).expect("edge endpoints validated") += 1;
     }
     let mut queue = indegree
@@ -362,7 +393,9 @@ fn validate_requires_acyclic(
             .iter()
             .filter(|edge| edge.relation == EdgeKind::Requires && edge.from == node)
         {
-            let count = indegree.get_mut(&edge.to).expect("edge endpoints validated");
+            let count = indegree
+                .get_mut(&edge.to)
+                .expect("edge endpoints validated");
             *count -= 1;
             if *count == 0 {
                 queue.push_back(edge.to.clone());

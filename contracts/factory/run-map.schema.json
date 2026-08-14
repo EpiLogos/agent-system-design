@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "factory.run-map.schema/v1",
+  "title": "Factory Project, Run and canonical Run Map contract",
+  "$defs": {
+    "projectRef": {"type": "string", "pattern": "^project:[0-7][0-9A-HJKMNP-TV-Z]{25}$"},
+    "runRef": {"type": "string", "pattern": "^run:[0-7][0-9A-HJKMNP-TV-Z]{25}$"},
+    "ref": {"type": "string", "pattern": "^[a-z][a-z0-9-]*:[0-7][0-9A-HJKMNP-TV-Z]{25}$"},
+    "revision": {"type": "integer", "minimum": 1},
+    "mapAddress": {"type": "string", "pattern": "^run:[0-7][0-9A-HJKMNP-TV-Z]{25}/map$"},
+    "nodeState": {"enum": ["planned", "ready", "active", "blocked", "waiting", "satisfied", "returned", "superseded", "abandoned"]},
+    "nodeKind": {"enum": ["destination", "position", "work", "decision", "candidate", "gate", "authority", "nested_run"]},
+    "edgeKind": {"enum": ["requires", "branches_to", "returns_to", "nests", "converges_to", "realises", "supersedes"]},
+    "topologyNode": {
+      "type": "object",
+      "required": ["id", "kind", "label", "state", "semanticRef"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "kind": {"$ref": "#/$defs/nodeKind"},
+        "label": {"type": "string"},
+        "state": {"anyOf": [{"$ref": "#/$defs/nodeState"}, {"type": "null"}]},
+        "semanticRef": {"anyOf": [{"$ref": "#/$defs/ref"}, {"type": "null"}]}
+      }
+    },
+    "topologyEdge": {
+      "type": "object",
+      "required": ["from", "to", "relation"],
+      "additionalProperties": false,
+      "properties": {
+        "from": {"type": "string"},
+        "to": {"type": "string"},
+        "relation": {"$ref": "#/$defs/edgeKind"}
+      }
+    },
+    "runMap": {
+      "type": "object",
+      "description": "Exactly one owned child of Run. It has the owning runRef but no independent global Ref or mutable frontier authority.",
+      "required": ["runRef", "topologyRevision", "nodes", "edges"],
+      "additionalProperties": false,
+      "properties": {
+        "runRef": {"$ref": "#/$defs/runRef"},
+        "topologyRevision": {"$ref": "#/$defs/revision"},
+        "nodes": {"type": "object", "additionalProperties": {"$ref": "#/$defs/topologyNode"}},
+        "edges": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/topologyEdge"}}
+      }
+    },
+    "run": {
+      "type": "object",
+      "required": ["ref", "projectRef", "revision", "destination", "lifecycle", "writeAuthority", "map", "appliedCommandIds"],
+      "additionalProperties": false,
+      "properties": {
+        "ref": {"$ref": "#/$defs/runRef"},
+        "projectRef": {"$ref": "#/$defs/projectRef"},
+        "revision": {"$ref": "#/$defs/revision"},
+        "destination": {"type": "string", "minLength": 1},
+        "lifecycle": {"enum": ["seeded", "active", "waiting_human", "suspended", "finishing", "finished", "aborted", "archived"]},
+        "writeAuthority": {
+          "type": "object",
+          "required": ["owner", "epoch"],
+          "additionalProperties": false,
+          "properties": {"owner": {"type": "string", "minLength": 1}, "epoch": {"type": "integer", "minimum": 1}}
+        },
+        "map": {"$ref": "#/$defs/runMap"},
+        "appliedCommandIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}
