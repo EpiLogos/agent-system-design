@@ -93,10 +93,21 @@ fn add_two_work_nodes(run: &mut Run) {
 #[test]
 fn project_and_run_refs_are_typed_and_project_is_not_a_repository() {
     let project = Project::new(project_ref());
-    assert_eq!(project.reference().to_string(), fixture()["projectRef"].as_str().unwrap());
+    assert_eq!(
+        project.reference().to_string(),
+        fixture()["projectRef"].as_str().unwrap()
+    );
     assert_eq!(project.revision(), Revision::INITIAL);
-    assert!(fixture()["projectRef"].as_str().unwrap().parse::<RunRef>().is_err());
-    assert!(fixture()["runRef"].as_str().unwrap().parse::<ProjectRef>().is_err());
+    assert!(fixture()["projectRef"]
+        .as_str()
+        .unwrap()
+        .parse::<RunRef>()
+        .is_err());
+    assert!(fixture()["runRef"]
+        .as_str()
+        .unwrap()
+        .parse::<ProjectRef>()
+        .is_err());
 }
 
 #[test]
@@ -245,7 +256,10 @@ fn returns_to_is_the_legal_back_edge_without_becoming_dependency_cycle() {
         .edges()
         .iter()
         .any(|edge| edge.relation == EdgeKind::ReturnsTo));
-    assert_eq!(run.map().topology_revision().get(), prior_topology_revision.get() + 1);
+    assert_eq!(
+        run.map().topology_revision().get(),
+        prior_topology_revision.get() + 1
+    );
 }
 
 #[test]
@@ -295,7 +309,9 @@ fn invalid_dangling_and_second_destination_mutations_are_rejected() {
     );
     assert!(matches!(
         duplicate_destination,
-        Err(RunContractError::Topology(TopologyError::DestinationCount(2)))
+        Err(RunContractError::Topology(TopologyError::DestinationCount(
+            2
+        )))
     ));
     assert_eq!(run, initial);
 }
