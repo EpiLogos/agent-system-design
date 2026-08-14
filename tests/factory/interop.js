@@ -3,8 +3,10 @@ const path = require('path');
 
 const fixturePath = process.argv[2] || path.resolve(__dirname, '../../contracts/factory/fixtures/interop-v1.json');
 const schemaPath = process.argv[3] || path.resolve(__dirname, '../../contracts/factory/interop.schema.json');
+const qlSchemaPath = process.argv[4] || path.resolve(__dirname, '../../contracts/factory/ql-mef-composition.schema.json');
 const document = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+const qlSchema = JSON.parse(fs.readFileSync(qlSchemaPath, 'utf8'));
 const fail = (message) => { throw new Error(message); };
 const requireTrue = (condition, message) => { if (!condition) fail(message); };
 const canonical = /^factory:[a-z][a-z0-9-]*:[A-Za-z0-9][A-Za-z0-9._-]*$/;
@@ -23,6 +25,23 @@ function assertOwners(node, location = '#') {
 }
 
 function subjectKey(value) { return `${value.subjectRef}|${value.stateRef}|${value.revision}`; }
+
+function validateQlComposition(value) {
+  requireTrue(schema.properties.qlComposition.$ref === qlSchema.$id, 'parent QL schema reference drift');
+  requireTrue(schema.properties.qlComposition['x-semantic-owner'] === 'Standalone QL/MEF module', 'QL semantic owner drift');
+  requireTrue(!Object.prototype.hasOwnProperty.call(schema.$defs, 'qlComposition'), 'Factory must not duplicate QL composition definition');
+  requireTrue(value && typeof value === 'object' && !Array.isArray(value), 'QL composition object');
+  const allowed = new Set(Object.keys(qlSchema.properties));
+  requireTrue(Object.keys(value).every((key) => allowed.has(key)), 'QL composition additional property');
+  requireTrue(typeof value.targetRef === 'string' && value.targetRef.length > 0, 'QL targetRef');
+  const coordinateKeys = ['qlFormRef', 'qlAddress', 'lensRef', 'sublensRef'];
+  requireTrue(coordinateKeys.some((key) => Object.prototype.hasOwnProperty.call(value, key)), 'QL composition requires a coordinate');
+  for (const key of coordinateKeys) {
+    if (!Object.prototype.hasOwnProperty.call(value, key)) continue;
+    const pattern = qlSchema.properties[key].pattern;
+    requireTrue(typeof pattern === 'string' && new RegExp(pattern).test(value[key]), `invalid ${key}`);
+  }
+}
 
 function rejectAnti(item) {
   const value = item.value || {};
@@ -71,6 +90,7 @@ function validate(doc) {
   requireTrue(c.projectionProvenance.length >= 2, 'projection corpus');
   requireTrue(c.projectionProvenance.every((p) => p.canonicalRef === c.projectBinding.projectRef), 'projection identity drift');
   requireTrue(new Set(c.projectionProvenance.map((p) => p.providerRef)).size >= 2, 'provider change not exercised');
+  validateQlComposition(c.qlComposition);
   requireTrue(canonical.test(c.qlComposition.targetRef), 'QL target composition');
   const expectedAnti = new Set(['action-as-capability-identity-collapse','binding-as-ref','model-as-agent','session-as-agent','provider-as-project','stale-subject-state-evidence']);
   requireTrue(doc.antiFixtures.length === expectedAnti.size && doc.antiFixtures.every((item) => expectedAnti.has(item.id)), 'anti fixture completeness');
