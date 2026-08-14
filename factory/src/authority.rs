@@ -156,9 +156,11 @@ pub fn validate_manifest(manifest: &AuthorityManifest) -> Vec<String> {
             if !index.governs || index.status != "constitutional" {
                 errors.push("constitutional index must govern as constitutional".to_owned());
             }
-            if manifest.sources.iter().any(|source| {
-                source.id != index.id && source.precedence >= index.precedence
-            }) {
+            if manifest
+                .sources
+                .iter()
+                .any(|source| source.id != index.id && source.precedence >= index.precedence)
+            {
                 errors.push("constitutional index must have unique highest precedence".to_owned());
             }
         }
