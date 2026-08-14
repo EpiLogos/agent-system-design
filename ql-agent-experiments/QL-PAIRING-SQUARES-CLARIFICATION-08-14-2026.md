@@ -50,7 +50,13 @@ For every A/B/C pair `(x,y)`, the corresponding full square is:
 {x, y, x', y'}
 ```
 
-There are three families × three pairs = **nine square entries**. `A-square-2` and `C-square-3` share the same `(2,3)` / `(2',3')` tetrad, so there are eight unique tetrad sets while the 3×3 apparatus still has nine structurally meaningful entries.
+There are three families × three pairs = **nine square entries**.
+
+The source explicitly identifies `A-square-2 = C-square-3`: both use the ordered pair `(2,3)` and its primed counterpart. Therefore there are **eight unique oriented pair/square structures** across the nine entries.
+
+A further implementation-level distinction matters when a square is reduced to an **unordered set of four addresses**: `B-square-3` uses `(5,0)` while `C-square-1` uses `(0,5)`. Those are different family/orientation relations but contain the same four addresses `{P0,P5,P0',P5'}`. Consequently the nine structurally meaningful entries yield **seven unique unordered tetrad element-sets**.
+
+The runtime MUST preserve family and ordered-pair provenance. It MUST NOT collapse `B3` and `C1` merely because their unordered address sets coincide.
 
 ## Software-operator clarification supplied 2026-08-14
 
@@ -82,7 +88,7 @@ The corrected Deep profile MUST provide deterministic operators that can:
 - return its direct pair and conjugate pair;
 - materialise the nine-square apparatus;
 - construct D1/D2/D3 conjugate-modulation frames with exact cardinality;
-- retain face and source-family provenance;
+- retain family, ordered-pair, face and source provenance even where raw address sets coincide;
 - reject invalid families, pair indices, D-levels, and ambiguous D2 side selection.
 
 The grammar itself is **specified formal structure**, not a research claim.
