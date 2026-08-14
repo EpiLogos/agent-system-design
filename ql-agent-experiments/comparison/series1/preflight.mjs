@@ -1,5 +1,10 @@
 import { HOSTS } from './contract.mjs';
-import { providerForHost } from './providers.mjs';
+import {
+  providerForHost,
+  SERIES1_PROVIDER,
+  series1JudgeModelId,
+  series1ModelId
+} from './providers.mjs';
 import { SERIES1_TASKS, getTask } from './tasks.mjs';
 
 function cli() {
@@ -13,22 +18,25 @@ function cli() {
 }
 
 function checkConfiguration(selectedTask) {
-  const model = process.env.QL_SERIES1_MODEL ?? null;
-  const provider = process.env.QL_SERIES1_PROVIDER ?? 'openai';
-  const piModel = process.env.QL_SERIES1_PI_MODEL ?? model;
-  const piProvider = process.env.QL_SERIES1_PI_PROVIDER ?? 'openai';
-  const pydanticModel = process.env.QL_SERIES1_PYDANTIC_MODEL ?? (model ? `${provider}:${model}` : null);
-  const judgeModel = process.env.QL_SERIES1_JUDGE_MODEL ?? null;
+  const provider = process.env.QL_SERIES1_PROVIDER ?? SERIES1_PROVIDER;
+  const model = series1ModelId();
+  const judgeModel = series1JudgeModelId();
   const semanticTasks = SERIES1_TASKS.filter((task) => task.quality.kind === 'semantic').map((task) => task.id);
   const semanticRequired = selectedTask ? getTask(selectedTask).quality.kind === 'semantic' : semanticTasks.length > 0;
   const errors = [];
-  if (!model) errors.push('QL_SERIES1_MODEL is missing');
-  if (piModel && model && piModel !== model) errors.push('Pi model override differs from QL_SERIES1_MODEL; matched-model evidence would be invalid');
-  if (piProvider !== provider) errors.push('Pi provider override differs from QL_SERIES1_PROVIDER; matched-provider evidence would be invalid');
-  if (pydanticModel && model && pydanticModel !== `${provider}:${model}`) errors.push(`Pydantic model must be ${provider}:${model} for matched evidence`);
-  if (!process.env.QL_SERIES1_API_KEY && provider === 'openai') errors.push('QL_SERIES1_API_KEY is missing');
-  if (semanticRequired && !judgeModel) errors.push(`QL_SERIES1_JUDGE_MODEL is missing; ${selectedTask ? `selected semantic task ${selectedTask}` : `semantic tasks ${semanticTasks.join(', ')}`} cannot be scored`);
-  if (judgeModel && model && judgeModel === model) errors.push('QL_SERIES1_JUDGE_MODEL must differ from QL_SERIES1_MODEL');
+
+  if (provider !== SERIES1_PROVIDER) {
+    errors.push(`Series 1 is currently stipulated to provider '${SERIES1_PROVIDER}', not '${provider}'`);
+  }
+  if (!model) errors.push('A concrete Series 1 candidate model is required');
+  if (!process.env.DEEPSEEK_API_KEY) errors.push('DEEPSEEK_API_KEY is missing');
+  if (semanticRequired && !judgeModel) {
+    errors.push(`A distinct judge model is required; ${selectedTask ? `selected semantic task ${selectedTask}` : `semantic tasks ${semanticTasks.join(', ')}`} cannot be scored`);
+  }
+  if (semanticRequired && judgeModel === model) {
+    errors.push('The blinded semantic judge model must differ from the candidate model');
+  }
+
   return { provider, model, judgeModel, semanticTasks, semanticRequired, errors };
 }
 
@@ -40,13 +48,14 @@ async function main() {
   if (task) getTask(task);
   const config = checkConfiguration(task);
   const result = {
-    schema: 'ql-series1-preflight/0.2',
+    schema: 'ql-series1-preflight/0.3',
     live_requested: live,
     hosts,
     selected_task: task,
-    model: config.model,
     provider: config.provider,
+    model: config.model,
     judge_model: config.judgeModel,
+    credential_contract: 'DEEPSEEK_API_KEY',
     structural: {
       task_count: SERIES1_TASKS.length,
       semantic_task_count: config.semanticTasks.length,
