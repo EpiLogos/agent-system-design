@@ -1,10 +1,5 @@
 import { HOSTS } from './contract.mjs';
-import {
-  providerForHost,
-  SERIES1_PROVIDER,
-  series1JudgeModelId,
-  series1ModelId
-} from './providers.mjs';
+import { providerForHost, SERIES1_PROVIDER, series1ModelId } from './providers.mjs';
 import { SERIES1_TASKS, getTask } from './tasks.mjs';
 
 function cli() {
@@ -17,27 +12,21 @@ function cli() {
   return { live, hosts: host ? [host] : [...HOSTS], task };
 }
 
-function checkConfiguration(selectedTask) {
+function selectedTasks(task) {
+  if (!task || task === 'all') return SERIES1_TASKS;
+  return [getTask(task)];
+}
+
+function checkConfiguration() {
   const provider = process.env.QL_SERIES1_PROVIDER ?? SERIES1_PROVIDER;
   const model = series1ModelId();
-  const judgeModel = series1JudgeModelId();
-  const semanticTasks = SERIES1_TASKS.filter((task) => task.quality.kind === 'semantic').map((task) => task.id);
-  const semanticRequired = selectedTask ? getTask(selectedTask).quality.kind === 'semantic' : semanticTasks.length > 0;
   const errors = [];
-
   if (provider !== SERIES1_PROVIDER) {
     errors.push(`Series 1 is currently stipulated to provider '${SERIES1_PROVIDER}', not '${provider}'`);
   }
   if (!model) errors.push('A concrete Series 1 candidate model is required');
   if (!process.env.DEEPSEEK_API_KEY) errors.push('DEEPSEEK_API_KEY is missing');
-  if (semanticRequired && !judgeModel) {
-    errors.push(`A distinct judge model is required; ${selectedTask ? `selected semantic task ${selectedTask}` : `semantic tasks ${semanticTasks.join(', ')}`} cannot be scored`);
-  }
-  if (semanticRequired && judgeModel === model) {
-    errors.push('The blinded semantic judge model must differ from the candidate model');
-  }
-
-  return { provider, model, judgeModel, semanticTasks, semanticRequired, errors };
+  return { provider, model, errors };
 }
 
 async function main() {
@@ -45,24 +34,28 @@ async function main() {
   for (const host of hosts) {
     if (!HOSTS.includes(host)) throw new Error(`Unknown host '${host}'.`);
   }
-  if (task) getTask(task);
-  const config = checkConfiguration(task);
+  const tasks = selectedTasks(task);
+  const config = checkConfiguration();
   const result = {
-    schema: 'ql-series1-preflight/0.3',
+    schema: 'ql-series1-preflight/0.4',
+    benchmark: 'series1-v0.1-human-review',
     live_requested: live,
     hosts,
-    selected_task: task,
+    selected_task: task ?? 'all',
     provider: config.provider,
     model: config.model,
-    judge_model: config.judgeModel,
     credential_contract: 'DEEPSEEK_API_KEY',
+    determination_protocol: 'human-review-first; automated/scalar evals deferred',
     structural: {
       task_count: SERIES1_TASKS.length,
-      semantic_task_count: config.semanticTasks.length,
-      artifact_task_count: SERIES1_TASKS.length - config.semanticTasks.length,
-      semantic_judge_required_for_this_preflight: config.semanticRequired,
+      selected_task_count: tasks.length,
+      task_categories: Object.fromEntries(SERIES1_TASKS.map((entry) => [entry.id, entry.category])),
       conditions: ['classic', 'ql-direct', 'ql-deep'],
-      fixture_fallback: false
+      required_held_constants: ['task/prompt', 'starting workspace', 'model/parameters', 'capabilities', 'verification protocol', 'execution budget', 'host revision'],
+      fixture_fallback: false,
+      full_model_io_retained: true,
+      full_capability_io_retained: true,
+      full_before_after_workspace_retained: true
     },
     configuration_errors: config.errors,
     host_checks: []
