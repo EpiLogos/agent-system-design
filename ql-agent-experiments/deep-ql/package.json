@@ -10,6 +10,8 @@
     "corpus": "node typing-corpus/export.mjs",
     "corpus:ndjson": "node typing-corpus/export.mjs --ndjson",
     "readiness": "node convergence/run-readiness.mjs",
-    "review": "node convergence/run-product-review.mjs"
+    "review": "node convergence/run-product-review.mjs",
+    "series1:preflight": "node ../comparison/series1/preflight.mjs",
+    "series1:run": "node ../comparison/series1/run.mjs"
   }
 }
