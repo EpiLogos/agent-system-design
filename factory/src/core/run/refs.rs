@@ -7,7 +7,10 @@ use std::str::FromStr;
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum TypedRefError {
     Parse(RefParseError),
-    WrongKind { expected: &'static str, actual: String },
+    WrongKind {
+        expected: &'static str,
+        actual: String,
+    },
     InvalidMapAddress,
 }
 
