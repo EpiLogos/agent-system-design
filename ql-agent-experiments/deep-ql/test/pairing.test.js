@@ -19,13 +19,21 @@ test('A/B/C remain three distinct specified pairing families', () => {
   assert.equal(PAIRING_GRAMMAR.automatic_traversal, false);
 });
 
-test('the square apparatus has nine entries and eight unique tetrad sets', () => {
+test('the square apparatus preserves nine entries, eight oriented structures and seven unordered tetrad sets', () => {
   const squares = listSquares();
   assert.equal(squares.length, 9);
   assert.ok(squares.every((square) => square.cardinality === 4));
-  const unique = new Set(squares.map((square) => [...square.elements].sort().join('|')));
-  assert.equal(unique.size, 8);
+
+  const oriented = new Set(squares.map((square) => `${square.direct_pair.join('>')}|${square.conjugate_pair.join('>')}`));
+  const unordered = new Set(squares.map((square) => [...square.elements].sort().join('|')));
+  assert.equal(oriented.size, 8);
+  assert.equal(unordered.size, 7);
+
+  assert.deepEqual(buildSquare('A', 2).direct_pair, buildSquare('C', 3).direct_pair);
   assert.deepEqual(buildSquare('A', 2).elements, buildSquare('C', 3).elements);
+
+  assert.notDeepEqual(buildSquare('B', 3).direct_pair, buildSquare('C', 1).direct_pair);
+  assert.deepEqual([...buildSquare('B', 3).elements].sort(), [...buildSquare('C', 1).elements].sort());
 });
 
 test('D1/D2/D3 modulation has exact 2/3/4 element cardinality', () => {
