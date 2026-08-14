@@ -23,6 +23,9 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
+      - name: Install Python contract test dependencies
+        run: python3 -m pip install -r tests/factory/requirements.txt
+
       - name: Factory Python verification
         run: python3 scripts/factory_verify.py
 
