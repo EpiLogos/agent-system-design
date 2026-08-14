@@ -7,6 +7,7 @@ on:
       - 'tests/factory/**'
       - 'scripts/factory_verify.py'
       - 'scripts/validate_factory_authority.py'
+      - 'scripts/validate_factory_interop_schema.py'
       - '.github/workflows/factory-contracts.yml'
   workflow_dispatch:
 
@@ -25,11 +26,14 @@ jobs:
       - name: Factory Python verification
         run: python3 scripts/factory_verify.py
 
+      - name: Draft 2020-12 interoperability schema
+        run: python3 scripts/validate_factory_interop_schema.py
+
       - name: Node interoperability consumer
-        run: node tests/factory/interop.js contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json
+        run: node tests/factory/interop.js contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json contracts/factory/ql-mef-composition.schema.json
 
       - name: TypeScript interoperability consumer
-        run: node --experimental-strip-types tests/factory/interop.ts contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json
+        run: node --experimental-strip-types tests/factory/interop.ts contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json contracts/factory/ql-mef-composition.schema.json
 
       - name: Rust interoperability consumer
-        run: cargo run --quiet --manifest-path tests/factory/rust-interop/Cargo.toml -- contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json
+        run: cargo run --quiet --manifest-path tests/factory/rust-interop/Cargo.toml -- contracts/factory/fixtures/interop-v1.json contracts/factory/interop.schema.json contracts/factory/ql-mef-composition.schema.json
