@@ -10,6 +10,6 @@ pub use model::{
 pub use projection::{resolve_run_projection, RunProjectionIdentity};
 pub use refs::{ProjectRef, RunMapAddress, RunRef, TypedRefError};
 pub use topology::{
-    EdgeKind, NodeId, NodeKind, NodeState, RunMap, TopologyEdge, TopologyError,
-    TopologyMutation, TopologyNode,
+    EdgeKind, NodeId, NodeKind, NodeState, RunMap, TopologyEdge, TopologyError, TopologyMutation,
+    TopologyNode,
 };
