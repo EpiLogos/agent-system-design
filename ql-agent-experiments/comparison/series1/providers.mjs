@@ -1,6 +1,19 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
+export const SERIES1_PROVIDER = 'deepseek';
+export const SERIES1_DEFAULT_MODEL = 'deepseek-v4-flash';
+export const SERIES1_DEFAULT_JUDGE_MODEL = 'deepseek-v4-pro';
+export const DEEPSEEK_BASE_URL = 'https://api.deepseek.com';
+
+export function series1ModelId() {
+  return process.env.QL_SERIES1_MODEL ?? SERIES1_DEFAULT_MODEL;
+}
+
+export function series1JudgeModelId() {
+  return process.env.QL_SERIES1_JUDGE_MODEL ?? SERIES1_DEFAULT_JUDGE_MODEL;
+}
+
 function parseJsonObject(text) {
   const value = String(text ?? '').trim();
   try {
@@ -38,17 +51,26 @@ Return exactly one JSON object and no prose outside it:
 {"content":"assistant text","capabilityCalls":[{"id":"optional","name":"capability_name","args":{}}]}
 Use capabilityCalls only when exterior work is needed. If no capability is needed, return an empty array.`;
 
+/**
+ * Minimal native Series 1 transport. It intentionally speaks DeepSeek's
+ * documented OpenAI-compatible ChatCompletions surface directly rather than
+ * pretending DeepSeek is an OpenAI credential/configuration domain.
+ */
 export class NativeOpenAICompatibleProvider {
-  constructor({ baseUrl = process.env.QL_SERIES1_BASE_URL ?? 'https://api.openai.com/v1', apiKey = process.env.QL_SERIES1_API_KEY, model = process.env.QL_SERIES1_MODEL } = {}) {
-    this.id = 'native-openai-compatible';
+  constructor({
+    baseUrl = process.env.QL_SERIES1_BASE_URL ?? DEEPSEEK_BASE_URL,
+    apiKey = process.env.DEEPSEEK_API_KEY,
+    model = series1ModelId()
+  } = {}) {
+    this.id = 'native-deepseek-openai-compatible';
     this.baseUrl = baseUrl.replace(/\/$/, '');
     this.apiKey = apiKey;
     this.model = model;
   }
 
   assertReady() {
-    if (!this.apiKey) throw new Error('QL_SERIES1_API_KEY is required for live Native runs.');
-    if (!this.model) throw new Error('QL_SERIES1_MODEL is required for live Native runs.');
+    if (!this.apiKey) throw new Error('DEEPSEEK_API_KEY is required for live Native runs.');
+    if (!this.model) throw new Error('A concrete DeepSeek model id is required for live Native runs.');
   }
 
   async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, temperature = 0, signal, mode = 'turn' } = {}) {
@@ -66,7 +88,7 @@ export class NativeOpenAICompatibleProvider {
       }),
       signal
     });
-    if (!response.ok) throw new Error(`Native model HTTP ${response.status}: ${await response.text()}`);
+    if (!response.ok) throw new Error(`Native DeepSeek HTTP ${response.status}: ${await response.text()}`);
     const body = await response.json();
     const text = body?.choices?.[0]?.message?.content ?? '';
     const result = modeResult(text, mode);
@@ -75,13 +97,18 @@ export class NativeOpenAICompatibleProvider {
       output_tokens: body?.usage?.completion_tokens ?? 0,
       total_tokens: body?.usage?.total_tokens ?? 0
     };
-    result.raw = { finish_reason: body?.choices?.[0]?.finish_reason ?? null };
+    result.raw = {
+      finish_reason: body?.choices?.[0]?.finish_reason ?? null,
+      provider: SERIES1_PROVIDER,
+      model: this.model
+    };
     return result;
   }
 }
 
+/** Pi uses its own built-in DeepSeek provider and native auth discovery. */
 export class PiAIProvider {
-  constructor({ provider = process.env.QL_SERIES1_PI_PROVIDER ?? 'openai', model = process.env.QL_SERIES1_PI_MODEL ?? process.env.QL_SERIES1_MODEL } = {}) {
+  constructor({ provider = 'deepseek', model = series1ModelId() } = {}) {
     this.id = 'pi-ai';
     this.provider = provider;
     this.model = model;
@@ -101,11 +128,13 @@ export class PiAIProvider {
 
   async assertReady() {
     await this.#load();
-    if (!this.model) throw new Error('QL_SERIES1_PI_MODEL or QL_SERIES1_MODEL is required.');
+    if (this.provider !== SERIES1_PROVIDER) {
+      throw new Error(`Series 1 is currently stipulated to DeepSeek; Pi provider was '${this.provider}'.`);
+    }
     const model = this.models.getModel(this.provider, this.model);
     if (!model) throw new Error(`Pi model '${this.provider}:${this.model}' is not present in the pinned Pi catalog.`);
     const auth = await this.models.getAuth(model);
-    if (!auth) throw new Error(`Pi provider '${this.provider}' has no live credentials.`);
+    if (!auth) throw new Error(`Pi DeepSeek provider has no live credentials; export DEEPSEEK_API_KEY.`);
   }
 
   async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, signal, mode = 'turn' } = {}) {
@@ -152,8 +181,9 @@ function runPythonBridge(payload, { signal } = {}) {
   });
 }
 
+/** Pydantic AI bridge constructs its real DeepSeek provider explicitly. */
 export class PydanticAIProvider {
-  constructor({ model = process.env.QL_SERIES1_PYDANTIC_MODEL ?? `openai:${process.env.QL_SERIES1_MODEL ?? ''}` } = {}) {
+  constructor({ model = series1ModelId() } = {}) {
     this.id = 'pydantic-ai';
     this.model = model;
   }
@@ -167,7 +197,7 @@ export class PydanticAIProvider {
     const result = await runPythonBridge({ operation: 'complete', model: this.model, system, prompt }, { signal });
     const normalized = modeResult(result.output, mode);
     normalized.usage = result.usage ?? null;
-    normalized.raw = { model: result.model_name ?? this.model, framework: 'pydantic-ai' };
+    normalized.raw = { model: result.model_name ?? this.model, provider: SERIES1_PROVIDER, framework: 'pydantic-ai' };
     return normalized;
   }
 }
