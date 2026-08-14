@@ -39,8 +39,8 @@ macro_rules! typed_ref {
         #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
         pub struct $name(Ref);
 
-        impl $name {
-            pub fn as_ref(&self) -> &Ref {
+        impl AsRef<Ref> for $name {
+            fn as_ref(&self) -> &Ref {
                 &self.0
             }
         }
