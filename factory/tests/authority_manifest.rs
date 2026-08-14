@@ -11,7 +11,8 @@ fn manifest_value() -> Value {
 }
 
 fn validate_value(value: Value) -> Vec<String> {
-    let manifest = serde_json::from_value(value).expect("mutated fixture must retain manifest shape");
+    let manifest =
+        serde_json::from_value(value).expect("mutated fixture must retain manifest shape");
     validate_manifest(&manifest)
 }
 
@@ -98,10 +99,21 @@ fn determination_statuses_are_exact() {
 #[test]
 fn schema_surface_is_static_and_matches_manifest_version() {
     let schema: Value = serde_json::from_str(SCHEMA).expect("schema must be JSON");
-    assert_eq!(schema["$schema"], json!("https://json-schema.org/draft/2020-12/schema"));
-    assert_eq!(schema["$id"], json!("factory.authority-manifest.schema/v1"));
-    assert_eq!(schema["properties"]["schemaVersion"]["const"], json!("factory.authority-manifest/v1"));
-    let required = schema["required"].as_array().expect("required must be array");
+    assert_eq!(
+        schema["$schema"],
+        json!("https://json-schema.org/draft/2020-12/schema")
+    );
+    assert_eq!(
+        schema["$id"],
+        json!("factory.authority-manifest.schema/v1")
+    );
+    assert_eq!(
+        schema["properties"]["schemaVersion"]["const"],
+        json!("factory.authority-manifest/v1")
+    );
+    let required = schema["required"]
+        .as_array()
+        .expect("required must be array");
     for field in [
         "schemaVersion",
         "repository",
