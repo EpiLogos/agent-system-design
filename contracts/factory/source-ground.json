@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "factory.source-ground/v1",
+  "repository": {
+    "id": "EpiLogos/agent-system-design",
+    "baselineRef": "main",
+    "baselineCommit": "cae178d1409bd9f0f022d4e2ff4ab8f70b0166b1",
+    "determination": "OBSERVED"
+  },
+  "baselineObservations": {
+    "preExistingRootFactoryPackage": false,
+    "preExistingRootCargoManifest": false,
+    "preExistingFactoryWorkflow": false,
+    "canonicalFactoryStoreFound": false,
+    "factoryMigrationsFound": false,
+    "determination": "OBSERVED",
+    "evidence": {
+      "rootEntries": [
+        ".github",
+        "README.md",
+        "docs",
+        "inkwell-agent-sandboxes-and-software-factory",
+        "ql-agent-experiments",
+        "seed-docs",
+        "sites",
+        "super-simple-software-factory",
+        "transcripts"
+      ],
+      "baselineWorkflows": [
+        ".github/workflows/ql-experiment-native.yml",
+        ".github/workflows/ql-experiment-pi.yml",
+        ".github/workflows/ql-experiment-pydantic.yml",
+        ".github/workflows/ql-runtime-foundation.yml"
+      ]
+    }
+  },
+  "authorialDeterminations": {
+    "implementationLanguage": {
+      "value": "Rust",
+      "determination": "GENUINE HUMAN AUTHORSHIP",
+      "source": "repository owner direction on 2026-08-14"
+    }
+  },
+  "materializedImplementation": {
+    "determination": "CURRENT DESIGN",
+    "cratePath": "factory/",
+    "packageManifest": "factory/Cargo.toml",
+    "packageName": "epilogos-factory",
+    "sourcePath": "factory/src/",
+    "testPath": "factory/tests/",
+    "languageNeutralContracts": "contracts/factory/",
+    "ciWorkflow": ".github/workflows/factory-rust.yml",
+    "qualityCommands": [
+      "cargo fmt --manifest-path factory/Cargo.toml -- --check",
+      "cargo clippy --manifest-path factory/Cargo.toml --all-targets -- -D warnings",
+      "cargo test --manifest-path factory/Cargo.toml --all-targets"
+    ]
+  },
+  "sourceIslands": [
+    {
+      "path": "inkwell-agent-sandboxes-and-software-factory/",
+      "classification": "prior-art source island",
+      "determination": "OBSERVED",
+      "canonicalFactoryCore": false
+    },
+    {
+      "path": "super-simple-software-factory/",
+      "classification": "prior-art source island",
+      "determination": "OBSERVED",
+      "canonicalFactoryCore": false
+    },
+    {
+      "path": "ql-agent-experiments/",
+      "classification": "separate QL Loop Runtime programme",
+      "determination": "CONSTITUTIONAL DETERMINATION",
+      "canonicalFactoryCore": false
+    }
+  ],
+  "productBoundaries": {
+    "aikit": {
+      "ownership": "separate product/control plane",
+      "factoryMayDependOnPublicSeams": true,
+      "factoryOwnsInternals": false
+    },
+    "workcell": {
+      "ownership": "separate product repository EpiLogos/Workcell",
+      "factoryOwnsSharedSemanticContract": true,
+      "factoryOwnsProviderInternals": false
+    },
+    "qlMef": {
+      "ownership": "separate optional provider/formalism",
+      "factoryOwnsKernel": false
+    },
+    "qlLoopRuntime": {
+      "ownership": "separate runtime programme",
+      "factoryOwnsRuntimeInternals": false
+    }
+  },
+  "collisionConstraints": [
+    "Do not promote historical Run/Gate/store vocabulary from prior-art islands into canonical Factory semantics by name collision.",
+    "Do not place Factory product implementation under ql-agent-experiments/.",
+    "Do not import AIKit, Workcell, QL/MEF or QL Loop Runtime internals into the Factory crate.",
+    "Language-neutral interoperability contracts remain under contracts/factory/ rather than becoming Rust-only wire semantics."
+  ],
+  "safeInsertionPoints": [
+    "factory/",
+    "contracts/factory/",
+    ".github/workflows/factory-rust.yml"
+  ],
+  "blocked": false
+}
