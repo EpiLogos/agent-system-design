@@ -1,0 +1,6 @@
+{
+  "targetRef": "qltarget:claim-whole",
+  "qlFormRef": "qlform:factory-development/v1",
+  "qlAddress": "day:2.3",
+  "lensRef": "lens:L3"
+}
