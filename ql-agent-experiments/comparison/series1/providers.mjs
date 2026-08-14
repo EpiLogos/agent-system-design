@@ -26,6 +26,13 @@ function normalizeEnvelope(raw) {
   };
 }
 
+function modeResult(text, mode) {
+  if (mode === 'control') {
+    return { content: '', capabilityCalls: [], control: parseJsonObject(text), usage: null, raw: null };
+  }
+  return normalizeEnvelope(text);
+}
+
 export const LIVE_RESPONSE_SYSTEM = `You are an execution model inside a controlled agent-loop experiment.
 Return exactly one JSON object and no prose outside it:
 {"content":"assistant text","capabilityCalls":[{"id":"optional","name":"capability_name","args":{}}]}
@@ -44,7 +51,7 @@ export class NativeOpenAICompatibleProvider {
     if (!this.model) throw new Error('QL_SERIES1_MODEL is required for live Native runs.');
   }
 
-  async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, temperature = 0, signal } = {}) {
+  async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, temperature = 0, signal, mode = 'turn' } = {}) {
     this.assertReady();
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
@@ -62,14 +69,14 @@ export class NativeOpenAICompatibleProvider {
     if (!response.ok) throw new Error(`Native model HTTP ${response.status}: ${await response.text()}`);
     const body = await response.json();
     const text = body?.choices?.[0]?.message?.content ?? '';
-    const envelope = normalizeEnvelope(text);
-    envelope.usage = {
+    const result = modeResult(text, mode);
+    result.usage = {
       input_tokens: body?.usage?.prompt_tokens ?? 0,
       output_tokens: body?.usage?.completion_tokens ?? 0,
       total_tokens: body?.usage?.total_tokens ?? 0
     };
-    envelope.raw = { finish_reason: body?.choices?.[0]?.finish_reason ?? null };
-    return envelope;
+    result.raw = { finish_reason: body?.choices?.[0]?.finish_reason ?? null };
+    return result;
   }
 }
 
@@ -101,7 +108,7 @@ export class PiAIProvider {
     if (!auth) throw new Error(`Pi provider '${this.provider}' has no live credentials.`);
   }
 
-  async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, signal } = {}) {
+  async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, signal, mode = 'turn' } = {}) {
     await this.#load();
     const model = this.models.getModel(this.provider, this.model);
     if (!model) throw new Error(`Unknown Pi model '${this.provider}:${this.model}'.`);
@@ -112,15 +119,15 @@ export class PiAIProvider {
     };
     const response = await this.models.complete(model, context, { signal });
     const text = (response.content ?? []).filter((block) => block.type === 'text').map((block) => block.text).join('\n');
-    const envelope = normalizeEnvelope(text);
-    envelope.usage = {
+    const result = modeResult(text, mode);
+    result.usage = {
       input_tokens: response?.usage?.input ?? 0,
       output_tokens: response?.usage?.output ?? 0,
       total_tokens: response?.usage?.totalTokens ?? ((response?.usage?.input ?? 0) + (response?.usage?.output ?? 0)),
       cost: response?.usage?.cost?.total ?? null
     };
-    envelope.raw = { model: response?.model ?? this.model, provider: this.provider, stopReason: response?.stopReason ?? null };
-    return envelope;
+    result.raw = { model: response?.model ?? this.model, provider: this.provider, stopReason: response?.stopReason ?? null };
+    return result;
   }
 }
 
@@ -156,12 +163,12 @@ export class PydanticAIProvider {
     if (!result.ready) throw new Error(result.error ?? 'Pydantic AI bridge is not ready.');
   }
 
-  async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, signal } = {}) {
+  async complete({ system = LIVE_RESPONSE_SYSTEM, prompt, signal, mode = 'turn' } = {}) {
     const result = await runPythonBridge({ operation: 'complete', model: this.model, system, prompt }, { signal });
-    const envelope = normalizeEnvelope(result.output);
-    envelope.usage = result.usage ?? null;
-    envelope.raw = { model: result.model_name ?? this.model, framework: 'pydantic-ai' };
-    return envelope;
+    const normalized = modeResult(result.output, mode);
+    normalized.usage = result.usage ?? null;
+    normalized.raw = { model: result.model_name ?? this.model, framework: 'pydantic-ai' };
+    return normalized;
   }
 }
 
