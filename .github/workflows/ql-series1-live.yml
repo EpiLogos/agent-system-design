@@ -15,24 +15,24 @@ on:
         type: choice
         options: [all, pi, pydantic-ai, native]
       task:
-        description: Series 1 task id
+        description: Benchmark task id or 'all'
         required: true
-        default: S1-CODE-001
+        default: all
         type: string
       repetitions:
-        description: Repetitions per Classic/Direct/Deep condition
+        description: Repetitions per Classic/Direct/Deep condition (1 for exploratory human review)
         required: true
-        default: '3'
+        default: '1'
+        type: string
+      max_steps:
+        description: Identical recurrence budget for every matched condition
+        required: true
+        default: '16'
         type: string
       model:
-        description: Candidate DeepSeek model id, identical across all host conditions
+        description: Candidate DeepSeek model id, identical across all conditions and hosts
         required: true
         default: deepseek-v4-flash
-        type: string
-      judge_model:
-        description: Distinct blinded DeepSeek judge model for S1-CHAT-* tasks
-        required: true
-        default: deepseek-v4-pro
         type: string
 
 permissions:
@@ -41,11 +41,10 @@ permissions:
 jobs:
   live-series1:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 240
     env:
       QL_SERIES1_PROVIDER: deepseek
       QL_SERIES1_MODEL: ${{ inputs.model }}
-      QL_SERIES1_JUDGE_MODEL: ${{ inputs.judge_model }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
     steps:
       - name: Checkout experiment ref
@@ -79,29 +78,51 @@ jobs:
           python -m pip install -e '.series1/pydantic-ai/pydantic_graph'
           python -m pip install -e '.series1/pydantic-ai/pydantic_ai_slim[openai]'
 
-      - name: Preflight and execute requested hosts
+      - name: Preflight and execute matched benchmark
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p series1-evidence
+
           if [[ '${{ inputs.host }}' == 'all' ]]; then
             HOSTS=(pi pydantic-ai native)
           else
             HOSTS=('${{ inputs.host }}')
           fi
+
+          if [[ '${{ inputs.task }}' == 'all' ]]; then
+            TASKS=(
+              S1-CODE-001
+              S1-RESEARCH-001
+              S1-EPISTEMIC-001
+              S1-SKILL-001
+              S1-AGENCY-001
+              S1-RESTRAINT-001
+            )
+          else
+            TASKS=('${{ inputs.task }}')
+          fi
+
+          node ql-agent-experiments/comparison/series1/preflight.mjs --live --task '${{ inputs.task }}' \
+            | tee series1-evidence/preflight.json
+
           for HOST in "${HOSTS[@]}"; do
-            node ql-agent-experiments/comparison/series1/preflight.mjs --live --host "$HOST" --task '${{ inputs.task }}' \
-              | tee "series1-evidence/${HOST}-preflight.json"
-            node ql-agent-experiments/comparison/series1/run.mjs \
-              --host "$HOST" \
-              --task '${{ inputs.task }}' \
-              --repetitions '${{ inputs.repetitions }}' \
-              | tee "series1-evidence/${HOST}-run.json"
+            for TASK in "${TASKS[@]}"; do
+              OUT="series1-evidence/${HOST}-${TASK}-run.json"
+              node ql-agent-experiments/comparison/series1/run.mjs \
+                --host "$HOST" \
+                --task "$TASK" \
+                --repetitions '${{ inputs.repetitions }}' \
+                --max-steps '${{ inputs.max_steps }}' \
+                | tee "$OUT"
+              node ql-agent-experiments/comparison/series1/render-review.mjs "$OUT" \
+                > "series1-evidence/${HOST}-${TASK}-review.md"
+            done
           done
 
-      - name: Publish Series 1 evidence
+      - name: Publish Series 1 human-review evidence
         uses: actions/upload-artifact@v4
         with:
-          name: ql-series1-${{ inputs.task }}-${{ github.run_id }}
-          path: series1-evidence/*.json
+          name: ql-series1-human-review-${{ github.run_id }}
+          path: series1-evidence/*
           if-no-files-found: error
