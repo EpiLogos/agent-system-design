@@ -16,17 +16,17 @@ SPEC.loader.exec_module(interop)
 class InteropContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.schema, cls.document = interop.load_default(ROOT)
+        cls.schema, cls.ql_schema, cls.document = interop.load_default(ROOT)
 
-    def test_schema_is_versioned_and_every_instance_field_has_one_owner(self):
+    def test_schema_is_versioned_and_every_factory_instance_field_has_one_owner(self):
         self.assertEqual("https://json-schema.org/draft/2020-12/schema", self.schema["$schema"])
         self.assertEqual([], interop.schema_owner_failures(self.schema))
 
     def test_complete_positive_corpus_validates(self):
-        interop.validate_fixture_document(self.document, self.schema)
+        interop.validate_fixture_document(self.document, self.schema, self.ql_schema)
 
     def test_round_trip_preserves_complete_contract(self):
-        result = interop.round_trip(self.document, self.schema)
+        result = interop.round_trip(self.document, self.schema, self.ql_schema)
         self.assertEqual(self.document, result)
 
     def test_contract_surface_matches_live_cr001(self):
@@ -72,9 +72,17 @@ class InteropContractTests(unittest.TestCase):
     def test_ql_fields_are_composed_without_factory_redefinition(self):
         ql = self.document["contract"]["qlComposition"]
         self.assertEqual("factory:claim:c-1", ql["targetRef"])
-        ql_schema = self.schema["$defs"]["qlComposition"]["properties"]
-        for key in ("qlFormRef", "qlAddress", "lensRef", "qlTarget"):
-            self.assertEqual("Standalone QL/MEF module", ql_schema[key]["x-semantic-owner"])
+        self.assertEqual("mef:lens:L3@1", ql["lensRef"])
+        self.assertEqual(
+            self.ql_schema["$id"],
+            self.schema["properties"]["qlComposition"]["$ref"],
+        )
+        self.assertEqual(
+            "Standalone QL/MEF module",
+            self.schema["properties"]["qlComposition"]["x-semantic-owner"],
+        )
+        self.assertNotIn("qlComposition", self.schema["$defs"])
+        interop._validate_ql_composition(ql, self.schema, self.ql_schema)
 
 
 if __name__ == "__main__":
