@@ -2,9 +2,21 @@ name: QL Deep Runtime
 on:
   push:
     branches: [ql/deep-runtime]
-    paths: ['ql-agent-experiments/deep-ql/**','ql-agent-experiments/TYPING-CORPUS-REVIEW-CLARIFICATION-08-14-2026.md','.github/workflows/ql-deep-runtime.yml']
+    paths:
+      - 'ql-agent-experiments/deep-ql/**'
+      - 'ql-agent-experiments/comparison/series1/**'
+      - 'ql-agent-experiments/QL-PAIRING-SQUARES-CLARIFICATION-08-14-2026.md'
+      - 'ql-agent-experiments/TYPING-CORPUS-REVIEW-CLARIFICATION-08-14-2026.md'
+      - '.github/workflows/ql-deep-runtime.yml'
+      - '.github/workflows/ql-series1-live.yml'
   pull_request:
-    paths: ['ql-agent-experiments/deep-ql/**','ql-agent-experiments/TYPING-CORPUS-REVIEW-CLARIFICATION-08-14-2026.md','.github/workflows/ql-deep-runtime.yml']
+    paths:
+      - 'ql-agent-experiments/deep-ql/**'
+      - 'ql-agent-experiments/comparison/series1/**'
+      - 'ql-agent-experiments/QL-PAIRING-SQUARES-CLARIFICATION-08-14-2026.md'
+      - 'ql-agent-experiments/TYPING-CORPUS-REVIEW-CLARIFICATION-08-14-2026.md'
+      - '.github/workflows/ql-deep-runtime.yml'
+      - '.github/workflows/ql-series1-live.yml'
 permissions:
   contents: read
 jobs:
@@ -19,20 +31,22 @@ jobs:
         with: { node-version: '22' }
       - run: npm test
       - run: npm run conformance
-      - name: Run full Experiment Readiness convergence
+      - name: Verify Series 1 harness structure without claiming live evidence
+        run: npm run series1:preflight
+      - name: Run structural Deep convergence
         if: github.event_name == 'pull_request'
         env:
           DEEP_REVISION: ${{ github.event.pull_request.head.sha }}
         run: npm run readiness
-      - name: Record product review bundle
+      - name: Record deterministic structural review bundle
         if: github.event_name == 'pull_request'
         env:
           DEEP_REVISION: ${{ github.event.pull_request.head.sha }}
         run: npm run review | tee review-bundle.json
-      - name: Publish product review bundle
+      - name: Publish structural review bundle
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: ql-product-review-${{ github.event.pull_request.head.sha }}
+          name: ql-structural-review-${{ github.event.pull_request.head.sha }}
           path: ql-agent-experiments/deep-ql/review-bundle.json
           if-no-files-found: error
