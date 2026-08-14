@@ -9,7 +9,9 @@ pub struct RunProjectionIdentity {
     pub canonical_run_ref: Option<RunRef>,
 }
 
-pub fn resolve_run_projection(projection: &RunProjectionIdentity) -> Result<RunRef, RunContractError> {
+pub fn resolve_run_projection(
+    projection: &RunProjectionIdentity,
+) -> Result<RunRef, RunContractError> {
     projection
         .canonical_run_ref
         .clone()
