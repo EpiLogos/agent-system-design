@@ -2,9 +2,9 @@ name: QL Deep Runtime
 on:
   push:
     branches: [ql/deep-runtime]
-    paths: ['ql-agent-experiments/deep-ql/**','.github/workflows/ql-deep-runtime.yml']
+    paths: ['ql-agent-experiments/deep-ql/**','ql-agent-experiments/TYPING-CORPUS-REVIEW-CLARIFICATION-08-14-2026.md','.github/workflows/ql-deep-runtime.yml']
   pull_request:
-    paths: ['ql-agent-experiments/deep-ql/**','.github/workflows/ql-deep-runtime.yml']
+    paths: ['ql-agent-experiments/deep-ql/**','ql-agent-experiments/TYPING-CORPUS-REVIEW-CLARIFICATION-08-14-2026.md','.github/workflows/ql-deep-runtime.yml']
 permissions:
   contents: read
 jobs:
@@ -19,23 +19,8 @@ jobs:
         with: { node-version: '22' }
       - run: npm test
       - run: npm run conformance
-      - name: Capture matched host run records
+      - name: Run full Experiment Readiness convergence
         if: github.event_name == 'pull_request'
-        run: |
-          node ../experiments/pi/run-smoke.mjs > /tmp/pi.json
-          node ../experiments/pydantic/run-smoke.mjs > /tmp/pydantic.json
-          node ../experiments/native/run-smoke.mjs > /tmp/native.json
-      - name: Compare actual host semantic traces
-        if: github.event_name == 'pull_request'
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import { compareTraces } from './comparison/comparator.js';
-          const names = ['pi', 'pydantic', 'native'];
-          const traces = names.map((name) => JSON.parse(fs.readFileSync(`/tmp/${name}.json`, 'utf8')).ql.events.filter((event) => event.channel === 'runtime-semantic'));
-          for (let index = 1; index < traces.length; index += 1) {
-            const result = compareTraces(traces[0], traces[index]);
-            if (!result.equal) throw new Error(`semantic transition mismatch: pi vs ${names[index]}`);
-          }
-          console.log(JSON.stringify({ hosts: names, transition_equivalent: true }));
-          NODE
+        env:
+          DEEP_REVISION: ${{ github.event.pull_request.head.sha }}
+        run: npm run readiness
