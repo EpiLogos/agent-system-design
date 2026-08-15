@@ -1,7 +1,7 @@
 # Execution Intelligence Integration — Canonical Design Amendment
 
 **Status:** `CURRENT DESIGN — cross-map integration amendment`  
-**Date:** 2026-08-12  
+**Date:** 2026-08-15  
 **Authority:** subordinate to `QL-SOFTWARE-FACTORY-CONSTITUTIONAL-INDEX.md`; integrates and refines the existing Execution Intelligence family in Architecture, Primitive Relations and the three harmonised Wayfinders. It does not supersede constitutional determinations.
 
 ## 1. Determination
@@ -14,7 +14,7 @@ Run Map frontier / WorkNode / ActionInvocation / Assessment demand
  + Context = Operative World + Information Horizon + Focus
  + available Agents / Agencies
  + AIKit-resolved skills / Capabilities / Actions / sources
- + model / harness / SessionSpace / Workcell availability
+ + model / harness / optional effective HarnessComposition / SessionSpace / Workcell availability
  + learned fitness / policy / user constraints
         ↓
 EXECUTION INTELLIGENCE
@@ -31,6 +31,8 @@ P5 learning → future Ground / Context / execution resolution
 ```
 
 The agent is not a legacy workflow step. It receives a meaningful task, the relevant operative world, runtime competence, and a suitable intelligence/body. The Factory and AIKit resolve and enforce the boundaries around the act without pre-scripting the agent's internal reasoning.
+
+Some Harnesses are comparatively fixed. Others expose an internally composable runtime body. Where AIKit can resolve such a body, Factory needs only enough opaque `HarnessComposition` provenance to explain which effective embodiment carried an Execution. Component, Contract, Surface, activation-scope and target-native plugin semantics remain outside Factory ownership.
 
 ## 2. ExecutionDisposition
 
@@ -56,6 +58,7 @@ type ExecutionDisposition = {
 
   model: ModelRef
   harness: HarnessRef
+  harness_composition?: Ref
   session_space?: SessionSpaceRef
   execution_demand?: ExecutionDemandRef
 
@@ -80,7 +83,9 @@ type ExecutionShape =
   | 'nested-run'
 ```
 
-The exact serialized schema remains an implementation contract to settle through the root ticket. The semantic relation is fixed here.
+The exact serialized schema remains an implementation contract to settle through the root ticket. `harness_composition` is intentionally opaque at the Factory boundary: its source/revision/fingerprint/provenance may be carried through the common Ref floor, while AIKit/target adapters own its internal component graph. A fixed/thin harness may omit it entirely.
+
+The semantic relation is fixed here.
 
 `ExecutionDisposition` is **not**:
 
@@ -90,12 +95,13 @@ The exact serialized schema remains an implementation contract to settle through
 - Context;
 - a CapabilitySet or skill body;
 - an Action or ActionInvocation;
+- a HarnessComposition or Component graph;
 - an ExecutionDemand;
 - an Execution;
 - a provider prescription;
 - a chain-of-thought plan.
 
-The same semantic task may be re-resolved after host/session/provider/model loss or availability change without changing Run, WorkNode, Agent or Candidate identity.
+The same semantic task may be re-resolved after host/session/provider/model/body availability change without changing Run, WorkNode, Agent or Candidate identity. A body-composition change that materially affects an Execution must remain attributable in ExecutionDisposition/Execution provenance; it does not create a new semantic Agent or Run merely by occurring.
 
 ## 3. Run Map walking
 
@@ -152,6 +158,8 @@ Their content normally belongs in the agent's operative Context, **not copied in
 
 Capability composition may include standalone, embedded/gating, or orchestrating usage patterns where useful, but these are workflow participation modes, not an exhaustive ontology of all skills/Capabilities.
 
+For composition-capable harnesses, AIKit may additionally resolve the effective runtime body through which those powers become active. Factory consumes only the resulting body/provenance relation needed for execution attribution; it does not acquire AIKit's Component/Contract/Surface composition model.
+
 ## 5. Run-Map Builder capability
 
 Constructing or materially revising a Run Map is itself agentic work.
@@ -202,7 +210,7 @@ skills / Capabilities supply runtime competence
         ↓
 Agency situates the enduring Agent
         ↓
-model + Harness + material world give the act a body
+model + Harness + optional HarnessComposition + material world give the act a body
         ↓
 Execution
         ↓
@@ -213,7 +221,9 @@ attributable artifacts + epistemic returns
 
 The selector should not stuff every available document or skill into the prompt. It should resolve the smallest sufficient operative world while preserving addressability to the wider Information Horizon.
 
-Actions remain project/application-owned domain operations. Capabilities remain broader powers. Skills may help an agent use Actions; they do not acquire Action semantic ownership by being resolved alongside them.
+The same principle applies to runtime embodiment: a richly composable harness does not imply every available Component is mounted. AIKit may resolve a body appropriate to this Agency/Context; Factory records which effective body carried the act when that distinction is material.
+
+Actions remain project/application-owned domain operations. Capabilities remain broader powers. Skills may help an agent use Actions; they do not acquire Action semantic ownership by being resolved alongside them. A target-native Component or UI Surface exposing an Action likewise does not acquire that Action's canonical meaning.
 
 ## 8. P5 / recursion
 
@@ -225,6 +235,7 @@ It may derive **distinct** observations about:
 - Agency/Agent fitness for a use type;
 - Capability/skill usefulness;
 - context sufficiency and retrieval quality;
+- harness/body-composition use-fitness where observable;
 - decomposition quality;
 - false or missing dependencies;
 - execution-shape effectiveness;
@@ -233,7 +244,7 @@ It may derive **distinct** observations about:
 - cost, latency and context occupancy;
 - Run-Map granularity and map-building quality.
 
-These observations may influence future Execution Intelligence and Run-Map Builder resolution. They do not overwrite immutable Run history, collapse trust/preference/frecency/fitness into one signal, or silently rewrite authored Intent.
+These observations may influence future Execution Intelligence and Run-Map Builder resolution. They do not overwrite immutable Run history, collapse trust/preference/frecency/fitness into one signal, silently rewrite authored Intent, or acquire authority over AIKit/target Component meaning.
 
 ## 9. Architecture gates implied by this amendment
 
@@ -243,11 +254,13 @@ The implementation must be able to detect or demonstrate failure for at least:
 - skill bodies copied into canonical map state as a substitute for capability resolution;
 - an execution leg that cannot be attributed back to its Run/frontier;
 - orphan runtime work;
+- a materially different effective HarnessComposition used without execution provenance when the adapter supplies that relation;
+- a target-native plugin/component ID replacing canonical Agent, Action, Capability, Project or Run identity;
 - false seriality where dependency is absent when the selector is expected to exploit parallelism;
 - a barrier opening without all stipulated evidence-bearing legs;
 - report concatenation presented as synthesis;
 - builder self-review satisfying an explicitly independent gate;
-- resource/model choice with no reconstructable rationale;
+- resource/model/body choice with no reconstructable rationale;
 - AIKit resolution acquiring ownership of Project, Action or Run semantics;
 - P5 learning rewriting historical facts or authored intent.
 
@@ -255,6 +268,8 @@ The implementation must be able to detect or demonstrate failure for at least:
 
 The architecture remains QL-rooted without requiring an executable QL service for ordinary operation.
 
-Execution Intelligence is a constitutional family crossing all six positions; it is not assigned to one QL stage. MEF may later refract tasks, Context, Agents, Capabilities, ExecutionDispositions or Assessments where there is a real operational consequence. Graph-review angles are not automatically MEF lenses, and the existence of twelve lenses does not imply twelve review agents.
+Execution Intelligence is a constitutional family crossing all six positions; it is not assigned to one QL stage. MEF may later refract tasks, Context, Agents, Capabilities, ExecutionDispositions, HarnessComposition refs or Assessments where there is a real operational consequence. Graph-review angles are not automatically MEF lenses, and the existence of twelve lenses does not imply twelve review agents.
+
+The current QL Loop Runtime experiment uses this body distinction directly: `Harness`/host mechanics remain outside the selectable `classic | ql-direct | ql-deep` recurrence seam, and a composition-capable DeepSeek Harness can carry that same seam while its body composition is held constant within matched comparisons.
 
 This preserves the open socket for deeper QL-native/conjugate/nested orchestration while keeping present execution excellent under NoQL/FixtureQL conditions.
