@@ -87,13 +87,17 @@ export async function sourceRevisions() {
     policy: await fileDigest('policy.mjs'),
     freeze: await fileDigest('freeze.mjs'),
     candidate_boundary: await fileDigest('candidate-boundary.mjs'),
-    evidence_boundary: await fileDigest('evidence.mjs')
+    evidence_boundary: await fileDigest('evidence.mjs'),
+    dsh_host: await fileDigest('dsh.mjs'),
+    dsh_ui: await fileDigest('dsh-ui-client.tsx'),
+    dsh_profile: await fileDigest('DEEPSEEK-HARNESS-MAXIMAL-REFERENCE.md')
   });
   const reviewContractRevision = stableDigest({
     benchmark: benchmarkSpecRevision,
     renderer_cli: await fileDigest('render-review.mjs'),
     renderer: await fileDigest('review.mjs'),
-    evidence_boundary: await fileDigest('evidence.mjs')
+    evidence_boundary: await fileDigest('evidence.mjs'),
+    dsh_ui: await fileDigest('dsh-ui-client.tsx')
   });
   return {
     benchmark_spec_revision: benchmarkSpecRevision,
