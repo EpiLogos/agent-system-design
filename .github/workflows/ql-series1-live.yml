@@ -104,19 +104,30 @@ jobs:
           fi
 
           node ql-agent-experiments/comparison/series1/preflight.mjs --live --task '${{ inputs.task }}' \
-            | tee series1-evidence/preflight.json
+            > series1-evidence/preflight.json
 
           for HOST in "${HOSTS[@]}"; do
             for TASK in "${TASKS[@]}"; do
-              OUT="series1-evidence/${HOST}-${TASK}-run.json"
+              PREFIX="series1-evidence/${HOST}-${TASK}"
+              OUT="${PREFIX}-run.json"
               node ql-agent-experiments/comparison/series1/run.mjs \
                 --host "$HOST" \
                 --task "$TASK" \
                 --repetitions '${{ inputs.repetitions }}' \
                 --max-steps '${{ inputs.max_steps }}' \
-                | tee "$OUT"
-              node ql-agent-experiments/comparison/series1/render-review.mjs "$OUT" \
-                > "series1-evidence/${HOST}-${TASK}-review.md"
+                > "$OUT"
+
+              node ql-agent-experiments/comparison/series1/render-review.mjs "$OUT" --mode assessment \
+                > "${PREFIX}-assessment.json"
+              node -e "const fs=require('node:fs'); const a=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); if(!a.valid){ console.error('Series 1 evidence is invalid/incomplete: '+a.reasons.join('; ')); process.exit(1); }" \
+                "${PREFIX}-assessment.json"
+
+              node ql-agent-experiments/comparison/series1/render-review.mjs "$OUT" --mode masked \
+                > "${PREFIX}-pass-a-masked.md"
+              node ql-agent-experiments/comparison/series1/render-review.mjs "$OUT" --mode unmasked \
+                > "${PREFIX}-pass-b-unmasked.md"
+              node ql-agent-experiments/comparison/series1/render-review.mjs "$OUT" --mode mapping \
+                > "${PREFIX}-mask-map.json"
             done
           done
 
