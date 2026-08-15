@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { HOSTS, REQUIRED_HELD_CONSTANTS, SERIES1_CAPABILITY_CONTRACT, SERIES1_SCHEMA, assertLiveManifest, stableDigest } from '../../comparison/series1/contract.mjs';
 import { DSH_INSPECTION_SCHEMA, DSH_PACKAGE_VERSION, DSH_PLUGIN_TREE, DSH_PROVIDER_ROUTE, DSH_UPSTREAM_REVISION, buildDshInspectionProjection, buildIgnorableInspectionSeed, dshCompositionFingerprint } from '../../comparison/series1/dsh.mjs';
 import { Series1Workspace, createLiveHost } from '../../comparison/series1/host.mjs';
@@ -46,6 +48,18 @@ test('DSH inspection projection is read-only evidence derived from portable chro
   const seed = buildIgnorableInspectionSeed(projection, { time: 0 });
   assert.equal(seed.length, events.length);
   assert.ok(seed.every((event, index) => event.type === 'series1/portable-event' && event.seq === index && event.ignorable === true));
+});
+
+test('DSH Web UI contribution registers only read-model and renderer surfaces', async () => {
+  const source = await fs.readFile(fileURLToPath(new URL('../../comparison/series1/dsh-ui-client.tsx', import.meta.url)), 'utf8');
+  assert.match(source, /ctx\.conversationEvents\.register\(series1QLInspectionDefinition\)/);
+  assert.match(source, /ctx\.slots\.inject\('conversation\.chat\.node'/);
+  assert.match(source, /candidate_context_authority/i);
+  assert.doesNotMatch(source, /ctx\.(?:agents|sessions)\./);
+  assert.doesNotMatch(source, /\.append\s*\(/);
+  assert.doesNotMatch(source, /\.callModel\s*\(/);
+  assert.doesNotMatch(source, /\.executeCapability\s*\(/);
+  assert.doesNotMatch(source, /\.(?:followup|steer|send|inject)\s*\(/);
 });
 
 test('DSH host reuses the exact portable candidate capability contract and carries target revision/composition', () => {
