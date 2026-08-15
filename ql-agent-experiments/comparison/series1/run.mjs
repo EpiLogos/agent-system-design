@@ -11,21 +11,18 @@ import { Series1Workspace, createLiveHost } from './host.mjs';
 import {
   CONDITIONS,
   DETERMINATION,
+  SERIES1_CAPABILITY_CONTRACT,
   SERIES1_SCHEMA,
   assertLiveManifest,
   compareHeldConstant,
   stableDigest
 } from './contract.mjs';
+import { buildBenchmarkFreeze, fingerprintWorkspace } from './freeze.mjs';
 import { getTask, setupTask, verifyTask } from './tasks.mjs';
 
 const SPEC_REVISION = 'f9d056c54caf094eb672f005ce3c8cbde4de0a5b+QL-PAIRING-SQUARES-CLARIFICATION-08-14-2026+SERIES1-BENCHMARK-V0.1';
 const DEEP_CLASS = createDeepQLRuntimeClass(QLDirectCoreRuntime);
-const CAPABILITIES = Object.freeze([
-  { id: 'list_files', args: { path: 'optional relative directory' } },
-  { id: 'read_file', args: { path: 'required relative file path' } },
-  { id: 'write_file', args: { path: 'required relative file path', content: 'complete UTF-8 replacement' } },
-  { id: 'run_tests', args: { files: 'optional relative test path array' } }
-]);
+const CAPABILITIES = Object.freeze(SERIES1_CAPABILITY_CONTRACT.map(({ name, args }) => ({ id: name, args })));
 
 function args() {
   const values = process.argv.slice(2);
@@ -81,13 +78,29 @@ function createRuntime(condition, runId) {
   return { runtime: new DEEP_CLASS({ policy }), policy };
 }
 
-async function runCondition({ hostId, task, condition, repetition, model, maxSteps }) {
+async function runCondition({ hostId, task, condition, repetition, model, maxSteps, freeze }) {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), `ql-series1-${task.id}-${condition}-`));
   try {
     await setupTask(task, temp);
     const before = await snapshot(temp);
-    const startStateDigest = stableDigest(before);
+    const byteFingerprint = await fingerprintWorkspace(temp);
+    const frozenTask = freeze.tasks[task.id];
+    if (!frozenTask || byteFingerprint.digest !== frozenTask.starting_workspace_digest) {
+      const error = new Error(`Series 1 frozen workspace mismatch for ${task.id}: expected ${frozenTask?.starting_workspace_digest ?? 'missing'}, got ${byteFingerprint.digest}`);
+      error.code = 'SERIES1_FREEZE_MISMATCH';
+      throw error;
+    }
+
+    const startStateDigest = byteFingerprint.digest;
     const workspace = new Series1Workspace(temp);
+    const actualCapabilityContract = workspace.describe();
+    const capabilityContractDigest = stableDigest(actualCapabilityContract);
+    if (capabilityContractDigest !== freeze.capability_contract_digest) {
+      const error = new Error(`Series 1 capability contract mismatch: expected ${freeze.capability_contract_digest}, got ${capabilityContractDigest}`);
+      error.code = 'SERIES1_FREEZE_MISMATCH';
+      throw error;
+    }
+
     const provider = providerForHost(hostId);
     await provider.assertReady();
     const host = createLiveHost({ hostId, provider, workspace });
@@ -98,6 +111,10 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       network: 'model-provider-only',
       workspace_network_tools: false
     };
+    const networkPolicyDigest = stableDigest({
+      network: logicalEnvironment.network,
+      workspace_network_tools: logicalEnvironment.workspace_network_tools
+    });
     const baseRequest = {
       taskId: task.id,
       input: task.prompt,
@@ -141,22 +158,37 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       schema: SERIES1_SCHEMA,
       provider_mode: 'live',
       fixture_provider: false,
+      source_repository_revision: process.env.GITHUB_SHA ?? process.env.QL_SERIES1_SOURCE_REVISION ?? null,
+      benchmark_revision: freeze.benchmark_revision,
+      benchmark_spec_revision: freeze.benchmark_spec_revision,
+      task_corpus_revision: freeze.task_corpus_revision,
+      task_revision: frozenTask.task_revision,
+      runner_revision: freeze.runner_revision,
+      review_contract_revision: freeze.review_contract_revision,
       host: { id: host.id, revision: host.revision, real_framework_path: host.realFrameworkPath },
+      host_revision: host.revision,
+      host_composition_fingerprint: host.compositionFingerprint ?? null,
       condition,
       repetition,
       runtime: { id: runtime.id, version: runtime.version },
       model,
       task_id: task.id,
       task_digest: stableDigest({ prompt: task.prompt, success_conditions: task.successConditions }),
+      prompt_digest: frozenTask.prompt_digest,
+      success_constraints_digest: frozenTask.success_constraints_digest,
       start_state_digest: startStateDigest,
       end_state_digest: stableDigest(after),
-      capability_digest: stableDigest(CAPABILITIES),
-      verification_protocol_digest: stableDigest(task.verificationProtocol),
+      capability_digest: capabilityContractDigest,
+      capability_contract_digest: capabilityContractDigest,
+      capability_contract: actualCapabilityContract,
+      verification_protocol_digest: frozenTask.verification_protocol_digest,
       execution_budget_digest: stableDigest(executionBudget),
+      network_policy_digest: networkPolicyDigest,
       execution_budget: executionBudget,
       prompt: task.prompt,
       success_conditions: task.successConditions,
       starting_workspace: before,
+      starting_workspace_fingerprint: byteFingerprint,
       final_workspace: after,
       outcome: output,
       verification,
@@ -207,18 +239,24 @@ async function main() {
   if (!process.env.DEEPSEEK_API_KEY) throw new Error('DEEPSEEK_API_KEY is required for live Series 1 runs.');
   const task = getTask(config.task);
   const model = canonicalModel();
+  const freeze = await buildBenchmarkFreeze();
   const records = [];
 
   for (let repetition = 0; repetition < config.repetitions; repetition += 1) {
     for (const condition of rotation(repetition)) {
-      records.push(await runCondition({ hostId: config.host, task, condition, repetition, model, maxSteps: config.maxSteps }));
+      records.push(await runCondition({ hostId: config.host, task, condition, repetition, model, maxSteps: config.maxSteps, freeze }));
     }
   }
 
   const held = compareHeldConstant(records);
   const manifest = {
     schema: SERIES1_SCHEMA,
-    benchmark: 'series1-v0.1-human-review',
+    benchmark: freeze.benchmark_id,
+    benchmark_revision: freeze.benchmark_revision,
+    benchmark_spec_revision: freeze.benchmark_spec_revision,
+    task_corpus_revision: freeze.task_corpus_revision,
+    runner_revision: freeze.runner_revision,
+    review_contract_revision: freeze.review_contract_revision,
     provider_mode: 'live',
     fixture_provider: false,
     credential_contract: 'DEEPSEEK_API_KEY',
@@ -227,7 +265,7 @@ async function main() {
     conditions: CONDITIONS,
     held_constant: held,
     determination: DETERMINATION,
-    task: { id: task.id, category: task.category },
+    task: { id: task.id, category: task.category, revision: freeze.tasks[task.id].task_revision },
     repetitions: config.repetitions,
     review: {
       prompt: task.prompt,
