@@ -1,4 +1,6 @@
-import { HOSTS } from './contract.mjs';
+import { HOSTS, SERIES1_CAPABILITY_CONTRACT, stableDigest } from './contract.mjs';
+import { buildBenchmarkFreeze, verifyFreezeReproducibility } from './freeze.mjs';
+import { Series1Workspace } from './host.mjs';
 import { providerForHost, SERIES1_PROVIDER, series1ModelId } from './providers.mjs';
 import { SERIES1_TASKS, getTask } from './tasks.mjs';
 
@@ -36,9 +38,20 @@ async function main() {
   }
   const tasks = selectedTasks(task);
   const config = checkConfiguration();
+  const freeze = await buildBenchmarkFreeze();
+  const reproducibility = await verifyFreezeReproducibility();
+  const workspaceCapabilityDigest = stableDigest(new Series1Workspace(process.cwd()).describe());
+  const declaredCapabilityDigest = stableDigest(SERIES1_CAPABILITY_CONTRACT);
+  const capabilityParity = workspaceCapabilityDigest === declaredCapabilityDigest && declaredCapabilityDigest === freeze.capability_contract_digest;
+
   const result = {
-    schema: 'ql-series1-preflight/0.4',
-    benchmark: 'series1-v0.1-human-review',
+    schema: 'ql-series1-preflight/0.5',
+    benchmark: freeze.benchmark_id,
+    benchmark_revision: freeze.benchmark_revision,
+    benchmark_spec_revision: freeze.benchmark_spec_revision,
+    task_corpus_revision: freeze.task_corpus_revision,
+    runner_revision: freeze.runner_revision,
+    review_contract_revision: freeze.review_contract_revision,
     live_requested: live,
     hosts,
     selected_task: task ?? 'all',
@@ -46,12 +59,25 @@ async function main() {
     model: config.model,
     credential_contract: 'DEEPSEEK_API_KEY',
     determination_protocol: 'human-review-first; automated/scalar evals deferred',
+    freeze: {
+      reproducible: reproducibility.valid,
+      capability_contract_parity: capabilityParity,
+      capability_contract_digest: freeze.capability_contract_digest,
+      tasks: Object.fromEntries(Object.entries(freeze.tasks).map(([id, entry]) => [id, {
+        task_revision: entry.task_revision,
+        prompt_digest: entry.prompt_digest,
+        success_constraints_digest: entry.success_constraints_digest,
+        starting_workspace_digest: entry.starting_workspace_digest,
+        verification_protocol_digest: entry.verification_protocol_digest,
+        starting_workspace_files: entry.starting_workspace_files
+      }]))
+    },
     structural: {
       task_count: SERIES1_TASKS.length,
       selected_task_count: tasks.length,
       task_categories: Object.fromEntries(SERIES1_TASKS.map((entry) => [entry.id, entry.category])),
       conditions: ['classic', 'ql-direct', 'ql-deep'],
-      required_held_constants: ['task/prompt', 'starting workspace', 'model/parameters', 'capabilities', 'verification protocol', 'execution budget', 'host revision'],
+      required_held_constants: ['prompt', 'success/constraint text', 'starting workspace', 'model/parameters', 'capabilities', 'verification protocol', 'execution budget', 'host revision/composition', 'network policy', 'benchmark/task/runner/review revisions'],
       fixture_fallback: false,
       full_model_io_retained: true,
       full_capability_io_retained: true,
@@ -74,9 +100,10 @@ async function main() {
   }
 
   const hostFailures = result.host_checks.filter((entry) => !entry.ready);
-  result.evidence_ready = live && config.errors.length === 0 && hostFailures.length === 0;
+  result.structural_ready = reproducibility.valid && capabilityParity;
+  result.evidence_ready = result.structural_ready && live && config.errors.length === 0 && hostFailures.length === 0;
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
-  if (live && !result.evidence_ready) process.exitCode = 1;
+  if (!result.structural_ready || (live && !result.evidence_ready)) process.exitCode = 1;
 }
 
 main().catch((error) => {
