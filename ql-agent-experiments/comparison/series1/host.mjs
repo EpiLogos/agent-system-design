@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { LIVE_RESPONSE_SYSTEM } from './providers.mjs';
+import { DSH_UPSTREAM_REVISION, DSH_PACKAGE_VERSION } from './dsh.mjs';
 
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
 
@@ -80,21 +81,26 @@ function historyPrompt(history, request, capabilities) {
 }
 
 export class LiveRuntimeHost {
-  constructor({ id, revision, realFrameworkPath, provider, workspace }) {
+  constructor({ id, revision, realFrameworkPath, provider, workspace, compositionFingerprint = null }) {
     this.id = id;
     this.revision = revision;
     this.realFrameworkPath = realFrameworkPath;
     this.provider = provider;
     this.workspace = workspace;
+    this.compositionFingerprint = compositionFingerprint;
     this.observer = null;
     this.runId = null;
     this.sequence = 0;
+    this.providerAttach = null;
     this.usage = { model_calls: 0, input_tokens: 0, output_tokens: 0, total_tokens: 0, model_cost: 0 };
   }
 
   attachObserver(observer, runId) {
     this.observer = observer;
     this.runId = runId;
+    if (typeof this.provider.attachRun === 'function') {
+      this.providerAttach = Promise.resolve(this.provider.attachRun(runId, this.workspace.root));
+    }
   }
 
   emit(eventType, payload) {
@@ -118,6 +124,7 @@ export class LiveRuntimeHost {
   }
 
   async callModel(payload = {}) {
+    if (this.providerAttach) await this.providerAttach;
     let system = LIVE_RESPONSE_SYSTEM;
     let prompt;
     const mode = payload.series1Control ? 'control' : 'turn';
@@ -165,6 +172,7 @@ export class LiveRuntimeHost {
   }
 
   async executeCapability({ name, args } = {}) {
+    if (this.providerAttach) await this.providerAttach;
     this.emit('capability_requested', { name, args: clone(args ?? {}) });
     try {
       const result = await this.workspace.execute(name, args ?? {});
@@ -185,6 +193,19 @@ export class LiveRuntimeHost {
     return { kind, input: clone(input), capabilities: this.workspace.describe() };
   }
 
+  async capturePortableTrace(events, details = {}) {
+    if (this.providerAttach) await this.providerAttach;
+    if (typeof this.provider.capturePortableTrace === 'function') {
+      return this.provider.capturePortableTrace(events, details);
+    }
+  }
+
+  async snapshotNativeEvidence() {
+    if (this.providerAttach) await this.providerAttach;
+    if (typeof this.provider.snapshotNativeEvidence === 'function') return this.provider.snapshotNativeEvidence();
+    return null;
+  }
+
   snapshotUsage() { return clone(this.usage); }
 }
 
@@ -201,9 +222,20 @@ export function createLiveHost({ hostId, provider, workspace }) {
     native: {
       revision: 'native-series1-host-v1',
       path: 'repo-owned DeepSeek OpenAI-compatible HTTP transport'
+    },
+    dsh: {
+      revision: `deepseek-ai/deepseek-harness@${DSH_UPSTREAM_REVISION}`,
+      path: `@deepseek-ai/dsh@${DSH_PACKAGE_VERSION} programmatic Cordis composition / deepseek-official`
     }
   };
   const config = table[hostId];
   if (!config) throw new Error(`Unknown Series 1 host '${hostId}'.`);
-  return new LiveRuntimeHost({ id: hostId, revision: config.revision, realFrameworkPath: config.path, provider, workspace });
+  return new LiveRuntimeHost({
+    id: hostId,
+    revision: config.revision,
+    realFrameworkPath: config.path,
+    provider,
+    workspace,
+    compositionFingerprint: provider.compositionFingerprint ?? null
+  });
 }
