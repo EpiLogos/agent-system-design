@@ -13,7 +13,7 @@ on:
         required: true
         default: all
         type: choice
-        options: [all, pi, pydantic-ai, native]
+        options: [all, pi, pydantic-ai, native, dsh]
       task:
         description: Benchmark task id or 'all'
         required: true
@@ -55,7 +55,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.19.0'
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -78,6 +78,36 @@ jobs:
           python -m pip install -e '.series1/pydantic-ai/pydantic_graph'
           python -m pip install -e '.series1/pydantic-ai/pydantic_ai_slim[openai]'
 
+      - name: Checkout pinned public DeepSeek Harness source
+        if: ${{ inputs.host == 'dsh' || inputs.host == 'all' }}
+        uses: actions/checkout@v4
+        with:
+          repository: deepseek-ai/deepseek-harness
+          ref: 47f943859bef60e4160492346772ded9b24f765a
+          path: .series1/deepseek-harness
+
+      - name: Build pinned DSH host packages from public source
+        if: ${{ inputs.host == 'dsh' || inputs.host == 'all' }}
+        working-directory: .series1/deepseek-harness
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.7.0 --activate
+          pnpm install --frozen-lockfile
+          pnpm run build:lib:host
+
+      - name: Project pinned DSH packages into Series 1 resolution
+        if: ${{ inputs.host == 'dsh' || inputs.host == 'all' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE="$GITHUB_WORKSPACE/.series1/deepseek-harness/node_modules/@deepseek-ai"
+          TARGET="$GITHUB_WORKSPACE/ql-agent-experiments/comparison/series1/node_modules/@deepseek-ai"
+          mkdir -p "$TARGET"
+          for PKG in cordis dsh-llm dsh-llm-deepseek dsh-session dsh-session-persistence dsh-session-persistence-jsonl dsh-agent; do
+            rm -rf "$TARGET/$PKG"
+            ln -s "$SOURCE/$PKG" "$TARGET/$PKG"
+          done
+
       - name: Preflight and execute matched benchmark
         shell: bash
         run: |
@@ -85,9 +115,11 @@ jobs:
           mkdir -p series1-evidence
 
           if [[ '${{ inputs.host }}' == 'all' ]]; then
-            HOSTS=(pi pydantic-ai native)
+            HOSTS=(pi pydantic-ai native dsh)
+            PREFLIGHT_HOST=()
           else
             HOSTS=('${{ inputs.host }}')
+            PREFLIGHT_HOST=(--host '${{ inputs.host }}')
           fi
 
           if [[ '${{ inputs.task }}' == 'all' ]]; then
@@ -103,7 +135,7 @@ jobs:
             TASKS=('${{ inputs.task }}')
           fi
 
-          node ql-agent-experiments/comparison/series1/preflight.mjs --live --task '${{ inputs.task }}' \
+          node ql-agent-experiments/comparison/series1/preflight.mjs --live --task '${{ inputs.task }}' "${PREFLIGHT_HOST[@]}" \
             > series1-evidence/preflight.json
 
           for HOST in "${HOSTS[@]}"; do
