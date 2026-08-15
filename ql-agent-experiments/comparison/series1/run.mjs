@@ -17,6 +17,8 @@ import {
   compareHeldConstant,
   stableDigest
 } from './contract.mjs';
+import { buildCandidateRequest } from './candidate-boundary.mjs';
+import { assertNoConfiguredSecrets, sanitizeEvidence } from './evidence.mjs';
 import { buildBenchmarkFreeze, fingerprintWorkspace } from './freeze.mjs';
 import { getTask, setupTask, verifyTask } from './tasks.mjs';
 
@@ -115,14 +117,12 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       network: logicalEnvironment.network,
       workspace_network_tools: logicalEnvironment.workspace_network_tools
     });
-    const baseRequest = {
-      taskId: task.id,
-      input: task.prompt,
-      successConditions: task.successConditions,
+    const baseRequest = buildCandidateRequest({
+      task,
       capabilities: CAPABILITIES,
       maxSteps,
       provenance: { series: 1, benchmark: 'v0.1', repetition, condition }
-    };
+    });
     const manifest = createRunManifest({
       taskId: task.id,
       fixtureId: `series1:v0.1:${task.id}:r${repetition}`,
@@ -153,6 +153,9 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
     const verification = await verifyTask(task, temp, { before, after, output, record });
     const usage = host.snapshotUsage();
     const executionBudget = { max_steps: maxSteps };
+    const hostNativeEvidence = typeof host.snapshotNativeEvidence === 'function'
+      ? await host.snapshotNativeEvidence()
+      : null;
 
     return {
       schema: SERIES1_SCHEMA,
@@ -168,6 +171,7 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       host: { id: host.id, revision: host.revision, real_framework_path: host.realFrameworkPath },
       host_revision: host.revision,
       host_composition_fingerprint: host.compositionFingerprint ?? null,
+      host_native_evidence: hostNativeEvidence,
       condition,
       repetition,
       runtime: { id: runtime.id, version: runtime.version },
@@ -279,10 +283,12 @@ async function main() {
     records
   };
   assertLiveManifest(manifest);
-  process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);
+  const safeManifest = sanitizeEvidence(manifest);
+  assertNoConfiguredSecrets(safeManifest);
+  process.stdout.write(`${JSON.stringify(safeManifest, null, 2)}\n`);
 }
 
 main().catch((error) => {
-  console.error(error.stack ?? error.message ?? String(error));
+  console.error(sanitizeEvidence(error.stack ?? error.message ?? String(error)));
   process.exitCode = 1;
 });
