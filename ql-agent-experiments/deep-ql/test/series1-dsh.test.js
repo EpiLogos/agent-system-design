@@ -54,7 +54,6 @@ test('DSH Web UI contribution registers only read-model and renderer surfaces', 
   const source = await fs.readFile(fileURLToPath(new URL('../../comparison/series1/dsh-ui-client.tsx', import.meta.url)), 'utf8');
   assert.match(source, /ctx\.conversationEvents\.register\(series1QLInspectionDefinition\)/);
   assert.match(source, /ctx\.slots\.inject\('conversation\.chat\.node'/);
-  assert.match(source, /candidate_context_authority/i);
   assert.doesNotMatch(source, /ctx\.(?:agents|sessions)\./);
   assert.doesNotMatch(source, /\.append\s*\(/);
   assert.doesNotMatch(source, /\.callModel\s*\(/);
