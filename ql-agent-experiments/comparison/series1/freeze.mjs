@@ -85,11 +85,15 @@ export async function sourceRevisions() {
     host: await fileDigest('host.mjs'),
     providers: await fileDigest('providers.mjs'),
     policy: await fileDigest('policy.mjs'),
-    freeze: await fileDigest('freeze.mjs')
+    freeze: await fileDigest('freeze.mjs'),
+    candidate_boundary: await fileDigest('candidate-boundary.mjs'),
+    evidence_boundary: await fileDigest('evidence.mjs')
   });
   const reviewContractRevision = stableDigest({
     benchmark: benchmarkSpecRevision,
-    renderer: await fileDigest('render-review.mjs')
+    renderer_cli: await fileDigest('render-review.mjs'),
+    renderer: await fileDigest('review.mjs'),
+    evidence_boundary: await fileDigest('evidence.mjs')
   });
   return {
     benchmark_spec_revision: benchmarkSpecRevision,
