@@ -81,7 +81,7 @@ function renderPortableRecord(record, heading, { masked }) {
     renderWorkspace(record.final_workspace, 'Complete final workspace')
   ];
 
-  if (record.host_native_evidence) {
+  if (!masked && record.host_native_evidence) {
     parts.push('### Host-native evidence links', '', fence(record.host_native_evidence), '');
   }
 
@@ -145,7 +145,7 @@ function sharedReviewMaterial(manifest, { masked }) {
   } else {
     lines.push(
       '## Pass A boundary', '',
-      'Condition identity, runtime IDs, semantic/closure state, QL event names, controller payloads, QL-only model envelopes, human answer/reference anchors, and the neutral-label mapping are intentionally withheld from this artifact. Tool calls/results, workspace effects, verifier facts, final outcome and descriptive friction metrics remain visible.', '',
+      'Condition identity, runtime IDs, semantic/closure state, QL event names, controller payloads, QL-only model envelopes, human answer/reference anchors, host-native observer links, and the neutral-label mapping are intentionally withheld from this artifact. Tool calls/results, workspace effects, verifier facts, final outcome and descriptive friction metrics remain visible.', '',
       '_The neutral-label mapping is emitted separately as machine evidence and must not be opened during Pass A._', ''
     );
   }
