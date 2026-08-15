@@ -82,6 +82,7 @@ function createRuntime(condition, runId) {
 
 async function runCondition({ hostId, task, condition, repetition, model, maxSteps, freeze }) {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), `ql-series1-${task.id}-${condition}-`));
+  let provider = null;
   try {
     await setupTask(task, temp);
     const before = await snapshot(temp);
@@ -103,7 +104,7 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       throw error;
     }
 
-    const provider = providerForHost(hostId);
+    provider = providerForHost(hostId);
     await provider.assertReady();
     const host = createLiveHost({ hostId, provider, workspace });
     const descriptor = runtimeDescriptor(condition);
@@ -148,14 +149,13 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       }
     }
 
+    await host.capturePortableTrace(record.events, { condition });
     const after = await snapshot(temp);
     const output = typeof record.result?.outcome === 'string' ? record.result.outcome : JSON.stringify(record.result?.outcome ?? '');
     const verification = await verifyTask(task, temp, { before, after, output, record });
     const usage = host.snapshotUsage();
     const executionBudget = { max_steps: maxSteps };
-    const hostNativeEvidence = typeof host.snapshotNativeEvidence === 'function'
-      ? await host.snapshotNativeEvidence()
-      : null;
+    const hostNativeEvidence = await host.snapshotNativeEvidence();
 
     return {
       schema: SERIES1_SCHEMA,
@@ -210,6 +210,7 @@ async function runCondition({ hostId, task, condition, repetition, model, maxSte
       record
     };
   } finally {
+    if (typeof provider?.dispose === 'function') await provider.dispose();
     await fs.rm(temp, { recursive: true, force: true });
   }
 }
