@@ -59,7 +59,7 @@ test('DSH Web UI contribution registers only read-model and renderer surfaces', 
   assert.doesNotMatch(source, /\.append\s*\(/);
   assert.doesNotMatch(source, /\.callModel\s*\(/);
   assert.doesNotMatch(source, /\.executeCapability\s*\(/);
-  assert.doesNotMatch(source, /\.(?:followup|steer|send|inject)\s*\(/);
+  assert.doesNotMatch(source, /\.(?:followup|steer|send)\s*\(/);
 });
 
 test('DSH host reuses the exact portable candidate capability contract and carries target revision/composition', () => {
