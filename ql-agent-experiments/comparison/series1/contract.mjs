@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 
 export const SERIES1_SCHEMA = 'ql-series1-run/0.3';
 export const CONDITIONS = Object.freeze(['classic', 'ql-direct', 'ql-deep']);
-export const HOSTS = Object.freeze(['pi', 'pydantic-ai', 'native']);
+export const HOSTS = Object.freeze(['pi', 'pydantic-ai', 'native', 'dsh']);
 export const DETERMINATION = 'pending-human-review';
 
 export const SERIES1_CAPABILITY_CONTRACT = Object.freeze([
@@ -107,6 +107,9 @@ export function assertLiveManifest(manifest) {
     if (!record?.runner_revision) errors.push(`records[${index}].runner_revision is required`);
     if (!record?.review_contract_revision) errors.push(`records[${index}].review_contract_revision is required`);
     if (!record?.host_revision && !record?.host?.revision) errors.push(`records[${index}].host_revision is required`);
+    if ((record?.host?.id ?? manifest?.host?.id) === 'dsh' && !record?.host_composition_fingerprint) {
+      errors.push(`records[${index}].host_composition_fingerprint is required for dsh`);
+    }
   }
   if (errors.length) {
     const error = new Error(`Series 1 manifest is not evidence eligible:\n- ${errors.join('\n- ')}`);
