@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { DshSeries1Provider } from './dsh.mjs';
 
 export const SERIES1_PROVIDER = 'deepseek';
 export const SERIES1_DEFAULT_MODEL = 'deepseek-v4-flash';
@@ -201,6 +202,7 @@ export function providerForHost(hostId, options = {}) {
   if (hostId === 'pi') return new PiAIProvider(options.pi);
   if (hostId === 'pydantic-ai') return new PydanticAIProvider(options.pydantic);
   if (hostId === 'native') return new NativeOpenAICompatibleProvider(options.native);
+  if (hostId === 'dsh') return new DshSeries1Provider({ model: series1ModelId(), ...options.dsh });
   throw new Error(`Unknown live host '${hostId}'.`);
 }
 
