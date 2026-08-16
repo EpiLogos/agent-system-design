@@ -5,6 +5,7 @@ import { SpanDetail } from './components/SpanDetail'
 import { TraceWaterfall } from './components/TraceWaterfall'
 import { chronologicalSpans } from './read-model'
 import './styles.css'
+import './build-surface.css'
 
 export interface BuildSurfaceProps {
   view: FactoryBuildView
@@ -38,7 +39,7 @@ export function BuildSurface({ view, initialDepth = 'semantic', onAction }: Buil
   const candidateActions = view.actions.filter((action) => action.subjectKinds.includes('candidate'))
   const runActions = view.actions.filter((action) => action.subjectKinds.includes('run'))
 
-  return <main className="factory-build oi-surface-dark">
+  return <main className="fb-build-surface factory-build oi-surface-dark">
     <header className="fb-header">
       <div className="fb-eyebrow">Factory / Build</div>
       <div className="fb-title-row">
