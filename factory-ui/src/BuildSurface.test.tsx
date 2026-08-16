@@ -18,7 +18,7 @@ describe('Factory Build semantic envelope', () => {
     fireEvent.click(screen.getByRole('button', { name: 'live' }))
     expect(screen.getByText('Live working world')).toBeTruthy()
     expect(screen.getByText('Mahāmāyā · implementation agency')).toBeTruthy()
-    expect(screen.getByText(/SessionSpace unavailable/)).toBeTruthy()
+    expect(screen.getAllByText(/SessionSpace unavailable/)).toHaveLength(2)
 
     fireEvent.click(screen.getByRole('button', { name: 'trajectory' }))
     expect(screen.getByText('Trajectory')).toBeTruthy()
@@ -31,7 +31,10 @@ describe('Factory Build semantic envelope', () => {
     expect(screen.getByText(/body sha256:dsh-maximal-cordis-a7f9/)).toBeTruthy()
     expect(screen.getByText(/dsh-session-events/)).toBeTruthy()
 
-    fireEvent.click(screen.getByText('execution:01ARZ3NDEKTSV4RRFFQ69G5FAG'))
+    const thinExecutionRef = 'execution:01ARZ3NDEKTSV4RRFFQ69G5FAG'
+    const thinCard = screen.getAllByText(thinExecutionRef).map((element) => element.closest('button')).find(Boolean)
+    if (!thinCard) throw new Error('thin execution card missing')
+    fireEvent.click(thinCard)
     expect(screen.getByText(/native sssf:/)).toBeTruthy()
     expect(screen.queryByText(/sha256:dsh-maximal-cordis-a7f9/)).toBeNull()
     expect(screen.getByText(/pinned SSSF trace does not emit a process event type/)).toBeTruthy()
