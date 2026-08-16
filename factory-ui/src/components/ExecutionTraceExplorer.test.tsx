@@ -7,7 +7,7 @@ describe('SSSF-derived execution explorer', () => {
   it('renders sessions, waterfall, selected phase and scan-friendly stats', () => {
     render(<ExecutionTraceExplorer traces={[sssfParityTrace]} />)
     expect(screen.getByText('Sessions')).toBeTruthy()
-    expect(screen.getByText('Preserve source-faithful execution detail while porting the Build surface.')).toBeTruthy()
+    expect(screen.getAllByText('Preserve source-faithful execution detail while porting the Build surface.').length).toBeGreaterThanOrEqual(2)
     expect(screen.getByLabelText('Execution trace waterfall')).toBeTruthy()
     expect(screen.getByLabelText('Phase detail: request')).toBeTruthy()
     expect(screen.getByText('18,432 tokens')).toBeTruthy()
@@ -22,7 +22,9 @@ describe('SSSF-derived execution explorer', () => {
 
   it('keeps failed tool args/results/duration deeply inspectable', () => {
     render(<ExecutionTraceExplorer traces={[sssfParityTrace]} />)
-    fireEvent.click(screen.getByTitle('test — fail'))
+    const testPhase = screen.getAllByTitle('test — fail').find((element) => element.tagName === 'BUTTON')
+    if (!testPhase) throw new Error('test phase button missing')
+    fireEvent.click(testPhase)
     const row = screen.getByText('bash').closest('summary')
     expect(row?.textContent).toContain('3s')
     expect(row?.textContent).toContain('failed')
