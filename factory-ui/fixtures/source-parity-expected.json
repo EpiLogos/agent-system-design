@@ -19,14 +19,14 @@
   },
   "minimumBlockPct": 3.5,
   "failedTool": {
-    "span": "build",
+    "span": "test",
     "tool": "bash",
     "args": {
       "command": "npm test"
     },
-    "result": "1 failing fixture",
-    "durationMs": 925,
-    "nativeRef": "e5"
+    "result": "1 failed, 12 passed",
+    "durationMs": 3100,
+    "nativeRef": "e-test"
   },
   "sourceProcessEventSupported": false
 }
