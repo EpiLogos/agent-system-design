@@ -26,7 +26,7 @@
     },
     "result": "1 failed, 12 passed",
     "durationMs": 3100,
-    "nativeRef": "evt-test-tool"
+    "nativeRef": "e-test"
   },
   "sourceProcessEventSupported": false
 }
