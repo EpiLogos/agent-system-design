@@ -26,7 +26,7 @@ describe('SSSF-derived execution explorer', () => {
     if (!testPhase) throw new Error('test phase button missing')
     fireEvent.click(testPhase)
     const row = screen.getByText('bash').closest('summary')
-    expect(row?.textContent).toContain('3s')
+    expect(row?.textContent).toContain('3.1s')
     expect(row?.textContent).toContain('failed')
     if (!row) throw new Error('tool row missing')
     fireEvent.click(row)
