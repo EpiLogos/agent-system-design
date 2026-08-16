@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import liveDshFixture from '../fixtures/dsh-trajectory.json'
 import { processEvents, toolEvents } from './read-model'
 import { drainSssfEvents, type SssfApi, type SssfEvent } from './sssf'
 import { dshMaximalTrace } from './fixtures/factory-build'
@@ -57,5 +58,12 @@ describe('heterogeneous native trajectory conformance', () => {
   it('keeps target-native permission evidence distinct from a Factory HumanRequest', () => {
     const permission = dshMaximalTrace.spans.flatMap((span) => span.events).find((event) => event.kind === 'permission')
     expect(permission?.payload).toMatchObject({ factoryHumanRequest: false })
+  })
+
+  it('consumes the current AIKit SessionSpace reference shape without re-owning it', () => {
+    expect(liveDshFixture.sessionSpaceRef).toBe('session-space/live-field')
+    expect(liveDshFixture.sessionSpaceRevision).toBe(7)
+    expect(liveDshFixture.sessionSpaceLifecycle).toBe('open')
+    expect(liveDshFixture.surfaceRefs).toContain('surface/aikit/tui')
   })
 })
