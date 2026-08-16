@@ -60,10 +60,10 @@ describe('heterogeneous native trajectory conformance', () => {
     expect(permission?.payload).toMatchObject({ factoryHumanRequest: false })
   })
 
-  it('consumes the current AIKit SessionSpace reference shape without re-owning it', () => {
-    expect(liveDshFixture.sessionSpaceRef).toBe('session-space/live-field')
-    expect(liveDshFixture.sessionSpaceRevision).toBe(7)
-    expect(liveDshFixture.sessionSpaceLifecycle).toBe('open')
+  it('keeps SessionSpace unavailable until the current AIKit producer implements #61-#63', () => {
+    expect(liveDshFixture.sessionSpaceRef).toBeNull()
+    expect(liveDshFixture.sessionSpaceRevision).toBeNull()
+    expect(liveDshFixture.sessionSpaceLifecycle).toBe('unavailable-pending-aikit-61-63')
     expect(liveDshFixture.surfaceRefs).toContain('surface/aikit/tui')
   })
 })
