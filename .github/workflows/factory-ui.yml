@@ -1,0 +1,29 @@
+name: Factory Build UI
+
+on:
+  pull_request:
+    paths:
+      - 'factory-ui/**'
+      - '.github/workflows/factory-ui.yml'
+  push:
+    branches:
+      - agent/factory-build-sssf-surface
+    paths:
+      - 'factory-ui/**'
+      - '.github/workflows/factory-ui.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: factory-ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
