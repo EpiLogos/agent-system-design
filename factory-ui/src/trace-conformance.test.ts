@@ -36,7 +36,7 @@ describe('SSSF source-fidelity trace conformance', () => {
     expect(failed.toolCall?.result).toBe('1 failed, 12 passed')
     expect(failed.toolCall?.durationMs).toBe(3100)
     expect(failed.toolCall?.agentRef).toMatch(/^agent:/)
-    expect(failed.toolCall?.nativeRef).toBe('e-test')
+    expect(failed.toolCall?.nativeRef).toBe('evt-test-tool')
   })
 
   it('does not invent process material absent from the pinned SSSF event vocabulary', () => {
