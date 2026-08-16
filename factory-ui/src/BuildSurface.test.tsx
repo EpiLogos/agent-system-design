@@ -32,8 +32,9 @@ describe('Factory Build semantic envelope', () => {
     expect(screen.getByText(/dsh-session-events/)).toBeTruthy()
 
     fireEvent.click(screen.getByText('execution:01ARZ3NDEKTSV4RRFFQ69G5FAG'))
-    expect(screen.getByText('native trajectory unavailable')).toBeTruthy()
+    expect(screen.getByText(/native sssf:/)).toBeTruthy()
     expect(screen.queryByText(/sha256:dsh-maximal-cordis-a7f9/)).toBeNull()
+    expect(screen.getByText(/pinned SSSF trace does not emit a process event type/)).toBeTruthy()
   })
 
   it('dispatches canonical Factory Actions without mutating local business state', () => {
