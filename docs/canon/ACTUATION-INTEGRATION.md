@@ -107,11 +107,36 @@ Factory's proven `Agent` / `Agency` / `AgentSession` / `Execution` distinctions 
 
 Actuation MUST consume those meanings compatibly rather than fork them. A later shared-schema amendment may move canonical ownership without semantic drift.
 
-## 6. QL profile
+## 6. QL profile and sixfold projection
 
-Factory retains the Epi-Logos developmental profile in which the 0/1 reader-composer coordinates six canonical Agent identities. Those are legitimate first-class Agents used by Factory; they are not the generic definition of actuation.
+Factory does **not** canonically define a `0/1 orchestrator` plus six named Agent species.
 
-Generic Actuation is number-neutral and N-agent. QL-MEF may refract the relation through bimba/pratibimba, conjugation, 0/1, 1/0, 4+2, MEF lenses, or other formal structures. Factory MAY consume those projections without requiring them for baseline correctness.
+The generic substrate available to Factory is an Actuation relation: a whole-bearing/determining Agency may differentiate bounded agency, including an optional sixfold functional arrangement, while the participating loci remain ordinary Agents/Agencies. That arrangement is number-neutral and ontology-neutral at the Actuation layer.
+
+When the Epi-Logos developmental profile is required, **QL-MEF owns the ontological projection** that can read the generic whole/differentiation relation through `0/1 ↔ 1/0`, bimba/pratibimba, mono/poly, One/All and the `4+2` / six-position structure. It is at that projection layer — not in generic Factory or Actuation identity semantics — that the six functional positions may acquire the canonical Epi-Logos names and their richer ontological determinations.
+
+Consequently:
+
+```text
+Actuation generic relation
+    whole-bearing Agency
+      ↕ differentiation / return
+    N agentic loci
+          │
+          │ optional QL-MEF projection
+          ▼
+QL functional reading
+    0/1 whole ↔ 1/0 differentiated field
+    4+2 / six functional positions
+          │
+          │ Epi-Logos ontological profile
+          ▼
+    named/specifically interpreted positions
+```
+
+Factory MAY consume the projected Epi profile where developmental semantics call for it. It MUST NOT make those projected names, a fixed count of six Agents, or a special `OrchestratorAgent` class prerequisites for baseline Agent, Agency, Actuation, or Execution correctness.
+
+This preserves the possibility that a QL six-position circuit is a functional articulation within one agentic locus, across multiple loci, or recursively across both; that question remains evidence-bearing rather than pre-decided by identity classes.
 
 ## 7. QL Agent Runtime graduation
 
