@@ -1,0 +1,15 @@
+{
+  "executionRef":"execution:01K2N6P7H8J9K0M1N2P3Q4R5SM",
+  "projectRef":"project:01K2N6P7H8J9K0M1N2P3Q4R5S6",
+  "runRef":"run:01K2N6P7H8J9K0M1N2P3Q4R5S7",
+  "status":"success",
+  "request":"Render a portable-only harness honestly",
+  "startedAt":"2026-08-17T00:02:00.000Z",
+  "endedAt":"2026-08-17T00:02:03.000Z",
+  "agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SN",
+  "agencyRef":"agency:01K2N6P7H8J9K0M1N2P3Q4R5SP",
+  "harnessRef":"native-thin/v1",
+  "spans":[
+    {"spanRef":"span:thin","name":"portable execution","description":"Only the cross-harness portable trace is available.","kind":"agent","status":"success","startedAt":"2026-08-17T00:02:00.000Z","endedAt":"2026-08-17T00:02:03.000Z","ownerLabel":"builder","agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SN","agencyRef":"agency:01K2N6P7H8J9K0M1N2P3Q4R5SP","events":[{"eventRef":"event:thin-tool","kind":"tool_call","timestamp":"2026-08-17T00:02:01.000Z","name":"run_tests","spanRef":"span:thin","projectRef":"project:01K2N6P7H8J9K0M1N2P3Q4R5S6","runRef":"run:01K2N6P7H8J9K0M1N2P3Q4R5S7","executionRef":"execution:01K2N6P7H8J9K0M1N2P3Q4R5SM","agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SN","agencyRef":"agency:01K2N6P7H8J9K0M1N2P3Q4R5SP","harnessRef":"native-thin/v1","status":"success","toolCall":{"tool":"run_tests","args":{"suite":"portable"},"result":"12 passed","ok":true,"durationMs":610,"agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SN"}}]}
+  ]
+}
