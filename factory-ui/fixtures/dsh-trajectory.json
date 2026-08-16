@@ -1,0 +1,26 @@
+{
+  "executionRef":"execution:01K2N6P7H8J9K0M1N2P3Q4R5SH",
+  "projectRef":"project:01K2N6P7H8J9K0M1N2P3Q4R5S6",
+  "runRef":"run:01K2N6P7H8J9K0M1N2P3Q4R5S7",
+  "status":"success",
+  "request":"Verify the maximal DSH trajectory without flattening SessionEvents",
+  "startedAt":"2026-08-17T00:01:00.000Z",
+  "endedAt":"2026-08-17T00:01:12.000Z",
+  "agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SJ",
+  "agencyRef":"agency:01K2N6P7H8J9K0M1N2P3Q4R5SK",
+  "harnessRef":"deepseek-harness@47f943859bef60e4160492346772ded9b24f765a",
+  "harnessCompositionRef":"aikit:harness-composition/demo-dsh",
+  "harnessCompositionRevision":3,
+  "harnessCompositionFingerprint":"dsh-demo-4c9a",
+  "agentSessionRef":"aikit:agent-session/dsh-demo",
+  "sessionSpaceRef":"aikit:session-space/demo",
+  "workcellBindingRefs":["workcell:binding/execution-demo","workcell:binding/preview-demo"],
+  "surfaceRefs":["aikit:surface/web-dsh","aikit:surface/terminal-demo"],
+  "totalTokens":12140,
+  "totalCost":0.061,
+  "nativeTrajectory":{"kind":"dsh-session-events","ref":"dsh:session/demo-trajectory","fingerprint":"session-events-v1"},
+  "spans":[
+    {"spanRef":"span:dsh-model","nativeSpanRef":"dsh:turn/1","name":"model turn","description":"Candidate model call through the frozen runtime host seam.","kind":"agent","status":"success","startedAt":"2026-08-17T00:01:00.000Z","endedAt":"2026-08-17T00:01:06.000Z","agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SJ","agencyRef":"agency:01K2N6P7H8J9K0M1N2P3Q4R5SK","ownerLabel":"Mahāmāyā","modelLabel":"deepseek-v4-flash","events":[{"eventRef":"event:dsh-tool","kind":"tool_call","timestamp":"2026-08-17T00:01:03.000Z","endedAt":"2026-08-17T00:01:03.140Z","name":"read_file","spanRef":"span:dsh-model","projectRef":"project:01K2N6P7H8J9K0M1N2P3Q4R5S6","runRef":"run:01K2N6P7H8J9K0M1N2P3Q4R5S7","executionRef":"execution:01K2N6P7H8J9K0M1N2P3Q4R5SH","agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SJ","agencyRef":"agency:01K2N6P7H8J9K0M1N2P3Q4R5SK","harnessRef":"deepseek-harness@47f943859bef60e4160492346772ded9b24f765a","agentSessionRef":"aikit:agent-session/dsh-demo","sessionSpaceRef":"aikit:session-space/demo","workcellBindingRef":"workcell:binding/execution-demo","status":"success","toolCall":{"tool":"read_file","args":{"path":"src/lib.rs"},"result":"portable capability result","ok":true,"durationMs":140,"agentRef":"agent:01K2N6P7H8J9K0M1N2P3Q4R5SJ","nativeRef":"dsh-session-event:evt-42"},"nativeRef":"dsh-session-event:evt-42"}]},
+    {"spanRef":"span:dsh-process","nativeSpanRef":"dsh:service/preview","name":"preview service","description":"Native process/service material surfaced by the rich harness/workcell trajectory.","kind":"process","status":"success","startedAt":"2026-08-17T00:01:06.010Z","endedAt":"2026-08-17T00:01:12.000Z","ownerLabel":"preview","events":[{"eventRef":"event:dsh-process","kind":"process","timestamp":"2026-08-17T00:01:06.010Z","endedAt":"2026-08-17T00:01:12.000Z","name":"preview available","spanRef":"span:dsh-process","projectRef":"project:01K2N6P7H8J9K0M1N2P3Q4R5S6","runRef":"run:01K2N6P7H8J9K0M1N2P3Q4R5S7","executionRef":"execution:01K2N6P7H8J9K0M1N2P3Q4R5SH","workcellBindingRef":"workcell:binding/preview-demo","status":"success","payload":{"endpoint":"preview:factory-build","availability":"available"},"nativeRef":"dsh-session-event:process-9"}]}
+  ]
+}
