@@ -180,17 +180,11 @@ mod tests {
             agency_ref: Some("agency:mahamaya".into()),
             profile_ref: Some("profile:rust".into()),
             use_type: "coding".into(),
-            required_capabilities: BTreeSet::from([
-                "reasoning".into(),
-                "structured-output".into(),
-            ]),
+            required_capabilities: BTreeSet::from(["reasoning".into(), "structured-output".into()]),
             required_modalities: BTreeSet::from(["text".into()]),
             required_actions: BTreeSet::from(["apply-patch".into()]),
             required_tools: BTreeSet::from(["shell".into()]),
-            context_characteristics: BTreeSet::from([
-                "rust".into(),
-                "large-repository".into(),
-            ]),
+            context_characteristics: BTreeSet::from(["rust".into(), "large-repository".into()]),
             independence_from: BTreeSet::new(),
             cost_ceiling_usd: Some(30.0),
             latency_preference_ms: Some(30_000),
@@ -224,16 +218,12 @@ mod tests {
         .unwrap();
         assert_eq!(disposition.selection.model_ref, "model:gpt-5.4");
         assert_eq!(disposition.demand.run_ref, "run:184");
-        assert_eq!(
-            disposition.selection.ranking_explanation["eligible"],
-            true
-        );
+        assert_eq!(disposition.selection.ranking_explanation["eligible"], true);
     }
 
     #[test]
     fn provider_replacement_preserves_model_and_run_identity() {
-        let first =
-            accept_aikit_selection(demand(), selection("provider:openai-a"), "t1").unwrap();
+        let first = accept_aikit_selection(demand(), selection("provider:openai-a"), "t1").unwrap();
         let second =
             accept_aikit_selection(demand(), selection("provider:openai-b"), "t2").unwrap();
         assert_eq!(first.selection.model_ref, second.selection.model_ref);
@@ -298,12 +288,10 @@ mod tests {
         };
         let input = fitness_for_aikit(&observation);
         assert_eq!(input.fitness, 0.8);
-        assert!(
-            !serde_json::to_value(input)
-                .unwrap()
-                .as_object()
-                .unwrap()
-                .contains_key("exact_spend")
-        );
+        assert!(!serde_json::to_value(input)
+            .unwrap()
+            .as_object()
+            .unwrap()
+            .contains_key("exact_spend"));
     }
 }
