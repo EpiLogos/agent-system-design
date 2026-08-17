@@ -13,10 +13,10 @@
     "platforms": ["platform-neutral-source-component"]
   },
   "build": {
-    "command": ["cargo", "build", "--manifest-path", "factory/Cargo.toml", "--locked", "--release"]
+    "command": ["cargo", "build", "--workspace", "--locked", "--release"]
   },
   "verify": {
-    "source_command": ["cargo", "test", "--manifest-path", "factory/Cargo.toml", "--locked"],
+    "source_command": ["cargo", "test", "--workspace", "--locked"],
     "installed_command": null
   },
   "install": {"mode": "oi-managed-component"},
