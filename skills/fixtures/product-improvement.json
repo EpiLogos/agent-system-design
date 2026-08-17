@@ -1,0 +1,18 @@
+{
+  "schema": "factory.skill-workflow/v1",
+  "kind": "product-improvement",
+  "nativeOwner": "EpiLogos/Workcell",
+  "ownerSkillRef": "workcell:operator",
+  "stages": [
+    "observe-pressure",
+    "claim",
+    "bounded-run",
+    "candidate-through-owner-contract",
+    "owner-native-evidence",
+    "owner-recognition",
+    "attributable-return"
+  ],
+  "directForeignPrivateMutation": false,
+  "factoryRunImpliesRepositoryAuthority": false,
+  "automaticPromotion": false
+}
