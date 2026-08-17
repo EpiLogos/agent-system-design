@@ -171,6 +171,7 @@ export interface FactoryActionView {
   actionRef: string
   label: string
   subjectKinds: Array<'run' | 'candidate' | 'execution' | 'human-request'>
+  requiredCapabilityRef?: string
 }
 
 export interface FrontierView {
