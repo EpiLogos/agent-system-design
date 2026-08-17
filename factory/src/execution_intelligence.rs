@@ -133,7 +133,9 @@ pub fn accept_aikit_selection(
         return Err(ExecutionInteropError::EmptyModelRef);
     }
     if selection.roster_version != AIKIT_MODEL_ROSTER_VERSION {
-        return Err(ExecutionInteropError::WrongRosterVersion(selection.roster_version));
+        return Err(ExecutionInteropError::WrongRosterVersion(
+            selection.roster_version,
+        ));
     }
     Ok(ExecutionDisposition {
         schema_version: EXECUTION_INTELLIGENCE_INTEROP_VERSION.to_string(),
@@ -178,11 +180,17 @@ mod tests {
             agency_ref: Some("agency:mahamaya".into()),
             profile_ref: Some("profile:rust".into()),
             use_type: "coding".into(),
-            required_capabilities: BTreeSet::from(["reasoning".into(), "structured-output".into()]),
+            required_capabilities: BTreeSet::from([
+                "reasoning".into(),
+                "structured-output".into(),
+            ]),
             required_modalities: BTreeSet::from(["text".into()]),
             required_actions: BTreeSet::from(["apply-patch".into()]),
             required_tools: BTreeSet::from(["shell".into()]),
-            context_characteristics: BTreeSet::from(["rust".into(), "large-repository".into()]),
+            context_characteristics: BTreeSet::from([
+                "rust".into(),
+                "large-repository".into(),
+            ]),
             independence_from: BTreeSet::new(),
             cost_ceiling_usd: Some(30.0),
             latency_preference_ms: Some(30_000),
@@ -208,16 +216,26 @@ mod tests {
 
     #[test]
     fn factory_consumes_selection_without_owning_model_registry() {
-        let disposition = accept_aikit_selection(demand(), selection("provider:openai"), "2026-08-17T10:00:00+01:00").unwrap();
+        let disposition = accept_aikit_selection(
+            demand(),
+            selection("provider:openai"),
+            "2026-08-17T10:00:00+01:00",
+        )
+        .unwrap();
         assert_eq!(disposition.selection.model_ref, "model:gpt-5.4");
         assert_eq!(disposition.demand.run_ref, "run:184");
-        assert_eq!(disposition.selection.ranking_explanation["eligible"], true);
+        assert_eq!(
+            disposition.selection.ranking_explanation["eligible"],
+            true
+        );
     }
 
     #[test]
     fn provider_replacement_preserves_model_and_run_identity() {
-        let first = accept_aikit_selection(demand(), selection("provider:openai-a"), "t1").unwrap();
-        let second = accept_aikit_selection(demand(), selection("provider:openai-b"), "t2").unwrap();
+        let first =
+            accept_aikit_selection(demand(), selection("provider:openai-a"), "t1").unwrap();
+        let second =
+            accept_aikit_selection(demand(), selection("provider:openai-b"), "t2").unwrap();
         assert_eq!(first.selection.model_ref, second.selection.model_ref);
         assert_eq!(first.demand.run_ref, second.demand.run_ref);
         assert_ne!(first.selection.provider_ref, second.selection.provider_ref);
@@ -240,7 +258,11 @@ mod tests {
                 context_characteristics: BTreeSet::from(["rust".into()]),
             },
             fitness: 0.92,
-            exact_spend: Some(ExactExecutionSpend { amount: 3.27, currency: "USD".into(), provider_receipt_ref: Some("receipt:abc".into()) }),
+            exact_spend: Some(ExactExecutionSpend {
+                amount: 3.27,
+                currency: "USD".into(),
+                provider_receipt_ref: Some("receipt:abc".into()),
+            }),
             observed_at: "2026-08-17T10:05:00+01:00".into(),
             evidence_refs: vec!["gate:cargo-test".into(), "application:recognition".into()],
         };
@@ -256,12 +278,32 @@ mod tests {
     #[test]
     fn catalog_price_and_exact_spend_are_not_conflated() {
         let observation = P5ModelFitnessObservation {
-            run_ref: "run:x".into(), model_ref: "model:x".into(), provider_ref: "provider:x".into(), provider_revision: None,
-            scope: FitnessObservationScope { project_ref:"project:x".into(), use_type:"review".into(), ..Default::default() },
-            fitness:0.8, exact_spend:Some(ExactExecutionSpend { amount:7.0, currency:"USD".into(), provider_receipt_ref:None }), observed_at:"now".into(), evidence_refs:vec![]
+            run_ref: "run:x".into(),
+            model_ref: "model:x".into(),
+            provider_ref: "provider:x".into(),
+            provider_revision: None,
+            scope: FitnessObservationScope {
+                project_ref: "project:x".into(),
+                use_type: "review".into(),
+                ..Default::default()
+            },
+            fitness: 0.8,
+            exact_spend: Some(ExactExecutionSpend {
+                amount: 7.0,
+                currency: "USD".into(),
+                provider_receipt_ref: None,
+            }),
+            observed_at: "now".into(),
+            evidence_refs: vec![],
         };
         let input = fitness_for_aikit(&observation);
         assert_eq!(input.fitness, 0.8);
-        assert!(!serde_json::to_value(input).unwrap().as_object().unwrap().contains_key("exact_spend"));
+        assert!(
+            !serde_json::to_value(input)
+                .unwrap()
+                .as_object()
+                .unwrap()
+                .contains_key("exact_spend")
+        );
     }
 }
