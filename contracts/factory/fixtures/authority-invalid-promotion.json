@@ -1,0 +1,7 @@
+{
+  "fixtureVersion": "factory.authority-invalid-promotion/v1",
+  "retrievedReferenceId": "run-closure-verification-alignment-unmerged",
+  "precedence": 99,
+  "scope": "invalid-promoted-reference",
+  "expectedError": "silent authority promotion"
+}

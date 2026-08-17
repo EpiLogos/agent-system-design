@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "factory.run-map-fixtures/v1",
+  "projectRef": "project:01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "runRef": "run:01ARZ3NDEKTSV4RRFFQ69G5FAX",
+  "mapAddress": "run:01ARZ3NDEKTSV4RRFFQ69G5FAX/map",
+  "destination": "Build the durable Factory Run spine",
+  "initialWriteOwner": "host-alpha",
+  "replacementWriteOwner": "host-beta",
+  "sessionReplacements": ["agent-session-one", "agent-session-two"],
+  "workNodes": [
+    {"id": "work-a", "label": "Establish topology", "state": "ready"},
+    {"id": "work-b", "label": "Verify topology", "state": "planned"}
+  ],
+  "projectionChanges": [
+    {"provider": "github", "externalId": "issue-404", "canonicalRunRef": "run:01ARZ3NDEKTSV4RRFFQ69G5FAX"},
+    {"provider": "local", "externalId": "/work/renamed-run", "canonicalRunRef": "run:01ARZ3NDEKTSV4RRFFQ69G5FAX"}
+  ],
+  "projectionLoss": {"provider": "github", "externalId": "issue-404", "canonicalRunRef": null, "mustRejectIdentityRecovery": true},
+  "staleMutation": {"expectedRevision": 1, "mustReject": true},
+  "duplicateCanonicalMap": {"runRef": "run:01ARZ3NDEKTSV4RRFFQ69G5FAX", "mustReject": true},
+  "topologyRules": {
+    "requiresCycleMustReject": true,
+    "returnsToBackEdgeMustRemainLegal": true,
+    "frontierMustNotBeStored": true
+  }
+}
