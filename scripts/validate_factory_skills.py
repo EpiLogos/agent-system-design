@@ -37,7 +37,7 @@ require_text(
     [
         "factory:developer",
         "native-owner review / Recognition",
-        "projected harness projection",
+        "edited harness projection",
         "automatic backlog",
     ],
 )
