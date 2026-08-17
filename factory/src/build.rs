@@ -1,7 +1,7 @@
 use crate::core::identity::Revision;
 use crate::core::run::{
-    CommandOutcome, NodeKind, NodeState, Project, ProjectRef, Run, RunContractError, RunMutationAuthority,
-    RunRef, RunRegistry, RunTopologyCommand,
+    CommandOutcome, NodeKind, NodeState, Project, ProjectRef, Run, RunContractError,
+    RunMutationAuthority, RunRef, RunRegistry, RunTopologyCommand,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -12,8 +12,7 @@ use std::fmt::{Display, Formatter};
 pub const FACTORY_BUILD_VIEW_CONTRACT: &str = "factory.build-view/v1";
 pub const FACTORY_BUILD_PROVIDER_CONTRACT: &str = "factory.build-view-provider/v1";
 pub const FACTORY_NATIVE_OWNER: &str = "factory";
-pub const REQUEST_MORE_EVIDENCE_ACTION_REF: &str =
-    "action:01ARZ3NDEKTSV4RRFFQ69G5FAP";
+pub const REQUEST_MORE_EVIDENCE_ACTION_REF: &str = "action:01ARZ3NDEKTSV4RRFFQ69G5FAP";
 pub const REQUEST_MORE_EVIDENCE_CAPABILITY_REF: &str = "capability/factory/request-evidence";
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -115,7 +114,7 @@ pub struct ExecutionRecord {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub agent_session_ref: Option<String>,
     /// Opaque AIKit-owned SessionSpace identity. Factory never interprets the
-    /// target's activation/authority state from this ref.
+    /// target's activation or authority state from this ref.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub session_space_ref: Option<String>,
     #[serde(default)]
@@ -178,10 +177,7 @@ impl FactoryBuildState {
         self.runs.get(run_ref)
     }
 
-    pub fn run_mutation_authority(
-        &self,
-        run_ref: &RunRef,
-    ) -> Option<RunMutationAuthority> {
+    pub fn run_mutation_authority(&self, run_ref: &RunRef) -> Option<RunMutationAuthority> {
         self.runs.get(run_ref).map(Run::mutation_authority)
     }
 
@@ -304,9 +300,7 @@ impl FactoryBuildState {
         }
         let human_request_ref = format!("human-request/request-evidence/{candidate_ref}");
         if self.human_requests.contains_key(&human_request_ref) {
-            return Err(FactoryBuildError::ActionAlreadyApplied(
-                human_request_ref,
-            ));
+            return Err(FactoryBuildError::ActionAlreadyApplied(human_request_ref));
         }
         let request = HumanRequestRecord {
             run_ref: run_ref.clone(),
@@ -394,12 +388,12 @@ pub struct FactoryBuildView {
     pub project: ProjectView,
     pub run: RunView,
     pub frontier: FrontierView,
-    pub claims: Vec<ClaimView>,
-    pub evidence: Vec<EvidenceView>,
-    pub candidates: Vec<CandidateView>,
-    pub human_requests: Vec<HumanRequestView>,
-    pub agencies: Vec<AgencyView>,
-    pub executions: Vec<ExecutionView>,
+    pub claims: Vec<ClaimRecord>,
+    pub evidence: Vec<EvidenceRecord>,
+    pub candidates: Vec<CandidateRecord>,
+    pub human_requests: Vec<HumanRequestRecord>,
+    pub agencies: Vec<AgencyRecord>,
+    pub executions: Vec<ExecutionRecord>,
     pub trajectories: Vec<Value>,
     pub actions: Vec<FactoryActionView>,
 }
@@ -431,104 +425,6 @@ pub struct FrontierView {
     pub closure_state: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gate_state: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ClaimView {
-    pub claim_ref: String,
-    pub statement: String,
-    pub status: String,
-    pub evidence_refs: Vec<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct EvidenceView {
-    pub evidence_ref: String,
-    pub label: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub assessment: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub native_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub producing_execution_ref: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CandidateView {
-    pub candidate_ref: String,
-    pub revision: u64,
-    pub label: String,
-    pub status: String,
-    pub producing_execution_refs: Vec<String>,
-    pub claim_refs: Vec<String>,
-    pub evidence_refs: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub artifact_refs: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub preview_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tradeoffs: Vec<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct HumanRequestView {
-    pub human_request_ref: String,
-    pub decision_ref: String,
-    pub question: String,
-    pub why_human: String,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub blocked_execution_refs: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub evidence_refs: Vec<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AgencyView {
-    pub agency_ref: String,
-    pub agent_ref: String,
-    pub label: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub position: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub root_scope_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub metagency_grant_refs: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub actuation_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub return_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub return_state: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExecutionView {
-    pub execution_ref: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub agency_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub agent_ref: Option<String>,
-    pub status: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub harness_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub harness_composition_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub agent_session_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub session_space_ref: Option<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub surface_refs: Vec<String>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub workcell_binding_refs: Vec<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub native_trajectory_ref: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -574,93 +470,12 @@ impl FactoryBuildViewProvider {
                 status: run_status(run),
             },
             frontier: materialise_frontier(run),
-            claims: state
-                .claims
-                .values()
-                .filter(|record| record.run_ref == selection.run_ref)
-                .map(|record| ClaimView {
-                    claim_ref: record.claim_ref.clone(),
-                    statement: record.statement.clone(),
-                    status: record.status.clone(),
-                    evidence_refs: record.evidence_refs.clone(),
-                })
-                .collect(),
-            evidence: state
-                .evidence
-                .values()
-                .filter(|record| record.run_ref == selection.run_ref)
-                .map(|record| EvidenceView {
-                    evidence_ref: record.evidence_ref.clone(),
-                    label: record.label.clone(),
-                    assessment: record.assessment.clone(),
-                    native_ref: record.native_ref.clone(),
-                    producing_execution_ref: record.producing_execution_ref.clone(),
-                })
-                .collect(),
-            candidates: state
-                .candidates
-                .values()
-                .filter(|record| record.run_ref == selection.run_ref)
-                .map(|record| CandidateView {
-                    candidate_ref: record.candidate_ref.clone(),
-                    revision: record.revision,
-                    label: record.label.clone(),
-                    status: record.status.clone(),
-                    producing_execution_refs: record.producing_execution_refs.clone(),
-                    claim_refs: record.claim_refs.clone(),
-                    evidence_refs: record.evidence_refs.clone(),
-                    artifact_refs: record.artifact_refs.clone(),
-                    preview_ref: record.preview_ref.clone(),
-                    tradeoffs: record.tradeoffs.clone(),
-                })
-                .collect(),
-            human_requests: state
-                .human_requests
-                .values()
-                .filter(|record| record.run_ref == selection.run_ref)
-                .map(|record| HumanRequestView {
-                    human_request_ref: record.human_request_ref.clone(),
-                    decision_ref: record.decision_ref.clone(),
-                    question: record.question.clone(),
-                    why_human: record.why_human.clone(),
-                    blocked_execution_refs: record.blocked_execution_refs.clone(),
-                    evidence_refs: record.evidence_refs.clone(),
-                })
-                .collect(),
-            agencies: state
-                .agencies
-                .values()
-                .filter(|record| record.run_ref == selection.run_ref)
-                .map(|record| AgencyView {
-                    agency_ref: record.agency_ref.clone(),
-                    agent_ref: record.agent_ref.clone(),
-                    label: record.label.clone(),
-                    position: record.position.clone(),
-                    root_scope_ref: record.root_scope_ref.clone(),
-                    metagency_grant_refs: record.metagency_grant_refs.clone(),
-                    actuation_ref: record.actuation_ref.clone(),
-                    return_ref: record.return_ref.clone(),
-                    return_state: record.return_state.clone(),
-                })
-                .collect(),
-            executions: state
-                .executions
-                .values()
-                .filter(|record| record.run_ref == selection.run_ref)
-                .map(|record| ExecutionView {
-                    execution_ref: record.execution_ref.clone(),
-                    agency_ref: record.agency_ref.clone(),
-                    agent_ref: record.agent_ref.clone(),
-                    status: record.status.clone(),
-                    harness_ref: record.harness_ref.clone(),
-                    harness_composition_ref: record.harness_composition_ref.clone(),
-                    agent_session_ref: record.agent_session_ref.clone(),
-                    session_space_ref: record.session_space_ref.clone(),
-                    surface_refs: record.surface_refs.clone(),
-                    workcell_binding_refs: record.workcell_binding_refs.clone(),
-                    native_trajectory_ref: record.native_trajectory_ref.clone(),
-                })
-                .collect(),
+            claims: records_for_run(&state.claims, &selection.run_ref),
+            evidence: records_for_run(&state.evidence, &selection.run_ref),
+            candidates: records_for_run(&state.candidates, &selection.run_ref),
+            human_requests: records_for_run(&state.human_requests, &selection.run_ref),
+            agencies: records_for_run(&state.agencies, &selection.run_ref),
+            executions: records_for_run(&state.executions, &selection.run_ref),
             trajectories: state
                 .trajectories
                 .values()
@@ -691,8 +506,41 @@ impl FactoryBuildViewProvider {
     }
 }
 
+trait RunScopedRecord {
+    fn run_ref(&self) -> &RunRef;
+}
+
+macro_rules! run_scoped_record {
+    ($type:ty) => {
+        impl RunScopedRecord for $type {
+            fn run_ref(&self) -> &RunRef {
+                &self.run_ref
+            }
+        }
+    };
+}
+
+run_scoped_record!(ClaimRecord);
+run_scoped_record!(EvidenceRecord);
+run_scoped_record!(CandidateRecord);
+run_scoped_record!(HumanRequestRecord);
+run_scoped_record!(AgencyRecord);
+run_scoped_record!(ExecutionRecord);
+
+fn records_for_run<T>(records: &BTreeMap<String, T>, run_ref: &RunRef) -> Vec<T>
+where
+    T: Clone + RunScopedRecord,
+{
+    records
+        .values()
+        .filter(|record| record.run_ref() == run_ref)
+        .cloned()
+        .collect()
+}
+
 fn run_status(run: &Run) -> String {
     use crate::core::run::RunLifecycle;
+
     match run.lifecycle() {
         RunLifecycle::Seeded => "queued",
         RunLifecycle::Active | RunLifecycle::Finishing => "running",
@@ -713,7 +561,12 @@ fn materialise_frontier(run: &Run) -> FrontierView {
         NodeState::Returned,
     ]
     .iter()
-    .find_map(|state| nodes.iter().find(|node| node.state == Some(*state)).copied());
+    .find_map(|state| {
+        nodes
+            .iter()
+            .find(|node| node.state == Some(*state))
+            .copied()
+    });
 
     match selected {
         Some(node) => FrontierView {
