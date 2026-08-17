@@ -134,9 +134,8 @@ impl FactoryBuildFileProvider {
         let bytes = serde_json::to_vec_pretty(&stored)?;
         let temporary = temporary_path(&self.path);
         fs::write(&temporary, bytes)?;
-        fs::rename(&temporary, &self.path).map_err(|error| {
+        fs::rename(&temporary, &self.path).inspect_err(|_| {
             let _ = fs::remove_file(&temporary);
-            error
         })?;
         Ok(())
     }
