@@ -1,0 +1,32 @@
+{
+  "upstreamRevision": "de31374882e7a4e3e5b7bb9bd09e69dc2f779356",
+  "laneKinds": [
+    "engineer",
+    "code",
+    "agent",
+    "agent"
+  ],
+  "orderedSpanRefs": [
+    "sssf-span:p-request",
+    "sssf-span:p-plan",
+    "sssf-span:p-build",
+    "sssf-span:p-test",
+    "sssf-span:p-review"
+  ],
+  "requestZone": {
+    "leftPct": 0.4,
+    "nominalWidthPct": 15.2
+  },
+  "minimumBlockPct": 3.5,
+  "failedTool": {
+    "span": "test",
+    "tool": "bash",
+    "args": {
+      "command": "npm test"
+    },
+    "result": "1 failed, 12 passed",
+    "durationMs": 3100,
+    "nativeRef": "e-test"
+  },
+  "sourceProcessEventSupported": false
+}

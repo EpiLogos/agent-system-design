@@ -1,0 +1,56 @@
+{
+  "$schema": "factory-ui/source-integration/v1",
+  "id": "source/disler-super-simple-software-factory-visualizer",
+  "upstream": "https://github.com/disler/super-simple-software-factory",
+  "revision": "de31374882e7a4e3e5b7bb9bd09e69dc2f779356",
+  "observedDefaultBranch": "main",
+  "observedAt": "2026-08-17",
+  "license": {
+    "spdx": "MIT",
+    "copyright": "Copyright (c) 2026 IndyDevDan",
+    "notice": "../THIRD_PARTY_NOTICES.md"
+  },
+  "sourceRoot": ".claude/skills/sssf/apps/visualizer",
+  "upstreamRuntime": {
+    "ui": "Vue 3 + Vite",
+    "server": "Bun read-only HTTP server",
+    "store": "SQLite trace tables"
+  },
+  "destination": {
+    "mode": "mechanical React port + source adapter",
+    "root": "factory-ui",
+    "hostTarget": "O:I React/design-system Surface host"
+  },
+  "sourceFiles": [
+    "src/components/SessionsList.vue",
+    "src/components/SessionCard.vue",
+    "src/components/SessionTrace.vue",
+    "src/components/PhaseDetail.vue",
+    "src/lib/api.ts",
+    "src/lib/events.ts",
+    "shared/types.ts",
+    "server/db.ts",
+    "server/index.ts"
+  ],
+  "sourceEventTypes": [
+    "phase_start",
+    "phase_end",
+    "agent_start",
+    "agent_end",
+    "tool_call",
+    "handoff",
+    "gate_pass",
+    "gate_fail",
+    "log",
+    "error"
+  ],
+  "explicitAbsences": [
+    "No process event type exists at the pinned source revision; F0 must not fabricate process telemetry."
+  ],
+  "verification": [
+    "src/read-model.test.ts",
+    "src/trace-conformance.test.ts",
+    "src/BuildSurface.test.tsx",
+    "fixtures/source-parity-expected.json"
+  ]
+}
