@@ -120,7 +120,10 @@ impl FactoryBuildFileProvider {
     }
 
     fn persist(&self) -> Result<(), FactoryBuildProviderError> {
-        let parent = self.path.parent().filter(|path| !path.as_os_str().is_empty());
+        let parent = self
+            .path
+            .parent()
+            .filter(|path| !path.as_os_str().is_empty());
         if let Some(parent) = parent {
             fs::create_dir_all(parent)?;
         }
@@ -181,7 +184,10 @@ impl Display for FactoryBuildProviderError {
             Self::Json(error) => write!(formatter, "Factory Build provider JSON error: {error}"),
             Self::Factory(error) => write!(formatter, "{error}"),
             Self::UnsupportedSchema(schema) => {
-                write!(formatter, "unsupported Factory Build provider schema `{schema}`")
+                write!(
+                    formatter,
+                    "unsupported Factory Build provider schema `{schema}`"
+                )
             }
             Self::SelectionMismatch(detail) => write!(formatter, "{detail}"),
         }
