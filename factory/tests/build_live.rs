@@ -177,10 +177,16 @@ fn canonical_factory_state_materialises_without_read_side_mutation() {
     let snapshot = provider.snapshot(&state, &selection).unwrap();
     let after = serde_json::to_string(&state).unwrap();
 
-    assert_eq!(before, after, "snapshot reads must not mutate canonical state");
+    assert_eq!(
+        before, after,
+        "snapshot reads must not mutate canonical state"
+    );
     assert_eq!(snapshot.revision, state.revision().get());
     assert_eq!(snapshot.provenance.owner, FACTORY_NATIVE_OWNER);
-    assert_eq!(snapshot.provenance.factory_state_revision, snapshot.revision);
+    assert_eq!(
+        snapshot.provenance.factory_state_revision,
+        snapshot.revision
+    );
     assert_eq!(snapshot.view.project.project_ref, PROJECT);
     assert_eq!(snapshot.view.run.run_ref, RUN);
     assert_eq!(
@@ -227,7 +233,10 @@ fn authorised_factory_action_mutates_canonical_state_and_next_snapshot_revision(
     let executor = FactoryActionExecutor;
     let before = provider.snapshot(&state, &selection).unwrap();
     assert!(before.view.human_requests.is_empty());
-    assert_eq!(before.view.actions[0].action_ref, REQUEST_MORE_EVIDENCE_ACTION_REF);
+    assert_eq!(
+        before.view.actions[0].action_ref,
+        REQUEST_MORE_EVIDENCE_ACTION_REF
+    );
 
     let invocation = FactoryActionInvocation {
         action_ref: REQUEST_MORE_EVIDENCE_ACTION_REF.into(),
@@ -248,7 +257,10 @@ fn authorised_factory_action_mutates_canonical_state_and_next_snapshot_revision(
             },
         )
         .unwrap_err();
-    assert_eq!(missing_capability, FactoryBuildError::MissingCapabilityGrant);
+    assert_eq!(
+        missing_capability,
+        FactoryBuildError::MissingCapabilityGrant
+    );
 
     let missing_action_authority = executor
         .execute(
@@ -287,7 +299,10 @@ fn authorised_factory_action_mutates_canonical_state_and_next_snapshot_revision(
     );
 
     // Failed authority checks have not mutated canonical Factory state.
-    assert_eq!(provider.snapshot(&state, &selection).unwrap().revision, before.revision);
+    assert_eq!(
+        provider.snapshot(&state, &selection).unwrap().revision,
+        before.revision
+    );
 
     let receipt = executor
         .execute(
@@ -308,9 +323,6 @@ fn authorised_factory_action_mutates_canonical_state_and_next_snapshot_revision(
     assert_eq!(receipt.previous_revision, before.revision);
     assert_eq!(receipt.next_revision, after.revision);
     assert_eq!(after.view.human_requests.len(), 1);
-    assert_eq!(
-        after.view.human_requests[0].evidence_refs,
-        vec![EVIDENCE]
-    );
+    assert_eq!(after.view.human_requests[0].evidence_refs, vec![EVIDENCE]);
     assert!(after.view.human_requests[0].question.contains(CANDIDATE));
 }
