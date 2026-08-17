@@ -1,0 +1,22 @@
+{
+  "schema": "factory.skill-workflow/v1",
+  "kind": "skill-revision",
+  "nativeOwner": "example-native-owner",
+  "source": {
+    "semanticRef": "example:operator",
+    "path": "skills/example-operation/SKILL.md",
+    "revision": "exact-owner-git-revision"
+  },
+  "stages": [
+    "observed-deficiency",
+    "claim-and-bounded-run",
+    "proposed-owner-source-revision",
+    "native-validation",
+    "representative-use-evidence",
+    "native-owner-recognition",
+    "explicit-promotion-or-rejection"
+  ],
+  "projectedCopyAuthoritative": false,
+  "successfulUsePromotesAutomatically": false,
+  "rollbackPointRequired": true
+}
