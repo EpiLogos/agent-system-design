@@ -1,98 +1,219 @@
-# Agent System Design — Software Factory Reference
+# Software Factory
 
-Reference material for building a **software factory** setup: transcripts, linked resources,
-working codebases, and distilled design principles from four source videos (2026-07/08).
-Collected 2026-08-11, graph-engineering video added 2026-08-12.
+The Software Factory is a system for **making agentic software development durable and intelligible from authored intention through design, development, evidence, candidate formation, Recognition and Return**.
 
-**Intended use:** design a QL-aligned software factory — deterministic code wrapping
-non-deterministic agents, phased AI developer workflows with gate checks, out-of-the-loop
-operation, model-stack (not single-model) execution.
+Its purpose is not merely to make agents write code faster.
 
----
+Fast agentic implementation creates a specific risk: software can preserve the nouns of a request while deleting the reason those nouns mattered. A system may faithfully implement `Project`, `Run`, `Agent`, `Candidate` or a requested feature and still drift away from the experience, purpose, judgement or human possibility that caused the work to exist.
 
-## The three videos
+The Factory exists to keep that relation alive while allowing agents and deterministic machinery to carry much more of the developmental labour.
 
-| # | Video | Channel / guest | Date | What it gives you |
-|---|-------|-----------------|------|-------------------|
-| 1 | [Ex-NASA dev reveals his Agentic Engineering Workflow](https://youtu.be/xgkjtF89-44) | David Ondrej × Dexter Horthy (HumanLayer, coined "context engineering") | 2026-08-07 | Why benchmarks don't matter, program design before the agent cooks, the 4-month unattended software factory run, why pull requests are dead |
-| 2 | [Engineers… Your Software Factory NEEDS Agent Sandboxes to SCALE](https://youtu.be/SEI_qIW4o2c) | IndyDevDan | 2026-08-10 | Factory In A Box: three-tier architecture (out-loop orchestrator → in-sandbox orchestrator → Pi ADW agents), disposable provisioning keys, best-of-N fan-out, blast radius = the box |
-| 3 | [My Super Simple Software Factory](https://youtu.be/haUfb1ievTE) | IndyDevDan | 2026-08-03 | The SSSF skill: Observable / Customizable / Reusable, the core four (context, model, prompt, tool), phase gates, typed envelopes, in-distribution (Python + YAML + skills only) |
-| 4 | [Anthropic Just Fixed Graph Engineering's Greatest Flaw](https://youtu.be/H7t3uUp3HVw) | AI LABS | 2026-07-29 | Graph engineering: node/edge anatomy, shapes (diamond, fan-in at a barrier), verification as the load-bearing layer, three skill kinds (standalone / embedded / orchestrator), fresh-context second opinion, model-per-node economics — distilled in `seed-docs/QL-SOFTWARE-FACTORY-GRAPH-ENGINEERING-PRINCIPLES.md` |
+## The human telos
 
-**Cross-references:** both IndyDevDan videos point at the "Forget Loop Engineering"
-video ([VQy50fuxI34](https://youtu.be/VQy50fuxI34)) — the predecessor concept to the factory.
-The AI LABS graph-engineering video (04) sits at the far end of the same lineage: it documents
-the loop → graph transition the factory's phase pipeline must be able to promote into.
+The intended shift is not "human out of the loop" in the sense of removing human judgement. It is to move human attention away from work that should not require continuous authorship:
 
----
+- repeated codebase orientation;
+- source discovery;
+- routine decomposition;
+- implementation mechanics;
+- test and verification invocation;
+- environment management;
+- context reconstruction;
+- developmental bookkeeping.
 
-## Directory layout
+Human attention can then stay nearer the places where human authorship is consequential:
 
+- what is worth making;
+- what experience is intended;
+- taste and qualitative judgement;
+- which of several coherent futures belongs to the Project;
+- whether an encountered Candidate is recognisable as what should become real;
+- whether returned reality should revise the original intention.
+
+The Factory is successful when greater agentic capability gives the human **more room for vision, judgement and life away from babysitting agent mechanics**, not merely a larger volume of machine-produced changes to supervise.
+
+## The developmental relation
+
+A software change should remain intelligible as a relation among:
+
+```text
+authored intention
+        ↓
+experience / product meaning
+        ↓
+design and determinate programme
+        ↓
+agent-led development
+        ↓
+executable candidate reality
+        ↓
+evidence and encounter
+        ↓
+Recognition / redirection
+        ↓
+Return into Project ground
 ```
-Agent System Design/
-├── README.md                                  ← this file
-├── transcripts/
-│   ├── 01-david-ondrej-dexter-horthy-agentic-workflow.txt   (full, timestamped, ~85K)
-│   ├── 02-inkwell-agent-sandboxes-exe-dev.txt               (full, timestamped, ~51K)
-│   ├── 03-super-simple-software-factory.txt                 (full, timestamped, ~42K)
-│   └── 04-graph-engineering.txt                             (full, timestamped, ~19K)
-├── sites/                                     ← fetched content of description link sites
-│   ├── dex-factory-skill.md                   (email-gated landing page — see note)
-│   ├── exe-dev.md                             (sandbox/VPS/devbox platform, Shelley web agent)
-│   ├── openrouter-provisioning.md             (provisioning keys API — spend caps, revoke)
-│   └── humanlayer.md                          (Dexter's company — human-in-the-loop ops)
-├── seed-docs/                                 ← design docs + wayfinder maps
-│   ├── wayfinder-maps/                        (Map 1 semantic core A·C·G·J, Agentic Execution
-│   │                                           Body E·F·H·I, Map 2 Project World B·D·K·L)
-│   └── QL-SOFTWARE-FACTORY-GRAPH-ENGINEERING-PRINCIPLES.md  ← distilled from video 04
-├── super-simple-software-factory/             ← cloned repo (disler) — the SSSF skill
-└── inkwell-agent-sandboxes-and-software-factory/ ← cloned repo (disler) — Factory In A Box
+
+The important word is **relation**. A design document is not valuable because documentation is virtuous in the abstract. It is valuable when it preserves a determination that code can answer to. Evidence is not a gate ritual; it is how a claim about the developed thing meets something other than the producing model's confidence. Recognition is not a ceremonial approval button; it is where a human or authorised governing locus encounters the realised difference and decides what belongs to the durable Project.
+
+## Commission and Recognition
+
+Human participation concentrates around two especially consequential apertures.
+
+### Commission
+
+When the existing Project ground and initiating request already determine the intended change, the Factory should not ask the human to restate it.
+
+When several materially different futures remain open, Commission is the point where human authorship supplies or ratifies the direction. The question belongs with the human because the difference changes what the Project is for or what experience should become true, not because agents are incapable of choosing a technical option.
+
+### Recognition
+
+After development, a Candidate should become directly encounterable with the evidence needed to understand it.
+
+Recognition asks whether that encountered reality belongs to the Project. The answer may be:
+
+```text
+recognise this result
+return it for further development
+prefer another Candidate
+accept the failure as a finding
+revise the design
+revise the original intention
 ```
 
----
+A returned failure or unexpected possibility is therefore not merely a failed build. It can be information capable of changing an earlier determination.
 
-## The codebases
+## Runs preserve developmental continuity
 
-### `super-simple-software-factory` (~1.6M)
-A Claude skill (`.claude/skills/sssf/`) that drops an entire factory into any codebase
-with one `/install`. Core assets:
-- **`SKILL.md`** — the factory playbook (observable / customizable / reusable)
-- **`references/`** — config.md (the core four: context, model, prompt, tool), observability.md, handoff.md (typed envelopes)
-- **`templates/adws/`** — the ADW (agent developer workflow) roster: `adw_scout`, `adw_plan_build`, `adw_build_test`, `adw_plan_build_test_quality`, `adw_quality`… each with prompt/build gates and shared `adw_modules/` (runner, gates, session, tracer, permissions, git_helper)
-- **`scripts/`** — `make_config.py`, `make_adw.py`, `install.py`
+A `Run` is one durable intended transformation of a Project. A `RunMap` makes that transformation inspectable across time.
 
-### `inkwell-agent-sandboxes-and-software-factory` (~52M, Factory In A Box)
-The factory + a blog app (Inkwell) + the sandbox mount system. Three nested tiers:
-1. **Out-loop orchestrator** on your machine — `just sbx` command surface, mounts a throwaway exe.dev VM
-2. **In-sandbox orchestrator** on each VM — drives the factory
-3. **Pi coding agents** running plan → build → test → review → document inside
+A Run can outlive a terminal session, use several Agents or execution environments, branch into several Candidates, wait for a human decision, return from later work to an earlier assumption, and retain the evidence for why the present Project became what it is.
 
-Notable assets:
-- `adws/adw_sssf_config/` — **five model-stack configs**: `frontier`, `open-weights`, `top-speed`, `deepestseek` (all-DeepSeek), base — best-of-N against one prompt
-- `adws/adw_document.py`, `adw_build_review.py` — extended roster beyond SSSF
-- `.claude/commands/install` + `/prime` — agentic bootstrap; `just sbx manage doctor` preflight
-- Disposable OpenRouter provisioning keys with hard spend caps, revoked at teardown
+This is why the Factory is not reducible to an agent loop or CI pipeline. Its subject is **developmental continuity**.
 
----
+A future human or agent should be able to ask not only:
 
-## Notes / honest gaps
+> What code changed?
 
-- **`sites/dex-factory-skill.md`** — the page at davidondrej.com/dex-podcast is an **email-capture gate**; the actual Dexter Software Factory skill content is only delivered by subscribing. Page text is what we got: "FREE — What you get: Website" + newsletter consent form. Do not expect the skill from this fetch; the repo clones above are the substantive code.
-- **PostHog / Skool / TAC links** in descriptions are sponsor/course pages — excluded.
-- HumanLayer page fetched for completeness (Dexter's company; agent ops with human sign-off).
+but:
 
----
+> What were we trying to make true, which possibilities were considered, what evidence changed the decision, what was recognised, and what did the Project learn?
 
-## QL alignment hooks (for the design pass)
+## Design before blind implementation
 
-The factory's phase model maps onto QL structure without forcing:
-- **plan / build / test / review / document / commit** = a phase pipeline with deterministic gate checks between phases — natural analogue to position-driven phase transitions (each gate = a boundary condition, not a vibe)
-- **core four (context, model, prompt, tool)** = the configurable degrees of freedom per agent — candidates for coordinate-driven configuration
-- **typed envelopes / shared session dirs** = the handoff contract between phases — analogue of the envelope structure in QL messaging
-- **out-loop vs in-loop** = the observing system vs the operating system split
-- **graph engineering principles** (`seed-docs/QL-SOFTWARE-FACTORY-GRAPH-ENGINEERING-PRINCIPLES.md`,
-  distilled from video 04) = how the phase pipeline promotes into parallel Run Map topology:
-  node/edge semantics, fan-out shapes, verification as the load-bearing layer, and the
-  five-field skill stipulation contract (trigger · scope · measure · model · output)
+The Factory treats development as an intelligible transformation rather than an isolated patch.
 
-Actual QL schema design (coordinate assignment, envelope typing, gate semantics) is the next step — this directory is the raw material for it.
+That does not mean every small task needs a large planning ceremony. It means the system should preserve enough of the design relation for implementation to be evaluated as an implementation *of something*.
+
+For a trivial change, that determination may be compact. For a larger change it may include experience design, architecture, program design, interfaces, source integration choices and vertical order.
+
+The criterion is sufficiency, not document volume.
+
+## Evidence and Candidates
+
+A `Candidate` is a coherent possible Project reality, not just a diff.
+
+It may include source state, a materialised application or service, claims about the intended behaviour, deterministic checks, screenshots or traces, provenance and the environment in which it was encountered.
+
+Evidence exists to make consequential claims inspectable. Different evidence answers different questions:
+
+- a test can show a deterministic property;
+- a runtime observation can show what happened in a particular environment;
+- an impact analysis can reveal affected structure;
+- a human encounter can answer whether the resulting experience is recognisable;
+- an agent review can identify tensions or missing evidence;
+- a failed Candidate can falsify a design assumption.
+
+No single evidence kind is universal merely because it is easy to automate.
+
+## Returned reality can revise the plan
+
+The Factory is deliberately not a one-way pipeline.
+
+Later work can reveal that an earlier determination was wrong:
+
+```text
+Development
+  ├── implementation defect        → revise development
+  ├── design mismatch              → return to design
+  └── ground assumption false      → return to ground
+
+Application / encounter
+  ├── behaviour misses intent      → return to intent
+  ├── context was incomplete       → return to ground
+  └── new possibility disclosed    → reopen authorship
+```
+
+This matters because a development system that can only move downward from instruction to code becomes insulated from the reality it produces. Return makes failure, resistance and discovery productive parts of the Project's future ground.
+
+## The Factory as a Project-understanding system
+
+A mature Project should become easier for both humans and agents to enter over time.
+
+Its authored vision, design, architecture, code, actions, prior Runs, evidence and recognised decisions form a navigable developmental history. The current code tells us what is real now; it does not retroactively tell us why the Project exists. Vision tells us what is meant; it does not prove the implementation works. The Factory keeps both available and lets returned reality revise earlier understanding explicitly.
+
+The durable result is not only code. It is a Project that knows more about itself.
+
+## Relation to the wider {O:I} field
+
+**O:I** is the whole technological-agency field. Factory is its developmental centre: it does not require every Project to adopt the rest of the suite.
+
+**Central** supplies durable human-authored ground across technological change. Factory keeps Project-specific intention and canon with the Project and can return genuinely cross-context durable discoveries for explicit human adoption rather than silently rewriting Central.
+
+**Actuation** owns the constitution of situated Agency, determination, delegation, federation, authority and Return. Factory may commission an `AgenticComposition` for developmental work without redefining those agency semantics as workflow primitives.
+
+**AIKit** resolves the operative world available to an actor — capabilities, sources, models, sessions, runtime bodies and Surfaces. Factory gives those powers a developmental reason and records their provenance in the Run.
+
+**Workcell** materialises the computational world required by development and application: workspaces, processes, services, containers, VMs, hosts, databases, browser surfaces and provider bindings. Factory reasons in Projects, Runs and Candidates; Workcell supplies the actual material embodiment.
+
+**Quaternal Logic** can provide optional formal/refraction faculties and can be used for deeper QL-native development experiments. Ordinary Factory operation must remain valid without QL.
+
+## Quaternal Logic and the Factory
+
+The Factory has a historical and research relation to Quaternal Logic, but the two should not be collapsed.
+
+Earlier Factory design used QL-aligned developmental forms and the Epi-Logos six-agent skeleton as a way to explore archetypal integrity in software. The deeper QL work now has its own native product boundary in `EpiLogos/QL-MEF`, while QL agent-runtime experiments have moved into Actuation.
+
+The Factory remains a principal place where formal claims can become answerable through software development and evidence. That does not make QL terminology proof of architectural quality. Where QL is active, the standard is operational consequence and explicit provenance; where it is disabled, the ordinary developmental system should remain coherent.
+
+## Current repository
+
+This repository now contains several layers with different authority:
+
+```text
+docs/canon/
+    governing Factory vision, experienced ontology and architecture
+
+factory/ + factory-ui/
+    current executable Factory implementation surfaces on main
+
+contracts/
+    cross-product and language-neutral contracts where accepted
+
+skills/
+    Factory-native operational procedures
+
+seed-docs/ + transcripts/ + sites/
+    research/source provenance that informed the design
+
+super-simple-software-factory/
+inkwell-agent-sandboxes-and-software-factory/
+    retained upstream/reference systems and experiments
+
+ql-agent-experiments/
+    historical/experimental QL runtime material; canonical runtime ownership
+    has moved to Actuation according to the migration documents
+```
+
+The source videos and imported factory systems remain valuable because they preserve where design ideas came from. They are **research provenance, not the definition of the Software Factory product**.
+
+Current `main`, tests and accepted contracts determine implementation truth. Open implementation and integration PRs remain current development state until accepted.
+
+## Read first
+
+1. [`docs/canon/QL-SOFTWARE-FACTORY-CONSTITUTIONAL-INDEX.md`](docs/canon/QL-SOFTWARE-FACTORY-CONSTITUTIONAL-INDEX.md) — telos, document authority, system whole and developmental control body.
+2. [`docs/canon/QL-SOFTWARE-FACTORY-ARCHITECTURE-SPEC.md`](docs/canon/QL-SOFTWARE-FACTORY-ARCHITECTURE-SPEC.md) — detailed product architecture and developmental contracts.
+3. [`docs/canon/QL-SOFTWARE-FACTORY-PRIMITIVE-RELATIONS.md`](docs/canon/QL-SOFTWARE-FACTORY-PRIMITIVE-RELATIONS.md) — experienced ontology and primitive relations.
+4. [`docs/canon/QL-SOFTWARE-FACTORY-DEEP-QL-INTEGRATION-FOUNDATIONS.md`](docs/canon/QL-SOFTWARE-FACTORY-DEEP-QL-INTEGRATION-FOUNDATIONS.md) — deeper QL framing and the operational-parity boundary.
+
+The issue tracker and open PRs are the current development map; they should be read as temporal state, not as retroactive product purpose.
