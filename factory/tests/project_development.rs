@@ -2,12 +2,13 @@ use epilogos_factory::build::{ClaimRecord, EvidenceRecord, FactoryBuildState};
 use epilogos_factory::core::run::{Project, ProjectRef, Run, RunRef};
 use epilogos_factory::project_development::{
     CapabilityPraxisRow, DevelopmentObservation, DevelopmentObservationKind, OwnerReturnProposal,
-    PraxisCondition, ProjectDevelopmentError, ProjectDevelopmentLedger, ProjectOrientationCondition,
-    ReflectionAnchor,
+    PraxisCondition, ProjectDevelopmentError, ProjectDevelopmentLedger,
+    ProjectOrientationCondition, ReflectionAnchor,
 };
 use epilogos_factory::structural_ground::{
     verify_structural_ground, StructuralBinding, StructuralFidelityIssueKind,
-    StructuralFidelityObservation, StructuralGround, StructuralSourceRef, STRUCTURAL_GROUND_VERSION,
+    StructuralFidelityObservation, StructuralGround, StructuralSourceRef,
+    STRUCTURAL_GROUND_VERSION,
 };
 use std::str::FromStr;
 
@@ -16,12 +17,16 @@ const RUN: &str = "run:01ARZ3NDEKTSV4RRFFQ69G5FAB";
 const CENTRAL_CONTRACT: &str = "github:EpiLogos/Central:docs/PROJECTCENTRAL-CONTRACT.md";
 const CENTRAL_MAIN: &str = "github:EpiLogos/Central:main";
 const OI_GROUND: &str = "github:EpiLogos/O-I:docs/positions/FOUNDING-POSITIONS.md";
-const AIKIT_KNOWLEDGE: &str = "github:EpiLogos/ai-kit:crates/aikit-core/src/knowledge_navigation.rs";
-const AIKIT_PROJECT_MAP: &str = "github:EpiLogos/ai-kit:crates/aikit-core/src/project_map.rs";
+const AIKIT_KNOWLEDGE: &str =
+    "github:EpiLogos/ai-kit:crates/aikit-core/src/knowledge_navigation.rs";
+const AIKIT_PROJECT_MAP: &str =
+    "github:EpiLogos/ai-kit:crates/aikit-core/src/project_map.rs";
+const AIKIT_REFLECTION_HEAD: &str = "abc341dad55dfdb7c6792b3c344dc921825fe81c";
 const EPI_REVISION: &str = "daa660cbc1b8c5da83828698665a753852cb0287";
 const QL_HEAD: &str = "de7d50c9f7dcfec33cfa0fd5f8a8a1068b4fbe84";
 const SEMANTIC: &str = "formal:sixfold-complement";
-const MANIFEST: &str = "github:EpiLogos/QL-MEF:docs/integrations/epi-logos/EPI-HOLOGRAPHIC-KERNEL-MANIFEST.json";
+const MANIFEST: &str =
+    "github:EpiLogos/QL-MEF:docs/integrations/epi-logos/EPI-HOLOGRAPHIC-KERNEL-MANIFEST.json";
 const CODE: &str = "github:EpiLogos/QL-MEF:c/src/primitive.c#ql_position_invert";
 const CLAIM: &str = "claim:01ARZ3NDEKTSV4RRFFQ69G5FAD";
 const EVIDENCE: &str = "evidence:01ARZ3NDEKTSV4RRFFQ69G5FAE";
@@ -56,11 +61,12 @@ fn epi_anchor() -> ReflectionAnchor {
         local_source_ref: Some(MANIFEST.into()),
         code_refs: vec![CODE.into()],
         verification_refs: vec![
-            "github:EpiLogos/ai-kit:crates/aikit-core/tests/epi_holographic_reflection.rs".into(),
+            "github:EpiLogos/ai-kit:crates/aikit-core/tests/epi_holographic_reflection.rs"
+                .into(),
         ],
         route_ref: Some("aikit-project-reflection/epi-sixfold-complement".into()),
         provider_ref: "github:EpiLogos/ai-kit".into(),
-        provider_revision: "pr/115".into(),
+        provider_revision: AIKIT_REFLECTION_HEAD.into(),
         relation: "implemented-by".into(),
     }
 }
@@ -76,6 +82,7 @@ fn real_epi_anchor_is_bidirectionally_inspectable_without_a_factory_project_map(
     assert_eq!(reverse[0].semantic_ref, SEMANTIC);
     assert_eq!(reverse[0].local_source_ref.as_deref(), Some(MANIFEST));
     assert_eq!(reverse[0].provider_ref, "github:EpiLogos/ai-kit");
+    assert_eq!(reverse[0].provider_revision, AIKIT_REFLECTION_HEAD);
 
     let review = ledger.human_review();
     assert_eq!(review.intention_and_ground_refs, vec![OI_GROUND]);
@@ -134,7 +141,8 @@ fn stale_structural_binding_returns_discrepancy_and_owner_proposal_without_mutat
             run_ref: run_ref(),
             observation_ref: "observation/stale-sixfold-binding".into(),
             kind: DevelopmentObservationKind::ProjectReflectionDiscrepancy,
-            statement: "declared sixfold complement binding is stale against observed implementation revision".into(),
+            statement: "declared sixfold complement binding is stale against observed implementation revision"
+                .into(),
             subject_refs: vec![SEMANTIC.into(), MANIFEST.into(), CODE.into()],
             evidence_refs: vec!["structural-fidelity/epi-sixfold-stale".into()],
             owner_return: Some(OwnerReturnProposal {
@@ -146,11 +154,13 @@ fn stale_structural_binding_returns_discrepancy_and_owner_proposal_without_mutat
         })
         .unwrap();
 
-    // Returned difference does not rewrite the provider anchor or authored source ref.
     assert_eq!(ledger.reflection_anchors[0], epi_anchor());
     let review = ledger.human_review();
     assert_eq!(review.discrepancies.len(), 1);
-    assert_eq!(review.recognition_returns[0].owner_ref, "github:EpiLogos/QL-MEF");
+    assert_eq!(
+        review.recognition_returns[0].owner_ref,
+        "github:EpiLogos/QL-MEF"
+    );
 }
 
 #[test]
@@ -181,7 +191,8 @@ fn praxis_configuration_is_input_and_fitness_returns_as_ordinary_claim_evidence(
         .insert_claim(ClaimRecord {
             run_ref: run_ref.clone(),
             claim_ref: CLAIM.into(),
-            statement: "The selected project-reflection praxis was fit for this developmental act.".into(),
+            statement: "The selected project-reflection praxis was fit for this developmental act."
+                .into(),
             status: "supported".into(),
             evidence_refs: vec![EVIDENCE.into()],
         })
@@ -207,7 +218,7 @@ fn praxis_configuration_is_input_and_fitness_returns_as_ordinary_claim_evidence(
             material_condition_refs: Vec::new(),
             resolution_ref: Some("aikit:resolution/praxis-155".into()),
             provider_ref: "github:EpiLogos/ai-kit".into(),
-            provider_revision: "pr/115".into(),
+            provider_revision: AIKIT_REFLECTION_HEAD.into(),
         })
         .unwrap();
     ledger
@@ -226,7 +237,8 @@ fn praxis_configuration_is_input_and_fitness_returns_as_ordinary_claim_evidence(
             harness_ref: Some("harness/current-code".into()),
             agency_ref: Some("actuation:agency/factory-developer".into()),
             material_condition_refs: Vec::new(),
-            verification_expectation: "semantic/source/code relation remains attributable and inspectable".into(),
+            verification_expectation:
+                "semantic/source/code relation remains attributable and inspectable".into(),
             observed_fitness_evidence_refs: vec![EVIDENCE.into()],
         })
         .unwrap();
@@ -247,8 +259,14 @@ fn praxis_configuration_is_input_and_fitness_returns_as_ordinary_claim_evidence(
         })
         .unwrap();
 
-    assert_eq!(ledger.praxis.as_ref().unwrap().method_ref.as_deref(), Some("aikit:method/project-reflection-development"));
-    assert_eq!(ledger.capability_rows[0].observed_fitness_evidence_refs, vec![EVIDENCE]);
+    assert_eq!(
+        ledger.praxis.as_ref().unwrap().method_ref.as_deref(),
+        Some("aikit:method/project-reflection-development")
+    );
+    assert_eq!(
+        ledger.capability_rows[0].observed_fitness_evidence_refs,
+        vec![EVIDENCE]
+    );
     let serialized = serde_json::to_string(&build).unwrap();
     assert!(serialized.contains(CLAIM));
     assert!(serialized.contains(EVIDENCE));
@@ -346,7 +364,10 @@ fn development_records_cannot_leak_across_runs_or_duplicate_receipt_identity() {
         provider_ref: "provider".into(),
         provider_revision: "1".into(),
     });
-    assert!(matches!(duplicate, Err(ProjectDevelopmentError::DuplicateRef(_))));
+    assert!(matches!(
+        duplicate,
+        Err(ProjectDevelopmentError::DuplicateRef(_))
+    ));
 
     let other_run = RunRef::from_str("run:01ARZ3NDEKTSV4RRFFQ69G5FAV").unwrap();
     let mut wrong_anchor = epi_anchor();
