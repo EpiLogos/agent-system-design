@@ -86,7 +86,7 @@ pub struct CapabilityPraxisRow {
     pub observed_fitness_evidence_refs: Vec<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
 pub enum DevelopmentObservationKind {
     ProjectReflectionDiscrepancy,
@@ -148,9 +148,14 @@ impl Display for ProjectDevelopmentError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::WrongRun { expected, actual } => {
-                write!(formatter, "development record belongs to {actual}, expected {expected}")
+                write!(
+                    formatter,
+                    "development record belongs to {actual}, expected {expected}"
+                )
             }
-            Self::DuplicateRef(reference) => write!(formatter, "duplicate development ref: {reference}"),
+            Self::DuplicateRef(reference) => {
+                write!(formatter, "duplicate development ref: {reference}")
+            }
         }
     }
 }
@@ -190,7 +195,10 @@ impl ProjectDevelopmentLedger {
         Ok(())
     }
 
-    pub fn set_praxis(&mut self, condition: PraxisCondition) -> Result<(), ProjectDevelopmentError> {
+    pub fn set_praxis(
+        &mut self,
+        condition: PraxisCondition,
+    ) -> Result<(), ProjectDevelopmentError> {
         self.ensure_run(&condition.run_ref)?;
         self.ensure_unique(&condition.condition_ref)?;
         self.praxis = Some(condition);
@@ -222,7 +230,12 @@ impl ProjectDevelopmentLedger {
     pub fn anchors_for_code(&self, code_ref: &str) -> Vec<&ReflectionAnchor> {
         self.reflection_anchors
             .iter()
-            .filter(|anchor| anchor.code_refs.iter().any(|candidate| candidate == code_ref))
+            .filter(|anchor| {
+                anchor
+                    .code_refs
+                    .iter()
+                    .any(|candidate| candidate == code_ref)
+            })
             .collect()
     }
 
@@ -311,7 +324,10 @@ impl ProjectDevelopmentLedger {
                 .reflection_anchors
                 .iter()
                 .any(|record| record.anchor_ref == candidate)
-            || self.capability_rows.iter().any(|record| record.row_ref == candidate)
+            || self
+                .capability_rows
+                .iter()
+                .any(|record| record.row_ref == candidate)
             || self
                 .observations
                 .iter()
