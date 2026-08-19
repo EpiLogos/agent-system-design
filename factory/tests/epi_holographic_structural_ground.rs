@@ -90,8 +90,14 @@ fn exact_bimba_inversion_identity_is_structurally_bound_to_the_ql_c_symbol() {
         .expect("source-ground fixture is valid");
 
     assert!(evidence.passed, "structural issues: {:?}", evidence.issues);
-    assert_eq!(ground.existing_implementation_bindings[0].identity, BIMBA_INVERSION);
-    assert_eq!(ground.constitutive_relations[0].relation, "CONTAINS_LOGIC_STAGE");
+    assert_eq!(
+        ground.existing_implementation_bindings[0].identity,
+        BIMBA_INVERSION
+    );
+    assert_eq!(
+        ground.constitutive_relations[0].relation,
+        "CONTAINS_LOGIC_STAGE"
+    );
     assert_eq!(ground.constitutive_relations[1].relation, "INVERTS_INTO");
     assert_eq!(evidence.unresolved_source_gaps[0].id, "bimba-live");
 }
