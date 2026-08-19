@@ -19,8 +19,7 @@ const CENTRAL_MAIN: &str = "github:EpiLogos/Central:main";
 const OI_GROUND: &str = "github:EpiLogos/O-I:docs/positions/FOUNDING-POSITIONS.md";
 const AIKIT_KNOWLEDGE: &str =
     "github:EpiLogos/ai-kit:crates/aikit-core/src/knowledge_navigation.rs";
-const AIKIT_PROJECT_MAP: &str =
-    "github:EpiLogos/ai-kit:crates/aikit-core/src/project_map.rs";
+const AIKIT_PROJECT_MAP: &str = "github:EpiLogos/ai-kit:crates/aikit-core/src/project_map.rs";
 const AIKIT_REFLECTION_HEAD: &str = "abc341dad55dfdb7c6792b3c344dc921825fe81c";
 const EPI_REVISION: &str = "daa660cbc1b8c5da83828698665a753852cb0287";
 const QL_HEAD: &str = "de7d50c9f7dcfec33cfa0fd5f8a8a1068b4fbe84";
@@ -61,8 +60,7 @@ fn epi_anchor() -> ReflectionAnchor {
         local_source_ref: Some(MANIFEST.into()),
         code_refs: vec![CODE.into()],
         verification_refs: vec![
-            "github:EpiLogos/ai-kit:crates/aikit-core/tests/epi_holographic_reflection.rs"
-                .into(),
+            "github:EpiLogos/ai-kit:crates/aikit-core/tests/epi_holographic_reflection.rs".into(),
         ],
         route_ref: Some("aikit-project-reflection/epi-sixfold-complement".into()),
         provider_ref: "github:EpiLogos/ai-kit".into(),
