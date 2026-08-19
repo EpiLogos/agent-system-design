@@ -283,8 +283,6 @@ pub fn verify_structural_ground(
         structural_ground_id: ground.id.clone(),
         passed: issues.is_empty(),
         issues,
-        // A structurally faithful tranche may still have explicit source gaps.
-        // Preserving them is preferable to inventing completion.
         unresolved_source_gaps: ground.unresolved_source_gaps.clone(),
     })
 }
@@ -328,6 +326,7 @@ mod tests {
 
     const EPI_REVISION: &str = "daa660cbc1b8c5da83828698665a753852cb0287";
     const QL_HEAD: &str = "de7d50c9f7dcfec33cfa0fd5f8a8a1068b4fbe84";
+    const RUN_REF: &str = "run:01ARZ3NDEKTSV4RRFFQ69G5FAV";
 
     fn source(reference: &str, revision: &str) -> StructuralSourceRef {
         StructuralSourceRef {
@@ -380,7 +379,7 @@ mod tests {
             constitutive_relations: vec![],
         };
 
-        let run_ref = RunRef::from_str("run:epi-holographic-position-inversion").unwrap();
+        let run_ref = RunRef::from_str(RUN_REF).unwrap();
         let evidence = verify_structural_ground(run_ref, &ground, &observed).unwrap();
 
         assert!(evidence.passed, "structural issues: {:?}", evidence.issues);
@@ -419,7 +418,7 @@ mod tests {
             }],
             constitutive_relations: vec![],
         };
-        let run_ref = RunRef::from_str("run:stale-structural-ground").unwrap();
+        let run_ref = RunRef::from_str(RUN_REF).unwrap();
         let evidence = verify_structural_ground(run_ref, &ground, &observed).unwrap();
         assert!(!evidence.passed);
         assert!(evidence
