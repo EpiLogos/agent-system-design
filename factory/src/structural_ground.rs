@@ -107,7 +107,9 @@ impl StructuralGround {
             require_text("binding.implementation_ref", &binding.implementation_ref)?;
             require_text("binding.relation", &binding.relation)?;
             if !identities.contains(binding.identity.as_str()) {
-                return Err(StructuralGroundError::UnknownIdentity(binding.identity.clone()));
+                return Err(StructuralGroundError::UnknownIdentity(
+                    binding.identity.clone(),
+                ));
             }
             if let Some(revision) = &binding.implementation_revision {
                 require_text("binding.implementation_revision", revision)?;
@@ -210,17 +212,28 @@ pub fn verify_structural_ground(
         .collect::<BTreeMap<_, _>>();
     for expected in &ground.source_refs {
         if let Some(revision) = expected.revision.as_deref() {
-            if observed_sources.get(expected.reference.as_str()).copied().flatten() != Some(revision) {
+            if observed_sources
+                .get(expected.reference.as_str())
+                .copied()
+                .flatten()
+                != Some(revision)
+            {
                 issues.push(StructuralFidelityIssue {
                     kind: StructuralFidelityIssueKind::MissingSourceRevision,
                     subject: expected.reference.clone(),
-                    detail: format!("expected source revision {revision} is not the observed revision"),
+                    detail: format!(
+                        "expected source revision {revision} is not the observed revision"
+                    ),
                 });
             }
         }
     }
 
-    let observed_identities = observed.identities.iter().map(String::as_str).collect::<BTreeSet<_>>();
+    let observed_identities = observed
+        .identities
+        .iter()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
     for identity in &ground.in_scope_identities {
         if !observed_identities.contains(identity.as_str()) {
             issues.push(StructuralFidelityIssue {
@@ -260,19 +273,27 @@ pub fn verify_structural_ground(
                 issues.push(StructuralFidelityIssue {
                     kind: StructuralFidelityIssueKind::StaleBinding,
                     subject: expected.identity.clone(),
-                    detail: format!("implementation binding no longer resolves revision {revision}"),
+                    detail: format!(
+                        "implementation binding no longer resolves revision {revision}"
+                    ),
                 });
             }
         }
     }
 
-    let observed_relations = observed.constitutive_relations.iter().collect::<BTreeSet<_>>();
+    let observed_relations = observed
+        .constitutive_relations
+        .iter()
+        .collect::<BTreeSet<_>>();
     for expected in &ground.constitutive_relations {
         if !observed_relations.contains(expected) {
             issues.push(StructuralFidelityIssue {
                 kind: StructuralFidelityIssueKind::MissingConstitutiveRelation,
                 subject: format!("{}→{}", expected.from_identity, expected.to_identity),
-                detail: format!("declared constitutive `{}` relation is absent", expected.relation),
+                detail: format!(
+                    "declared constitutive `{}` relation is absent",
+                    expected.relation
+                ),
             });
         }
     }
@@ -338,8 +359,8 @@ mod tests {
     fn binding(revision: &str) -> StructuralBinding {
         StructuralBinding {
             identity: "formal:sixfold-complement".into(),
-            implementation_ref:
-                "github:EpiLogos/QL-MEF:c/src/primitive.c#ql_position_invert".into(),
+            implementation_ref: "github:EpiLogos/QL-MEF:c/src/primitive.c#ql_position_invert"
+                .into(),
             relation: "implemented-by".into(),
             implementation_revision: Some(revision.into()),
         }
