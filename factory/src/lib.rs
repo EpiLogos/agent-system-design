@@ -5,4 +5,5 @@ pub mod build;
 pub mod build_provider;
 pub mod core;
 pub mod execution_intelligence;
+pub mod project_development;
 pub mod structural_ground;
