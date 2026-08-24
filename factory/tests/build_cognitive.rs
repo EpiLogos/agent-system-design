@@ -17,20 +17,21 @@ const EVIDENCE: &str = "evidence:01ARZ3NDEKTSV4RRFFQ69G5FAE";
 const RELATION_PATTERN: &str = "authored-relation-evidence/t3-pattern";
 const RELATION_ANOMALY: &str = "authored-relation-evidence/t3-prime-anomaly";
 
-fn thought(
-    id: &str,
-    run_ref: &RunRef,
-    anchor_ref: &str,
-    session_ref: &str,
-    execution_ref: &str,
-    related_ref: &str,
-    relation_evidence_ref: &str,
+struct ThoughtFixture<'a> {
+    id: &'a str,
+    anchor_ref: &'a str,
+    session_ref: &'a str,
+    execution_ref: &'a str,
+    related_ref: &'a str,
+    relation_evidence_ref: &'a str,
     lifecycle: RunThoughtLifecycle,
-) -> RunThought {
+}
+
+fn thought(run_ref: &RunRef, fixture: ThoughtFixture<'_>) -> RunThought {
     RunThought {
-        id: RunThoughtId::new(id).unwrap(),
+        id: RunThoughtId::new(fixture.id).unwrap(),
         run_ref: run_ref.clone(),
-        anchor_ref: anchor_ref.into(),
+        anchor_ref: fixture.anchor_ref.into(),
         anchor_revision: Some("sha256:source-revision".into()),
         passage: Some(PassageAnchor {
             start_byte: 120,
@@ -40,13 +41,13 @@ fn thought(
         producer: ThoughtProducer {
             agent_ref: Some("agent/mahamaya".into()),
             agency_ref: Some("agency/factory-run".into()),
-            agent_session_ref: Some(session_ref.into()),
-            execution_ref: Some(execution_ref.into()),
+            agent_session_ref: Some(fixture.session_ref.into()),
+            execution_ref: Some(fixture.execution_ref.into()),
         },
         run_map_subject_refs: vec![SUBJECT.into()],
-        related_refs: vec![related_ref.into()],
-        relation_evidence_refs: vec![relation_evidence_ref.into()],
-        lifecycle,
+        related_refs: vec![fixture.related_ref.into()],
+        relation_evidence_refs: vec![fixture.relation_evidence_ref.into()],
+        lifecycle: fixture.lifecycle,
     }
 }
 
@@ -70,14 +71,16 @@ fn canonical_state() -> (FactoryBuildState, FactoryBuildSelection) {
             command_id: "retain-pattern".into(),
             expected_revision: run.revision(),
             thought: thought(
-                "pattern-reading",
                 &run_ref,
-                "source/run-thinking.md",
-                "agent-session/one",
-                "execution/one",
-                CLAIM,
-                RELATION_PATTERN,
-                RunThoughtLifecycle::Active,
+                ThoughtFixture {
+                    id: "pattern-reading",
+                    anchor_ref: "source/run-thinking.md",
+                    session_ref: "agent-session/one",
+                    execution_ref: "execution/one",
+                    related_ref: CLAIM,
+                    relation_evidence_ref: RELATION_PATTERN,
+                    lifecycle: RunThoughtLifecycle::Active,
+                },
             ),
         },
     )
@@ -88,14 +91,16 @@ fn canonical_state() -> (FactoryBuildState, FactoryBuildSelection) {
             command_id: "retain-anomaly".into(),
             expected_revision: run.revision(),
             thought: thought(
-                "anomaly-reading",
                 &run_ref,
-                "artifact/test-report.md",
-                "agent-session/two",
-                "execution/two",
-                EVIDENCE,
-                RELATION_ANOMALY,
-                RunThoughtLifecycle::Integrated,
+                ThoughtFixture {
+                    id: "anomaly-reading",
+                    anchor_ref: "artifact/test-report.md",
+                    session_ref: "agent-session/two",
+                    execution_ref: "execution/two",
+                    related_ref: EVIDENCE,
+                    relation_evidence_ref: RELATION_ANOMALY,
+                    lifecycle: RunThoughtLifecycle::Integrated,
+                },
             ),
         },
     )
