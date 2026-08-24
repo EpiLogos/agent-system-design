@@ -1,4 +1,7 @@
-use super::{ProjectRef, RunMap, RunRef, TopologyError, TopologyMutation};
+use super::{
+    ProjectRef, RunMap, RunRef, RunThought, RunThoughtField, ThoughtFieldError, TopologyError,
+    TopologyMutation,
+};
 use crate::core::identity::Revision;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -75,6 +78,14 @@ pub struct RunTopologyCommand {
     pub mutation: TopologyMutation,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RunThoughtCommand {
+    pub command_id: String,
+    pub expected_revision: Revision,
+    pub thought: RunThought,
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum CommandOutcome {
     Applied {
@@ -85,6 +96,12 @@ pub enum CommandOutcome {
         revision: Revision,
         topology_revision: Revision,
     },
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum RunThoughtOutcome {
+    Applied { revision: Revision },
+    AlreadyApplied { revision: Revision },
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -98,6 +115,10 @@ pub struct Run {
     lifecycle: RunLifecycle,
     write_authority: WriteAuthority,
     map: RunMap,
+    /// Run-owned cognition. `serde(default)` keeps historical v1 Run records readable;
+    /// canonical new writes always materialise the field.
+    #[serde(default)]
+    thought_field: RunThoughtField,
     applied_command_ids: BTreeSet<String>,
 }
 
@@ -125,6 +146,7 @@ impl Run {
                 epoch: 1,
             },
             map,
+            thought_field: RunThoughtField::default(),
             applied_command_ids: BTreeSet::new(),
         })
     }
@@ -155,6 +177,10 @@ impl Run {
 
     pub fn map(&self) -> &RunMap {
         &self.map
+    }
+
+    pub fn thought_field(&self) -> &RunThoughtField {
+        &self.thought_field
     }
 
     pub fn mutation_authority(&self) -> RunMutationAuthority {
@@ -201,6 +227,45 @@ impl Run {
         })
     }
 
+    /// Retain one source-backed cognitive determination inside this Run.
+    ///
+    /// This advances Run revision but leaves RunMap topology untouched. The same
+    /// Run mutation authority governs retention, so cognition cannot silently
+    /// acquire a second write-authority path.
+    pub fn apply_thought_command(
+        &mut self,
+        authority: &RunMutationAuthority,
+        command: RunThoughtCommand,
+    ) -> Result<RunThoughtOutcome, RunContractError> {
+        self.validate_authority(authority)?;
+        if command.command_id.trim().is_empty() {
+            return Err(RunContractError::InvalidCommandId);
+        }
+        if self.applied_command_ids.contains(&command.command_id) {
+            return Ok(RunThoughtOutcome::AlreadyApplied {
+                revision: self.revision,
+            });
+        }
+        if command.expected_revision != self.revision {
+            return Err(RunContractError::RevisionConflict {
+                expected: command.expected_revision,
+                actual: self.revision,
+            });
+        }
+
+        let next_revision = self
+            .revision
+            .next()
+            .ok_or(RunContractError::RevisionOverflow)?;
+        self.thought_field
+            .retain(&self.reference, command.thought)?;
+        self.revision = next_revision;
+        self.applied_command_ids.insert(command.command_id);
+        Ok(RunThoughtOutcome::Applied {
+            revision: self.revision,
+        })
+    }
+
     pub fn transfer_write_authority(
         &mut self,
         authority: &RunMutationAuthority,
@@ -239,6 +304,7 @@ impl Run {
             return Err(RunContractError::CorruptRun);
         }
         self.map.validate()?;
+        self.thought_field.validate(&self.reference)?;
         Ok(())
     }
 
@@ -317,11 +383,18 @@ pub enum RunContractError {
     CorruptRun,
     CorruptRegistry(String),
     Topology(TopologyError),
+    Thought(ThoughtFieldError),
 }
 
 impl From<TopologyError> for RunContractError {
     fn from(error: TopologyError) -> Self {
         Self::Topology(error)
+    }
+}
+
+impl From<ThoughtFieldError> for RunContractError {
+    fn from(error: ThoughtFieldError) -> Self {
+        Self::Thought(error)
     }
 }
 

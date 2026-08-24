@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "factory.run-map.schema/v1",
-  "title": "Factory Project, Run and canonical Run Map contract",
+  "title": "Factory Project, Run, canonical Run Map and Run-owned cognitive field contract",
   "$defs": {
     "projectRef": {"type": "string", "pattern": "^project:[0-7][0-9A-HJKMNP-TV-Z]{25}$"},
     "runRef": {"type": "string", "pattern": "^run:[0-7][0-9A-HJKMNP-TV-Z]{25}$"},
@@ -45,6 +45,59 @@
         "edges": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/topologyEdge"}}
       }
     },
+    "runThoughtId": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "runThoughtLifecycle": {"enum": ["active", "resolved", "superseded", "integrated", "retained"]},
+    "passageAnchor": {
+      "type": "object",
+      "required": ["startByte", "endByte"],
+      "additionalProperties": false,
+      "properties": {
+        "startByte": {"type": "integer", "minimum": 0},
+        "endByte": {"type": "integer", "minimum": 1},
+        "label": {"type": "string"}
+      }
+    },
+    "thoughtProducer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agentRef": {"type": "string", "minLength": 1},
+        "agencyRef": {"type": "string", "minLength": 1},
+        "agentSessionRef": {"type": "string", "minLength": 1},
+        "executionRef": {"type": "string", "minLength": 1}
+      }
+    },
+    "runThought": {
+      "type": "object",
+      "description": "One retained, source-backed cognitive determination inside its owning Run. Relation evidence remains opaque/open so knowledge and QL providers retain their own vocabularies and authority.",
+      "required": ["id", "runRef", "anchorRef", "lifecycle"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/runThoughtId"},
+        "runRef": {"$ref": "#/$defs/runRef"},
+        "anchorRef": {"type": "string", "minLength": 1},
+        "anchorRevision": {"type": "string", "minLength": 1},
+        "passage": {"$ref": "#/$defs/passageAnchor"},
+        "producer": {"$ref": "#/$defs/thoughtProducer"},
+        "runMapSubjectRefs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "relatedRefs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "relationEvidenceRefs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "lifecycle": {"$ref": "#/$defs/runThoughtLifecycle"}
+      }
+    },
+    "runThoughtField": {
+      "type": "object",
+      "description": "Exactly one Run-owned cognitive field with no independent global Ref. Its identity is the owning RunRef; thought ids are local to that Run.",
+      "required": ["thoughts"],
+      "additionalProperties": false,
+      "properties": {
+        "thoughts": {
+          "type": "object",
+          "propertyNames": {"$ref": "#/$defs/runThoughtId"},
+          "additionalProperties": {"$ref": "#/$defs/runThought"}
+        }
+      }
+    },
     "run": {
       "type": "object",
       "required": ["ref", "projectRef", "revision", "destination", "lifecycle", "writeAuthority", "map", "appliedCommandIds"],
@@ -62,6 +115,10 @@
           "properties": {"owner": {"type": "string", "minLength": 1}, "epoch": {"type": "integer", "minimum": 1}}
         },
         "map": {"$ref": "#/$defs/runMap"},
+        "thoughtField": {
+          "$ref": "#/$defs/runThoughtField",
+          "description": "Canonical new writes include this field. It is optional in v1 schema so historical Run records without it remain readable as an empty cognitive field."
+        },
         "appliedCommandIds": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
       }
     }
