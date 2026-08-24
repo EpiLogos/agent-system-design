@@ -125,7 +125,10 @@ fn cognitive_optic_materialises_one_run_field_across_agent_sessions() {
     let snapshot = provider.snapshot(&state, &selection).unwrap();
     let after = serde_json::to_string(&state).unwrap();
 
-    assert_eq!(before, after, "cognitive reads must not mutate Factory state");
+    assert_eq!(
+        before, after,
+        "cognitive reads must not mutate Factory state"
+    );
     assert_eq!(snapshot.contract, FACTORY_BUILD_COGNITIVE_VIEW_CONTRACT);
     assert_eq!(
         snapshot.provider_contract,
@@ -181,7 +184,10 @@ fn exact_focus_returns_smallest_factory_owned_cognitive_selection() {
     assert_eq!(snapshot.view.focus.as_ref(), Some(&focus));
     assert_eq!(snapshot.view.thought_count, 1);
     assert_eq!(snapshot.view.thoughts[0].id.as_str(), "anomaly-reading");
-    assert_eq!(snapshot.view.thoughts[0].anchor_ref, "artifact/test-report.md");
+    assert_eq!(
+        snapshot.view.thoughts[0].anchor_ref,
+        "artifact/test-report.md"
+    );
     assert_eq!(snapshot.view.thoughts[0].related_refs, vec![EVIDENCE]);
     assert_eq!(
         snapshot.view.thoughts[0].relation_evidence_refs,
