@@ -1,7 +1,8 @@
 use crate::core::identity::Revision;
 use crate::core::run::{
     CommandOutcome, NodeKind, NodeState, Project, ProjectRef, Run, RunContractError,
-    RunMutationAuthority, RunRef, RunRegistry, RunTopologyCommand,
+    RunMutationAuthority, RunRef, RunRegistry, RunThoughtCommand, RunThoughtOutcome,
+    RunTopologyCommand,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -197,6 +198,23 @@ impl FactoryBuildState {
             .ok_or_else(|| FactoryBuildError::RunNotFound(run_ref.to_string()))?;
         let outcome = run.apply_topology_command(authority, command)?;
         if matches!(outcome, CommandOutcome::Applied { .. }) {
+            self.bump_revision()?;
+        }
+        Ok(outcome)
+    }
+
+    pub fn apply_run_thought_command(
+        &mut self,
+        run_ref: &RunRef,
+        authority: &RunMutationAuthority,
+        command: RunThoughtCommand,
+    ) -> Result<RunThoughtOutcome, FactoryBuildError> {
+        let run = self
+            .runs
+            .get_mut(run_ref)
+            .ok_or_else(|| FactoryBuildError::RunNotFound(run_ref.to_string()))?;
+        let outcome = run.apply_thought_command(authority, command)?;
+        if matches!(outcome, RunThoughtOutcome::Applied { .. }) {
             self.bump_revision()?;
         }
         Ok(outcome)
