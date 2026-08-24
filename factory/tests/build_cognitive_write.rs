@@ -33,7 +33,14 @@ fn live_build_retains_thought_and_next_cognitive_snapshot_sees_it() {
     let before_state_revision = state.revision();
     let before_run_revision = state.run(&run_ref).unwrap().revision();
     let before_topology_revision = state.run(&run_ref).unwrap().map().topology_revision();
-    assert_eq!(provider.snapshot(&state, &selection).unwrap().view.thought_count, 0);
+    assert_eq!(
+        provider
+            .snapshot(&state, &selection)
+            .unwrap()
+            .view
+            .thought_count,
+        0
+    );
 
     let command = RunThoughtCommand {
         command_id: "retain-live-challenge".into(),
@@ -77,16 +84,16 @@ fn live_build_retains_thought_and_next_cognitive_snapshot_sees_it() {
     assert_eq!(after.revision, state.revision().get());
     assert_eq!(after.view.thought_count, 1);
     assert_eq!(after.view.thoughts[0].id.as_str(), "live-challenge");
-    assert_eq!(after.view.thoughts[0].relation_evidence_refs, vec![RELATION]);
+    assert_eq!(
+        after.view.thoughts[0].relation_evidence_refs,
+        vec![RELATION]
+    );
 
     let after_applied_revision = state.revision();
     let replay = state
         .apply_run_thought_command(&run_ref, &authority, command)
         .unwrap();
-    assert!(matches!(
-        replay,
-        RunThoughtOutcome::AlreadyApplied { .. }
-    ));
+    assert!(matches!(replay, RunThoughtOutcome::AlreadyApplied { .. }));
     assert_eq!(
         state.revision(),
         after_applied_revision,
