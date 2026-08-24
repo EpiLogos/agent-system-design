@@ -172,7 +172,10 @@ impl RunThought {
             passage.validate()?;
         }
         self.producer.validate()?;
-        ensure_non_empty_refs(&self.run_map_subject_refs, ThoughtFieldError::EmptyRunMapSubjectRef)?;
+        ensure_non_empty_refs(
+            &self.run_map_subject_refs,
+            ThoughtFieldError::EmptyRunMapSubjectRef,
+        )?;
         ensure_non_empty_refs(&self.related_refs, ThoughtFieldError::EmptyRelatedRef)?;
         ensure_non_empty_refs(
             &self.relation_evidence_refs,
@@ -263,11 +266,17 @@ impl RunThoughtField {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ThoughtFieldError {
     InvalidThoughtId(String),
-    WrongRun { expected: RunRef, actual: RunRef },
+    WrongRun {
+        expected: RunRef,
+        actual: RunRef,
+    },
     DuplicateThought(RunThoughtId),
     EmptyAnchorRef,
     EmptyAnchorRevision,
-    InvalidPassageRange { start_byte: u64, end_byte: u64 },
+    InvalidPassageRange {
+        start_byte: u64,
+        end_byte: u64,
+    },
     EmptyProducerRef,
     EmptyRunMapSubjectRef,
     EmptyRelatedRef,
