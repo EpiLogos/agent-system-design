@@ -19,15 +19,16 @@ fn project_ref() -> ProjectRef {
 }
 
 fn run() -> Run {
-    Run::new(run_ref(), project_ref(), "Develop retained cognition", "host-alpha").unwrap()
+    Run::new(
+        run_ref(),
+        project_ref(),
+        "Develop retained cognition",
+        "host-alpha",
+    )
+    .unwrap()
 }
 
-fn thought(
-    id: &str,
-    run_ref: RunRef,
-    agent_session_ref: &str,
-    anchor_ref: &str,
-) -> RunThought {
+fn thought(id: &str, run_ref: RunRef, agent_session_ref: &str, anchor_ref: &str) -> RunThought {
     RunThought {
         id: RunThoughtId::new(id).unwrap(),
         run_ref,
@@ -125,7 +126,9 @@ fn thought_command_is_idempotent_without_duplicate_retention() {
         expected_revision: run.revision(),
         thought: thought.clone(),
     };
-    let first = run.apply_thought_command(&authority, command.clone()).unwrap();
+    let first = run
+        .apply_thought_command(&authority, command.clone())
+        .unwrap();
     assert!(matches!(first, RunThoughtOutcome::Applied { .. }));
 
     let replay = run.apply_thought_command(&authority, command).unwrap();
@@ -154,7 +157,9 @@ fn cross_run_thought_is_rejected_atomically() {
 
     assert!(matches!(
         result,
-        Err(RunContractError::Thought(ThoughtFieldError::WrongRun { .. }))
+        Err(RunContractError::Thought(
+            ThoughtFieldError::WrongRun { .. }
+        ))
     ));
     assert_eq!(run, before);
 }
@@ -180,7 +185,9 @@ fn duplicate_run_local_thought_id_is_rejected() {
 
     assert!(matches!(
         result,
-        Err(RunContractError::Thought(ThoughtFieldError::DuplicateThought(_)))
+        Err(RunContractError::Thought(
+            ThoughtFieldError::DuplicateThought(_)
+        ))
     ));
     assert_eq!(run, before);
 }
@@ -267,7 +274,11 @@ fn historical_run_json_without_thought_field_remains_readable() {
     registry.insert(run.clone()).unwrap();
     let mut value: Value = serde_json::from_str(&registry.to_json().unwrap()).unwrap();
     let runs = value["runs"].as_object_mut().unwrap();
-    let stored_run = runs.get_mut(&run_ref().to_string()).unwrap().as_object_mut().unwrap();
+    let stored_run = runs
+        .get_mut(&run_ref().to_string())
+        .unwrap()
+        .as_object_mut()
+        .unwrap();
     stored_run.remove("thoughtField");
 
     let restored = RunRegistry::from_json(&serde_json::to_string(&value).unwrap()).unwrap();
