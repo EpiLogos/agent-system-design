@@ -6,5 +6,6 @@ pub mod build_cognitive;
 pub mod build_provider;
 pub mod core;
 pub mod execution_intelligence;
+pub mod journey;
 pub mod project_development;
 pub mod structural_ground;
