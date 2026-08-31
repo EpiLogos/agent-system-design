@@ -6,5 +6,15 @@ pub mod build_cognitive;
 pub mod build_provider;
 pub mod core;
 pub mod execution_intelligence;
+// JourneyRef implements the standard AsRef trait below. Keep the legacy inherent
+// accessor during this additive contract tranche without weakening any other lint.
+#[allow(clippy::should_implement_trait)]
+pub mod journey;
 pub mod project_development;
 pub mod structural_ground;
+
+impl AsRef<core::identity::Ref> for journey::JourneyRef {
+    fn as_ref(&self) -> &core::identity::Ref {
+        journey::JourneyRef::as_ref(self)
+    }
+}
