@@ -214,11 +214,9 @@ impl Journey {
         if let Some(role) = participant.role.as_deref() {
             validate_text(role, "Journey participant role")?;
         }
-        upsert_by(
-            &mut self.participants,
-            participant,
-            |item| item.participant_ref.clone(),
-        );
+        upsert_by(&mut self.participants, participant, |item| {
+            item.participant_ref.clone()
+        });
         self.bump_revision()
     }
 
@@ -247,7 +245,10 @@ impl Journey {
         self.bump_revision()
     }
 
-    pub fn correlate_activity(&mut self, activity_ref: impl Into<String>) -> Result<(), JourneyError> {
+    pub fn correlate_activity(
+        &mut self,
+        activity_ref: impl Into<String>,
+    ) -> Result<(), JourneyError> {
         self.ensure_mutable()?;
         let activity_ref = activity_ref.into();
         validate_ref_text(&activity_ref, "Journey Activity ref")?;
@@ -385,7 +386,10 @@ impl Journey {
     }
 
     fn ensure_mutable(&self) -> Result<(), JourneyError> {
-        if matches!(self.status, JourneyStatus::Completed | JourneyStatus::Abandoned) {
+        if matches!(
+            self.status,
+            JourneyStatus::Completed | JourneyStatus::Abandoned
+        ) {
             return Err(JourneyError::Terminal(self.status));
         }
         Ok(())
@@ -426,7 +430,10 @@ fn push_unique(values: &mut Vec<String>, value: String) {
 
 fn upsert_by<T, K: Eq>(values: &mut Vec<T>, value: T, key: impl Fn(&T) -> K) {
     let value_key = key(&value);
-    if let Some(index) = values.iter().position(|existing| key(existing) == value_key) {
+    if let Some(index) = values
+        .iter()
+        .position(|existing| key(existing) == value_key)
+    {
         values[index] = value;
     } else {
         values.push(value);
@@ -445,7 +452,10 @@ fn validate_timestamp(value: &str, name: &str) -> Result<(), JourneyError> {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum JourneyError {
     RefParse(RefParseError),
-    WrongRefKind { expected: &'static str, actual: String },
+    WrongRefKind {
+        expected: &'static str,
+        actual: String,
+    },
     Schema(String),
     InvalidText(String),
     InvalidRefText(String),
@@ -457,7 +467,10 @@ pub enum JourneyError {
     DuplicateRecognition(String),
     CompletionWithoutRun,
     MissingFinalReturn(String),
-    UnrecognisedFinalReturn { return_ref: String, recognition_ref: String },
+    UnrecognisedFinalReturn {
+        return_ref: String,
+        recognition_ref: String,
+    },
     CompletedWithoutTimestamp,
     TimestampOnOpenJourney,
     Terminal(JourneyStatus),
@@ -479,22 +492,53 @@ impl Display for JourneyError {
             }
             Self::Schema(schema) => write!(formatter, "unsupported Journey schema {schema}"),
             Self::InvalidText(name) => write!(formatter, "{name} must be non-empty"),
-            Self::InvalidRefText(name) => write!(formatter, "{name} must be a non-empty opaque ref"),
-            Self::InvalidTimestamp(name) => write!(formatter, "{name} must be an ISO/RFC3339 timestamp"),
-            Self::DuplicateRun(reference) => write!(formatter, "Journey already contains Run {reference}"),
-            Self::UnknownRun(reference) => write!(formatter, "Journey Return references unknown Run {reference}"),
-            Self::ReturnWithoutRun(reference) => write!(formatter, "Journey Return {reference} must cite at least one Run"),
-            Self::DuplicateReturn(reference) => write!(formatter, "Journey already contains Return {reference}"),
-            Self::DuplicateRecognition(reference) => write!(formatter, "Journey already contains Recognition {reference}"),
-            Self::CompletionWithoutRun => write!(formatter, "Journey cannot complete without a bounded Run"),
-            Self::MissingFinalReturn(reference) => write!(formatter, "Journey has no final Return {reference}"),
-            Self::UnrecognisedFinalReturn { return_ref, recognition_ref } => write!(
+            Self::InvalidRefText(name) => {
+                write!(formatter, "{name} must be a non-empty opaque ref")
+            }
+            Self::InvalidTimestamp(name) => {
+                write!(formatter, "{name} must be an ISO/RFC3339 timestamp")
+            }
+            Self::DuplicateRun(reference) => {
+                write!(formatter, "Journey already contains Run {reference}")
+            }
+            Self::UnknownRun(reference) => write!(
+                formatter,
+                "Journey Return references unknown Run {reference}"
+            ),
+            Self::ReturnWithoutRun(reference) => write!(
+                formatter,
+                "Journey Return {reference} must cite at least one Run"
+            ),
+            Self::DuplicateReturn(reference) => {
+                write!(formatter, "Journey already contains Return {reference}")
+            }
+            Self::DuplicateRecognition(reference) => write!(
+                formatter,
+                "Journey already contains Recognition {reference}"
+            ),
+            Self::CompletionWithoutRun => {
+                write!(formatter, "Journey cannot complete without a bounded Run")
+            }
+            Self::MissingFinalReturn(reference) => {
+                write!(formatter, "Journey has no final Return {reference}")
+            }
+            Self::UnrecognisedFinalReturn {
+                return_ref,
+                recognition_ref,
+            } => write!(
                 formatter,
                 "Journey Return {return_ref} has not been accepted by Recognition {recognition_ref}"
             ),
-            Self::CompletedWithoutTimestamp => write!(formatter, "completed Journey requires completed_at"),
-            Self::TimestampOnOpenJourney => write!(formatter, "non-completed Journey must not declare completed_at"),
-            Self::Terminal(status) => write!(formatter, "terminal Journey {status:?} cannot be mutated"),
+            Self::CompletedWithoutTimestamp => {
+                write!(formatter, "completed Journey requires completed_at")
+            }
+            Self::TimestampOnOpenJourney => write!(
+                formatter,
+                "non-completed Journey must not declare completed_at"
+            ),
+            Self::Terminal(status) => {
+                write!(formatter, "terminal Journey {status:?} cannot be mutated")
+            }
             Self::RevisionOverflow => write!(formatter, "Journey revision overflow"),
         }
     }
@@ -561,8 +605,12 @@ mod tests {
     fn relocation_changes_material_correlation_not_journey_identity() {
         let mut journey = journey();
         let identity = journey.journey_ref.clone();
-        journey.correlate_material_context("workcell:local").unwrap();
-        journey.correlate_material_context("workcell:vm-lan-gpu").unwrap();
+        journey
+            .correlate_material_context("workcell:local")
+            .unwrap();
+        journey
+            .correlate_material_context("workcell:vm-lan-gpu")
+            .unwrap();
         assert_eq!(journey.journey_ref, identity);
         assert_eq!(
             journey.material_context_refs,
@@ -632,7 +680,10 @@ mod tests {
             .unwrap();
         journey.correlate_activity("activity:build-1").unwrap();
         let json = serde_json::to_value(&journey).unwrap();
-        assert_eq!(json["participants"][0]["participant_ref"], "agent-set:development");
+        assert_eq!(
+            json["participants"][0]["participant_ref"],
+            "agent-set:development"
+        );
         assert!(json.get("invocation_authority").is_none());
         assert_eq!(json["activity_refs"][0], "activity:build-1");
     }
