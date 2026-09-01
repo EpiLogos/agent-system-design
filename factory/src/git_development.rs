@@ -130,10 +130,7 @@ pub trait GitDevelopmentProvider {
         request: &GitDevelopmentRequest,
     ) -> Result<GitDevelopmentProvision, GitDevelopmentError>;
 
-    fn inspect(
-        &self,
-        worktree_ref: &str,
-    ) -> Result<GitWorktreeBinding, GitDevelopmentError>;
+    fn inspect(&self, worktree_ref: &str) -> Result<GitWorktreeBinding, GitDevelopmentError>;
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -162,7 +159,9 @@ impl GitDevelopmentRegistry {
             });
         }
         if self.worlds.contains_key(&development_ref) {
-            return Err(GitDevelopmentError::DuplicateDevelopmentRef(development_ref));
+            return Err(GitDevelopmentError::DuplicateDevelopmentRef(
+                development_ref,
+            ));
         }
         let world = GitDevelopmentWorld {
             schema: GIT_DEVELOPMENT_WORLD_SCHEMA.to_owned(),
@@ -173,7 +172,10 @@ impl GitDevelopmentRegistry {
             recognition: None,
         };
         self.worlds.insert(development_ref.clone(), world);
-        Ok(self.worlds.get(&development_ref).expect("inserted development world"))
+        Ok(self
+            .worlds
+            .get(&development_ref)
+            .expect("inserted development world"))
     }
 
     pub fn provision<P: GitDevelopmentProvider>(
@@ -347,13 +349,22 @@ impl Display for GitDevelopmentError {
                 write!(f, "duplicate Git development Ref: {reference}")
             }
             Self::NotFound(reference) => write!(f, "Git development world not found: {reference}"),
-            Self::RepositoryMismatch => write!(f, "Git repository relation does not match the development base"),
+            Self::RepositoryMismatch => write!(
+                f,
+                "Git repository relation does not match the development base"
+            ),
             Self::ProvisionedBaseMismatch { expected, actual } => write!(
                 f,
                 "provider materialised Git revision {actual}, expected exact base {expected}"
             ),
-            Self::ReturnBaseMismatch => write!(f, "returned Git evidence does not refer to the exact original base"),
-            Self::RecognitionBeforeReturn => write!(f, "Recognition cannot be attached before returned Git evidence exists"),
+            Self::ReturnBaseMismatch => write!(
+                f,
+                "returned Git evidence does not refer to the exact original base"
+            ),
+            Self::RecognitionBeforeReturn => write!(
+                f,
+                "Recognition cannot be attached before returned Git evidence exists"
+            ),
             Self::Provider(message) => write!(f, "Git development provider failed: {message}"),
         }
     }
@@ -437,10 +448,27 @@ mod tests {
     #[test]
     fn two_parallel_candidates_keep_semantic_identity_separate_from_worktrees() {
         let mut registry = GitDevelopmentRegistry::default();
-        registry.begin("git-dev:a", base("candidate:a", "A"), binding("wt:a", "A", "host:one")).unwrap();
-        registry.begin("git-dev:b", base("candidate:b", "A"), binding("wt:b", "A", "host:one")).unwrap();
+        registry
+            .begin(
+                "git-dev:a",
+                base("candidate:a", "A"),
+                binding("wt:a", "A", "host:one"),
+            )
+            .unwrap();
+        registry
+            .begin(
+                "git-dev:b",
+                base("candidate:b", "A"),
+                binding("wt:b", "A", "host:one"),
+            )
+            .unwrap();
         assert_eq!(registry.for_run(&run()).len(), 2);
-        assert_eq!(registry.for_candidate("candidate:a")[0].binding.worktree_ref, "wt:a");
+        assert_eq!(
+            registry.for_candidate("candidate:a")[0]
+                .binding
+                .worktree_ref,
+            "wt:a"
+        );
         assert_ne!(
             registry.get("git-dev:a").unwrap().base.candidate_ref,
             registry.get("git-dev:b").unwrap().base.candidate_ref
@@ -450,9 +478,17 @@ mod tests {
     #[test]
     fn material_relocation_changes_binding_not_run_candidate_or_base() {
         let mut registry = GitDevelopmentRegistry::default();
-        registry.begin("git-dev:a", base("candidate:a", "A"), binding("wt:a", "A", "host:one")).unwrap();
+        registry
+            .begin(
+                "git-dev:a",
+                base("candidate:a", "A"),
+                binding("wt:a", "A", "host:one"),
+            )
+            .unwrap();
         let before = registry.get("git-dev:a").unwrap().base.clone();
-        registry.rebind_material("git-dev:a", binding("wt:a2", "A", "host:two")).unwrap();
+        registry
+            .rebind_material("git-dev:a", binding("wt:a2", "A", "host:two"))
+            .unwrap();
         let after = registry.get("git-dev:a").unwrap();
         assert_eq!(after.base, before);
         assert_eq!(after.binding.material_host_ref.as_deref(), Some("host:two"));
@@ -461,7 +497,13 @@ mod tests {
     #[test]
     fn moved_current_project_is_explicit_divergence_not_rebased_history() {
         let mut registry = GitDevelopmentRegistry::default();
-        registry.begin("git-dev:a", base("candidate:a", "A"), binding("wt:a", "A", "host:one")).unwrap();
+        registry
+            .begin(
+                "git-dev:a",
+                base("candidate:a", "A"),
+                binding("wt:a", "A", "host:one"),
+            )
+            .unwrap();
         assert_eq!(
             registry.basis_state("git-dev:a", "B").unwrap(),
             GitBasisState::Diverged {
@@ -475,32 +517,56 @@ mod tests {
     #[test]
     fn returned_diff_is_evidence_and_never_recognition_by_itself() {
         let mut registry = GitDevelopmentRegistry::default();
-        registry.begin("git-dev:a", base("candidate:a", "A"), binding("wt:a", "A", "host:one")).unwrap();
-        registry.return_difference("git-dev:a", GitReturnEvidence {
-            schema: String::new(),
-            base_revision: "A".to_owned(),
-            result_revision: "C".to_owned(),
-            commits: vec!["C".to_owned()],
-            diff_ref: Some("git-diff:A..C".to_owned()),
-            uncommitted_diff_ref: None,
-            changed_paths: vec!["src/lib.rs".to_owned()],
-            verification_evidence_refs: vec!["evidence:test".to_owned()],
-            claim_refs: vec!["claim:works".to_owned()],
-            conflicts: Vec::new(),
-            provider_ref: "aikit:provider:native-git".to_owned(),
-            material_host_ref: Some("host:one".to_owned()),
-        }).unwrap();
+        registry
+            .begin(
+                "git-dev:a",
+                base("candidate:a", "A"),
+                binding("wt:a", "A", "host:one"),
+            )
+            .unwrap();
+        registry
+            .return_difference(
+                "git-dev:a",
+                GitReturnEvidence {
+                    schema: String::new(),
+                    base_revision: "A".to_owned(),
+                    result_revision: "C".to_owned(),
+                    commits: vec!["C".to_owned()],
+                    diff_ref: Some("git-diff:A..C".to_owned()),
+                    uncommitted_diff_ref: None,
+                    changed_paths: vec!["src/lib.rs".to_owned()],
+                    verification_evidence_refs: vec!["evidence:test".to_owned()],
+                    claim_refs: vec!["claim:works".to_owned()],
+                    conflicts: Vec::new(),
+                    provider_ref: "aikit:provider:native-git".to_owned(),
+                    material_host_ref: Some("host:one".to_owned()),
+                },
+            )
+            .unwrap();
         assert!(registry.get("git-dev:a").unwrap().returned.is_some());
         assert!(registry.get("git-dev:a").unwrap().recognition.is_none());
 
-        registry.record_recognition("git-dev:a", GitRecognitionEvidence {
-            recognition_ref: "recognition:accept".to_owned(),
-            accepted: true,
-            project_revision_before: "B".to_owned(),
-            project_revision_after: Some("D".to_owned()),
-            integration_evidence_ref: Some("evidence:merge".to_owned()),
-        }).unwrap();
-        assert!(registry.get("git-dev:a").unwrap().recognition.as_ref().unwrap().accepted);
+        registry
+            .record_recognition(
+                "git-dev:a",
+                GitRecognitionEvidence {
+                    recognition_ref: "recognition:accept".to_owned(),
+                    accepted: true,
+                    project_revision_before: "B".to_owned(),
+                    project_revision_after: Some("D".to_owned()),
+                    integration_evidence_ref: Some("evidence:merge".to_owned()),
+                },
+            )
+            .unwrap();
+        assert!(
+            registry
+                .get("git-dev:a")
+                .unwrap()
+                .recognition
+                .as_ref()
+                .unwrap()
+                .accepted
+        );
     }
 
     #[test]
@@ -509,7 +575,9 @@ mod tests {
         dirty.base_worktree_clean = false;
         let mut registry = GitDevelopmentRegistry::default();
         assert_eq!(
-            registry.begin("git-dev:a", dirty, binding("wt:a", "A", "host:one")).unwrap_err(),
+            registry
+                .begin("git-dev:a", dirty, binding("wt:a", "A", "host:one"))
+                .unwrap_err(),
             GitDevelopmentError::DirtyBaseWithoutExplicitSnapshot
         );
     }
