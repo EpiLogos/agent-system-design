@@ -122,7 +122,9 @@ pub fn execute_projected_factory_action(
     })
 }
 
-fn validate_request(request: &FactoryActionProjectionRequest) -> Result<(), FactoryActionProjectionError> {
+fn validate_request(
+    request: &FactoryActionProjectionRequest,
+) -> Result<(), FactoryActionProjectionError> {
     if request.contract != FACTORY_ACTION_PROJECTION_CONTRACT {
         return Err(FactoryActionProjectionError::UnsupportedContract(
             request.contract.clone(),
@@ -134,8 +136,7 @@ fn validate_request(request: &FactoryActionProjectionRequest) -> Result<(), Fact
     if request.caller.caller_ref.trim().is_empty() {
         return Err(FactoryActionProjectionError::MissingCallerRef);
     }
-    if request.caller.lineage.last().map(String::as_str)
-        != Some(request.caller.caller_ref.as_str())
+    if request.caller.lineage.last().map(String::as_str) != Some(request.caller.caller_ref.as_str())
     {
         return Err(FactoryActionProjectionError::CallerLineageMismatch);
     }
