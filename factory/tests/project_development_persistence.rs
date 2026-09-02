@@ -52,7 +52,9 @@ fn developmental_context_survives_owner_store_reload() {
         Ulid::new()
     ));
     let first_process = FileProjectDevelopmentStore::new(&root);
-    first_process.save(&ledger).expect("owner store persists ledger");
+    first_process
+        .save(&ledger)
+        .expect("owner store persists ledger");
     drop(first_process);
 
     let reloaded_process = FileProjectDevelopmentStore::new(&root);
