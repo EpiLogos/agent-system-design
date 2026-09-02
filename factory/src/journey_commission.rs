@@ -197,7 +197,11 @@ impl JourneyCommissionState {
                 self.state
             },
             frontier: journey.frontier.clone(),
-            run_refs: journey.runs.iter().map(|link| link.run_ref.clone()).collect(),
+            run_refs: journey
+                .runs
+                .iter()
+                .map(|link| link.run_ref.clone())
+                .collect(),
             agent_session_refs: journey.agent_session_refs.clone(),
             attention_refs: self.attention_refs.clone(),
             material_context_refs: journey.material_context_refs.clone(),
@@ -269,11 +273,18 @@ impl Display for JourneyCommissionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InvalidText(field) => write!(formatter, "{field} cannot be empty"),
-            Self::Schema(schema) => write!(formatter, "unsupported Journey Commission schema {schema}"),
-            Self::WrongJourney { expected, actual } => {
-                write!(formatter, "Journey Commission belongs to {expected}, got {actual}")
+            Self::Schema(schema) => {
+                write!(formatter, "unsupported Journey Commission schema {schema}")
             }
-            Self::CompletedCannotReopen => formatter.write_str("completed Journey Commission cannot reopen"),
+            Self::WrongJourney { expected, actual } => {
+                write!(
+                    formatter,
+                    "Journey Commission belongs to {expected}, got {actual}"
+                )
+            }
+            Self::CompletedCannotReopen => {
+                formatter.write_str("completed Journey Commission cannot reopen")
+            }
         }
     }
 }
@@ -313,7 +324,9 @@ mod tests {
                 vec!["agent-session:one".into()],
             )
             .unwrap();
-        journey.correlate_material_context("workcell:first").unwrap();
+        journey
+            .correlate_material_context("workcell:first")
+            .unwrap();
 
         let mut commission = JourneyCommissionState::commission(
             &journey,
@@ -420,7 +433,9 @@ mod tests {
             vec![],
         )
         .unwrap();
-        commission.set_state(CommissionState::WaitingExternal).unwrap();
+        commission
+            .set_state(CommissionState::WaitingExternal)
+            .unwrap();
         let reading = commission.reading(&journey).unwrap();
         assert_eq!(reading.state, CommissionState::WaitingExternal);
         assert!(reading.agent_session_refs.is_empty());
@@ -469,11 +484,7 @@ mod tests {
             })
             .unwrap();
         journey
-            .complete(
-                "2026-09-02T19:00:00Z",
-                "return:final",
-                "recognition:final",
-            )
+            .complete("2026-09-02T19:00:00Z", "return:final", "recognition:final")
             .unwrap();
         let commission = JourneyCommissionState::commission(
             &journey,
