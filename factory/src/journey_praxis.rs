@@ -150,10 +150,7 @@ impl JourneyPraxisContext {
         require_contract(&returned.method_contract, AIKIT_METHOD_SCHEMA, "Method")?;
         required(&returned.method_ref, "Method ref")?;
         required(&returned.method_revision, "Method revision")?;
-        required(
-            &returned.context_resolution_ref,
-            "ContextResolution ref",
-        )?;
+        required(&returned.context_resolution_ref, "ContextResolution ref")?;
         validate_refs(&returned.body_condition_refs, "body condition refs")?;
         require_refs(&returned.activity_refs, "Activity refs")?;
         require_refs(&returned.evidence_refs, "Evidence refs")?;
@@ -571,8 +568,14 @@ mod tests {
         let mut context = JourneyPraxisContext::new(&journey);
         context.select_agent_profile(&journey, profile()).unwrap();
         let reading = context.reading(&journey).unwrap();
-        assert_eq!(reading.agent_profiles[0].contract, CENTRAL_AGENT_PROFILE_SCHEMA);
-        assert_eq!(reading.agent_profiles[0].profile_ref, "agent-profile:researcher");
+        assert_eq!(
+            reading.agent_profiles[0].contract,
+            CENTRAL_AGENT_PROFILE_SCHEMA
+        );
+        assert_eq!(
+            reading.agent_profiles[0].profile_ref,
+            "agent-profile:researcher"
+        );
         assert_eq!(reading.agent_profiles[0].agent_ref, "agent:researcher");
     }
 
@@ -586,7 +589,10 @@ mod tests {
         assert_eq!(returned.method_ref, "method:verified-research");
         assert_eq!(returned.method_revision, "method-rev-1");
         assert_eq!(returned.context_resolution_ref, "context-resolution:abc123");
-        assert_eq!(returned.body_condition_refs, vec!["harness-composition:research"]);
+        assert_eq!(
+            returned.body_condition_refs,
+            vec!["harness-composition:research"]
+        );
         assert_eq!(returned.evidence_refs, vec!["evidence:method:1"]);
         assert_eq!(
             returned.proof.as_ref().unwrap().contract,
@@ -641,7 +647,10 @@ mod tests {
             .unwrap();
         let reading = context.reading(&journey).unwrap();
         let observation = &reading.routines[0];
-        assert_eq!(observation.agent_profile_ref.as_deref(), Some("agent-profile:researcher"));
+        assert_eq!(
+            observation.agent_profile_ref.as_deref(),
+            Some("agent-profile:researcher")
+        );
         assert_eq!(observation.method_ref, reading.praxis_returns[0].method_ref);
         assert_eq!(
             observation.proof_ref,
