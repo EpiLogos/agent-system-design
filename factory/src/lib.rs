@@ -1,5 +1,6 @@
 //! Factory semantic core, authority and execution-intelligence boundaries.
 
+pub mod action_projection;
 pub mod authority;
 pub mod build;
 pub mod build_cognitive;
