@@ -109,7 +109,7 @@ impl JourneyCommissionState {
             bounds_refs: Vec::new(),
             escalation_refs: Vec::new(),
             state: CommissionState::Commissioned,
-            journey_revision: journey.revision.value(),
+            journey_revision: journey.revision.get(),
             handoffs: Vec::new(),
             attention_refs: Vec::new(),
         })
@@ -117,7 +117,7 @@ impl JourneyCommissionState {
 
     pub fn reconcile(&mut self, journey: &Journey) -> Result<(), JourneyCommissionError> {
         self.ensure_journey(journey)?;
-        self.journey_revision = journey.revision.value();
+        self.journey_revision = journey.revision.get();
         if journey.status == JourneyStatus::Completed {
             self.state = CommissionState::Completed;
         }
@@ -149,7 +149,7 @@ impl JourneyCommissionState {
         }
         let from = self.accountable.clone();
         self.accountable = to.clone();
-        self.journey_revision = journey.revision.value();
+        self.journey_revision = journey.revision.get();
         self.handoffs.push(JourneyHandoff {
             from,
             to,
@@ -180,7 +180,10 @@ impl JourneyCommissionState {
         before != self.attention_refs.len()
     }
 
-    pub fn reading(&self, journey: &Journey) -> Result<JourneyCommissionReading, JourneyCommissionError> {
+    pub fn reading(
+        &self,
+        journey: &Journey,
+    ) -> Result<JourneyCommissionReading, JourneyCommissionError> {
         self.ensure_journey(journey)?;
         Ok(JourneyCommissionReading {
             schema: JOURNEY_COMMISSION_SCHEMA.into(),
@@ -198,7 +201,7 @@ impl JourneyCommissionState {
             agent_session_refs: journey.agent_session_refs.clone(),
             attention_refs: self.attention_refs.clone(),
             material_context_refs: journey.material_context_refs.clone(),
-            journey_revision: journey.revision.value(),
+            journey_revision: journey.revision.get(),
         })
     }
 
@@ -299,12 +302,16 @@ mod tests {
     }
 
     #[test]
-    fn AgentSet_accountability_survives_runs_sessions_and_material_relocation() {
+    fn agent_set_accountability_survives_runs_sessions_and_material_relocation() {
         let mut journey = journey();
         let run1: RunRef = "run:01ARZ3NDEKTSV4RRFFQ69G5FAA".parse().unwrap();
         let run2: RunRef = "run:01ARZ3NDEKTSV4RRFFQ69G5FAB".parse().unwrap();
         journey
-            .add_run(run1.clone(), vec!["basis:1".into()], vec!["agent-session:one".into()])
+            .add_run(
+                run1.clone(),
+                vec!["basis:1".into()],
+                vec!["agent-session:one".into()],
+            )
             .unwrap();
         journey.correlate_material_context("workcell:first").unwrap();
 
@@ -312,7 +319,9 @@ mod tests {
             &journey,
             "commission:development",
             "human:owner",
-            JourneyAccountableSubject::AgentSet { agent_set_ref: "agent-set:development".into() },
+            JourneyAccountableSubject::AgentSet {
+                agent_set_ref: "agent-set:development".into(),
+            },
             "Return a verified software difference.",
             vec!["success:tests-green".into()],
         )
@@ -320,16 +329,28 @@ mod tests {
         commission.set_state(CommissionState::Active).unwrap();
 
         journey
-            .add_run(run2.clone(), vec!["basis:2".into()], vec!["agent-session:two".into()])
+            .add_run(
+                run2.clone(),
+                vec!["basis:2".into()],
+                vec!["agent-session:two".into()],
+            )
             .unwrap();
-        journey.correlate_material_context("workcell:replacement").unwrap();
+        journey
+            .correlate_material_context("workcell:replacement")
+            .unwrap();
         commission.reconcile(&journey).unwrap();
         let reading = commission.reading(&journey).unwrap();
 
         assert_eq!(reading.accountable.reference(), "agent-set:development");
         assert_eq!(reading.run_refs, vec![run1, run2]);
-        assert_eq!(reading.agent_session_refs, vec!["agent-session:one", "agent-session:two"]);
-        assert_eq!(reading.material_context_refs, vec!["workcell:first", "workcell:replacement"]);
+        assert_eq!(
+            reading.agent_session_refs,
+            vec!["agent-session:one", "agent-session:two"]
+        );
+        assert_eq!(
+            reading.material_context_refs,
+            vec!["workcell:first", "workcell:replacement"]
+        );
     }
 
     #[test]
@@ -339,7 +360,9 @@ mod tests {
             &journey,
             "commission:handoff",
             "human:owner",
-            JourneyAccountableSubject::Agency { agency_ref: "agency:a".into() },
+            JourneyAccountableSubject::Agency {
+                agency_ref: "agency:a".into(),
+            },
             "Research, implement and verify.",
             vec![],
         )
@@ -348,7 +371,9 @@ mod tests {
         assert!(commission
             .handoff(
                 &journey,
-                JourneyAccountableSubject::Agency { agency_ref: "agency:b".into() },
+                JourneyAccountableSubject::Agency {
+                    agency_ref: "agency:b".into(),
+                },
                 "",
                 None,
             )
@@ -356,7 +381,9 @@ mod tests {
         commission
             .handoff(
                 &journey,
-                JourneyAccountableSubject::Agency { agency_ref: "agency:b".into() },
+                JourneyAccountableSubject::Agency {
+                    agency_ref: "agency:b".into(),
+                },
                 "determination:a-to-b",
                 Some("return:research".into()),
             )
@@ -364,7 +391,9 @@ mod tests {
         commission
             .handoff(
                 &journey,
-                JourneyAccountableSubject::Agent { agent_ref: "agent:c".into() },
+                JourneyAccountableSubject::Agent {
+                    agent_ref: "agent:c".into(),
+                },
                 "determination:b-to-c",
                 Some("return:design".into()),
             )
@@ -378,13 +407,15 @@ mod tests {
     }
 
     #[test]
-    fn commissioned_work_remains_intelligible_without_live_AgentSession() {
+    fn commissioned_work_remains_intelligible_without_live_agent_session() {
         let journey = journey();
         let mut commission = JourneyCommissionState::commission(
             &journey,
             "commission:background",
             "human:owner",
-            JourneyAccountableSubject::Agent { agent_ref: "agent:research".into() },
+            JourneyAccountableSubject::Agent {
+                agent_ref: "agent:research".into(),
+            },
             "Investigate the dependency and return evidence.",
             vec![],
         )
@@ -397,13 +428,15 @@ mod tests {
     }
 
     #[test]
-    fn recognition_wait_requires_explicit_Attention_ref_and_does_not_infer_from_text() {
+    fn recognition_wait_requires_explicit_attention_ref_and_does_not_infer_from_text() {
         let journey = journey();
         let mut commission = JourneyCommissionState::commission(
             &journey,
             "commission:recognition",
             "human:owner",
-            JourneyAccountableSubject::Agent { agent_ref: "agent:developer".into() },
+            JourneyAccountableSubject::Agent {
+                agent_ref: "agent:developer".into(),
+            },
             "Return only consequential decisions.",
             vec![],
         )
@@ -419,10 +452,12 @@ mod tests {
     }
 
     #[test]
-    fn Journey_completion_closes_application_reading_but_does_not_recognise_every_return() {
+    fn journey_completion_closes_application_reading_but_does_not_recognise_every_return() {
         let mut journey = journey();
         let run: RunRef = "run:01ARZ3NDEKTSV4RRFFQ69G5FAC".parse().unwrap();
-        journey.add_run(run.clone(), vec!["basis:final".into()], vec![]).unwrap();
+        journey
+            .add_run(run.clone(), vec!["basis:final".into()], vec![])
+            .unwrap();
         journey
             .record_return(JourneyReturn {
                 return_ref: "return:final".into(),
@@ -434,17 +469,26 @@ mod tests {
             })
             .unwrap();
         journey
-            .complete("2026-09-02T19:00:00Z", "return:final", "recognition:final")
+            .complete(
+                "2026-09-02T19:00:00Z",
+                "return:final",
+                "recognition:final",
+            )
             .unwrap();
         let commission = JourneyCommissionState::commission(
             &journey,
             "commission:complete",
             "human:owner",
-            JourneyAccountableSubject::AgentSet { agent_set_ref: "agent-set:development".into() },
+            JourneyAccountableSubject::AgentSet {
+                agent_set_ref: "agent-set:development".into(),
+            },
             "Complete the current cut.",
             vec![],
         )
         .unwrap();
-        assert_eq!(commission.reading(&journey).unwrap().state, CommissionState::Completed);
+        assert_eq!(
+            commission.reading(&journey).unwrap().state,
+            CommissionState::Completed
+        );
     }
 }
