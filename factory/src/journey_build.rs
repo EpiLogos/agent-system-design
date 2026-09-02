@@ -12,9 +12,7 @@ use crate::journey::Journey;
 use crate::journey_commission::{
     JourneyCommissionError, JourneyCommissionReading, JourneyCommissionState,
 };
-use crate::journey_praxis::{
-    JourneyPraxisContext, JourneyPraxisError, JourneyPraxisReading,
-};
+use crate::journey_praxis::{JourneyPraxisContext, JourneyPraxisError, JourneyPraxisReading};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fmt::{self, Display};
@@ -115,7 +113,10 @@ impl Display for FactoryDevelopmentalBuildError {
                 "Journey Project {journey} does not match Build Project {build}"
             ),
             Self::RunOutsideJourney(run_ref) => {
-                write!(formatter, "Build-selected Run {run_ref} is not in the Journey")
+                write!(
+                    formatter,
+                    "Build-selected Run {run_ref} is not in the Journey"
+                )
             }
         }
     }
@@ -145,9 +146,7 @@ mod tests {
     }
 
     fn fixture(routine_state: &str) -> Fixture {
-        let project_ref: ProjectRef = "project:01ARZ3NDEKTSV4RRFFQ69G5FAE"
-            .parse()
-            .unwrap();
+        let project_ref: ProjectRef = "project:01ARZ3NDEKTSV4RRFFQ69G5FAE".parse().unwrap();
         let run_ref: RunRef = "run:01ARZ3NDEKTSV4RRFFQ69G5FAA".parse().unwrap();
         let project = Project::new(project_ref.clone());
         let run = Run::new(
@@ -298,7 +297,10 @@ mod tests {
             snapshot.praxis.routines[0].routine_ref,
             "routine:daily-research"
         );
-        assert!(snapshot.to_json().unwrap().contains("routine:daily-research"));
+        assert!(snapshot
+            .to_json()
+            .unwrap()
+            .contains("routine:daily-research"));
     }
 
     #[test]
