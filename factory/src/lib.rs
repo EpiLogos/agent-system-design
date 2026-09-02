@@ -13,6 +13,7 @@ pub mod git_development;
 #[allow(clippy::should_implement_trait)]
 pub mod journey;
 pub mod project_development;
+pub mod project_development_store;
 pub mod structural_ground;
 
 impl AsRef<core::identity::Ref> for journey::JourneyRef {
