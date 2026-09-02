@@ -11,6 +11,7 @@ pub mod git_development;
 // accessor during this additive contract tranche without weakening any other lint.
 #[allow(clippy::should_implement_trait)]
 pub mod journey;
+pub mod journey_commission;
 pub mod project_development;
 pub mod structural_ground;
 
