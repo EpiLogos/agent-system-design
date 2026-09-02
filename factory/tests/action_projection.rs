@@ -1,7 +1,7 @@
 use epilogos_factory::action_projection::{
     execute_projected_factory_action, FactoryActionCaller, FactoryActionProjectionKind,
-    FactoryActionProjectionReceipt, FactoryActionProjectionRequest, ProjectedFactoryActionAuthority,
-    FACTORY_ACTION_PROJECTION_CONTRACT,
+    FactoryActionProjectionReceipt, FactoryActionProjectionRequest,
+    ProjectedFactoryActionAuthority, FACTORY_ACTION_PROJECTION_CONTRACT,
 };
 use epilogos_factory::build::{
     CandidateRecord, FactoryBuildSelection, FactoryBuildState, REQUEST_MORE_EVIDENCE_ACTION_REF,
@@ -56,7 +56,12 @@ fn state() -> (FactoryBuildState, FactoryBuildSelection) {
     )
 }
 
-fn request(kind: FactoryActionProjectionKind, projection_ref: &str, caller_ref: &str, lineage: Vec<&str>) -> FactoryActionProjectionRequest {
+fn request(
+    kind: FactoryActionProjectionKind,
+    projection_ref: &str,
+    caller_ref: &str,
+    lineage: Vec<&str>,
+) -> FactoryActionProjectionRequest {
     FactoryActionProjectionRequest {
         contract: FACTORY_ACTION_PROJECTION_CONTRACT.into(),
         projection_ref: projection_ref.into(),
@@ -101,7 +106,10 @@ fn assert_same_native_operation(receipts: &[FactoryActionProjectionReceipt]) {
         assert_eq!(receipt.subject_ref, CANDIDATE);
         assert_eq!(receipt.run_ref, RUN);
         assert_eq!(receipt.authority_ref, AUTHORITY);
-        assert_eq!(receipt.native_result.action_ref, REQUEST_MORE_EVIDENCE_ACTION_REF);
+        assert_eq!(
+            receipt.native_result.action_ref,
+            REQUEST_MORE_EVIDENCE_ACTION_REF
+        );
         assert_eq!(receipt.native_result.subject_ref, CANDIDATE);
         assert_eq!(receipt.native_result.authority_ref, AUTHORITY);
         assert_eq!(
@@ -111,7 +119,10 @@ fn assert_same_native_operation(receipts: &[FactoryActionProjectionReceipt]) {
     }
     let first = &receipts[0].native_result;
     for receipt in &receipts[1..] {
-        assert_eq!(receipt.native_result.previous_revision, first.previous_revision);
+        assert_eq!(
+            receipt.native_result.previous_revision,
+            first.previous_revision
+        );
         assert_eq!(receipt.native_result.next_revision, first.next_revision);
         assert_eq!(
             receipt.native_result.created_human_request_ref,
@@ -172,11 +183,23 @@ fn desktop_agent_and_headless_projections_share_one_action_handler_and_result_se
     );
     let headless: FactoryActionProjectionReceipt = serde_json::from_slice(&output.stdout).unwrap();
 
-    assert_eq!(desktop.caller.projection_kind, FactoryActionProjectionKind::DesktopHuman);
+    assert_eq!(
+        desktop.caller.projection_kind,
+        FactoryActionProjectionKind::DesktopHuman
+    );
     assert_eq!(desktop.caller.lineage, vec!["human:operator"]);
-    assert_eq!(agent.caller.projection_kind, FactoryActionProjectionKind::SituatedAgent);
-    assert_eq!(agent.caller.lineage, vec!["human:operator", "agent:mahamaya"]);
-    assert_eq!(headless.caller.projection_kind, FactoryActionProjectionKind::Headless);
+    assert_eq!(
+        agent.caller.projection_kind,
+        FactoryActionProjectionKind::SituatedAgent
+    );
+    assert_eq!(
+        agent.caller.lineage,
+        vec!["human:operator", "agent:mahamaya"]
+    );
+    assert_eq!(
+        headless.caller.projection_kind,
+        FactoryActionProjectionKind::Headless
+    );
     assert_eq!(headless.caller.lineage, vec!["automation:parity-fixture"]);
 
     assert_same_native_operation(&[desktop, agent, headless]);
@@ -208,7 +231,10 @@ fn projection_cannot_erase_caller_lineage_or_substitute_native_owner() {
     // from the same canonical revision and succeeds once.
     erased.authority.native_owner = "factory".into();
     let receipt = execute_projected_factory_action(&mut provider, &erased).unwrap();
-    assert_eq!(receipt.native_result.action_ref, REQUEST_MORE_EVIDENCE_ACTION_REF);
+    assert_eq!(
+        receipt.native_result.action_ref,
+        REQUEST_MORE_EVIDENCE_ACTION_REF
+    );
 
     let _ = fs::remove_file(path);
 }
