@@ -218,6 +218,8 @@ fn return_cannot_change_source_resolution_or_claim_success_without_evidence() {
     });
     assert!(matches!(
         unsupported_success,
-        Err(ProjectDevelopmentError::ConclusiveCriterionWithoutEvidence(_))
+        Err(ProjectDevelopmentError::ConclusiveCriterionWithoutEvidence(
+            _
+        ))
     ));
 }
