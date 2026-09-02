@@ -38,8 +38,7 @@ impl FileProjectDevelopmentStore {
     }
 
     fn path_for(&self, run_ref: &RunRef) -> PathBuf {
-        self.root
-            .join(format!("{}.json", run_ref.as_ref().id()))
+        self.root.join(format!("{}.json", run_ref.as_ref().id()))
     }
 }
 
@@ -55,7 +54,9 @@ impl Display for ProjectDevelopmentStoreError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Io(error) => write!(formatter, "project-development store I/O failed: {error}"),
-            Self::Json(error) => write!(formatter, "project-development store JSON failed: {error}"),
+            Self::Json(error) => {
+                write!(formatter, "project-development store JSON failed: {error}")
+            }
             Self::VersionMismatch { expected, actual } => write!(
                 formatter,
                 "project-development store version {actual} does not match {expected}"
