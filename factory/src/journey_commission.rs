@@ -299,8 +299,10 @@ mod tests {
 
     fn journey() -> Journey {
         Journey::new(
-            "journey:commission-proof".parse().unwrap(),
-            "project:oi".parse::<ProjectRef>().unwrap(),
+            "journey:01ARZ3NDEKTSV4RRFFQ69G5FAD".parse().unwrap(),
+            "project:01ARZ3NDEKTSV4RRFFQ69G5FAE"
+                .parse::<ProjectRef>()
+                .unwrap(),
             JourneyCommission {
                 purpose: "Converge deterministic O:I work before physical acceptance.".into(),
                 commission_ref: Some("source:intent:commission-proof".into()),
