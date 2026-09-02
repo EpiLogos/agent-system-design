@@ -238,10 +238,16 @@ impl Display for ProjectDevelopmentError {
             Self::DuplicateRef(reference) => {
                 write!(formatter, "duplicate development ref: {reference}")
             }
-            Self::MissingIntent => write!(formatter, "bounded Intent must be retained before its return"),
+            Self::MissingIntent => write!(
+                formatter,
+                "bounded Intent must be retained before its return"
+            ),
             Self::EmptyIntentSource => write!(formatter, "bounded Intent requires a source ref"),
             Self::EmptyContextResolution => {
-                write!(formatter, "bounded Intent requires an AIKit ContextResolution ref")
+                write!(
+                    formatter,
+                    "bounded Intent requires an AIKit ContextResolution ref"
+                )
             }
             Self::IntentSourceMismatch { expected, actual } => write!(
                 formatter,
@@ -322,7 +328,10 @@ impl ProjectDevelopmentLedger {
     ) -> Result<(), ProjectDevelopmentError> {
         self.ensure_run(&returned.run_ref)?;
         self.ensure_unique(&returned.return_ref)?;
-        let intent = self.intent.as_ref().ok_or(ProjectDevelopmentError::MissingIntent)?;
+        let intent = self
+            .intent
+            .as_ref()
+            .ok_or(ProjectDevelopmentError::MissingIntent)?;
         if returned.intent_source_ref != intent.intent_source_ref {
             return Err(ProjectDevelopmentError::IntentSourceMismatch {
                 expected: intent.intent_source_ref.clone(),
