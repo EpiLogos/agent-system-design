@@ -1,5 +1,6 @@
 # macOS
 .DS_Store
+/target/
 
 # Secrets — never commit these
 .env
