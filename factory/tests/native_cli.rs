@@ -80,11 +80,7 @@ fn cli_invoke_matches_headless_projection_and_fresh_provider_observes_the_mutati
     let cli_receipt: Value = serde_json::from_str(&cli_receipt).unwrap();
 
     let mut child = Command::new(env!("CARGO_BIN_EXE_factory-action-headless"))
-        .args([
-            headless_fixture.path.to_str().unwrap(),
-            PROJECT,
-            RUN,
-        ])
+        .args([headless_fixture.path.to_str().unwrap(), PROJECT, RUN])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -169,11 +165,9 @@ fn cli_retains_native_projection_and_provider_errors() {
         Some(&serde_json::to_string(&bad_lineage).unwrap()),
     )
     .unwrap_err();
-    assert!(
-        error
-            .to_string()
-            .contains("caller lineage must terminate at caller_ref")
-    );
+    assert!(error
+        .to_string()
+        .contains("caller lineage must terminate at caller_ref"));
 
     let mut wrong_owner = projected_request();
     wrong_owner["authority"]["nativeOwner"] = json!("not-factory");
