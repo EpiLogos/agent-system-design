@@ -30,6 +30,10 @@ require_text(
         "RunMutationAuthority",
         "Capability granted != Action authorised",
         "factory.build-view/v1",
+        "plausible Claim != evidenced Closure",
+        "partial evidence != whole satisfaction",
+        "Whole-relative verification / plausibility barrier",
+        "Claim -> operative Whole/opening condition -> VerificationRequirement/VerificationPlan -> Evidence/Assessment -> Closure/Gate",
     ],
 )
 require_text(
@@ -39,6 +43,10 @@ require_text(
         "native-owner review / Recognition",
         "edited harness projection",
         "automatic backlog",
+        "Proof over plausibility",
+        "whole-relative verification ledger",
+        "Discharge verification obligations",
+        "A passing subset remains a passing subset.",
     ],
 )
 
