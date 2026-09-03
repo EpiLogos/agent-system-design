@@ -21,6 +21,13 @@ function checkOwners(node: J, where = '#'): void {
   if (node.anyOf) (node.anyOf as J[]).forEach((child, i) => checkOwners(child, `${where}/anyOf/${i}`));
 }
 
+function wholeHasUnmetObligations(v: J): boolean {
+  const whole = v.operativeWhole || {};
+  const required = new Set<string>(whole.requiredObligations || []);
+  const satisfied = new Set<string>(whole.satisfiedObligations || []);
+  return [...required].some((obligation) => !satisfied.has(obligation));
+}
+
 function rejectsAnti(item: J): boolean {
   const v = item.value || {};
   switch (item.id) {
@@ -30,6 +37,10 @@ function rejectsAnti(item: J): boolean {
     case 'session-as-agent': return !kindRef('agent', v.agentRef);
     case 'provider-as-project': return !kindRef('project', v.projectRef);
     case 'stale-subject-state-evidence': return subjectKey(v.currentSubjectState) !== subjectKey(v.evidenceSubjectState);
+    case 'plausible-artifact-partial-evidence-as-full-closure':
+      return v.claimedClosure === 'full' && wholeHasUnmetObligations(v) && Number(v.claim?.confidence || 0) > 0.9;
+    case 'representative-evidence-without-coverage-contract':
+      return v.claimedClosure === 'full' && v.evidenceMode === 'representative' && wholeHasUnmetObligations(v) && (!v.samplingSufficiencyDeclared || !v.coverageConditionEvidenced);
     default: return false;
   }
 }
@@ -82,7 +93,7 @@ assert(binding.binding.workcellRef === offer.workcellOffer.workcellRef && !('ref
 assert(world.materialisedExecutionWorld.executionDemandRef === demand.executionDemand.demandRef && world.materialisedExecutionWorld.candidateRef === identity.identityEnvelope.ref && world.materialisedExecutionWorld.workcellRef === offer.workcellOffer.workcellRef && world.materialisedExecutionWorld.bindingKeys.includes(binding.binding.bindingKey), 'Materialised world relation drift');
 assert(canonical.test(ql.qlComposition.targetRef), 'QL target Ref'); ['qlFormRef','qlAddress','lensRef','qlTarget'].forEach((key) => assert(typeof ql.qlComposition[key] === 'string' && ql.qlComposition[key].length > 0, `${key} missing`));
 
-const anti = load(fixtureSet.antiFixturesPath); const expectedAnti = new Set(['action-as-capability-identity-collapse','binding-as-ref','model-as-agent','session-as-agent','provider-as-project','stale-subject-state-evidence']);
+const anti = load(fixtureSet.antiFixturesPath); const expectedAnti = new Set(['action-as-capability-identity-collapse','binding-as-ref','model-as-agent','session-as-agent','provider-as-project','stale-subject-state-evidence','plausible-artifact-partial-evidence-as-full-closure','representative-evidence-without-coverage-contract']);
 assert(anti.fixtureVersion === 'factory.interop-fixtures/v1' && anti.antiFixtures.length === expectedAnti.size && anti.antiFixtures.every((item: J) => expectedAnti.has(item.id)), 'anti-fixture set incomplete');
 anti.antiFixtures.forEach((item: J) => assert(item.mustReject === true && rejectsAnti(item), `anti fixture unexpectedly accepted: ${item.id}`));
 console.log(`TypeScript CR-001 interop PASS (${schemas.size} schema sections, ${anti.antiFixtures.length} anti-fixtures)`);

@@ -30,6 +30,12 @@ def owner_failures(node, where='#'):
         failures.extend(owner_failures(child, f'{where}/anyOf/{i}'))
     return failures
 
+def whole_has_unmet_obligations(value):
+    whole = value.get('operativeWhole', {})
+    required = set(whole.get('requiredObligations', []))
+    satisfied = set(whole.get('satisfiedObligations', []))
+    return not required.issubset(satisfied)
+
 schema_set = load('contracts/factory/interop/schema-set.json')
 fixture_set = load('contracts/factory/fixtures/interop/fixture-set.json')
 assert schema_set['schemaSetVersion'] == 'factory.interop/v1'
@@ -42,9 +48,30 @@ for key, entry in schemas.items():
     schema = load(entry['path'])
     fixture = load(sections[key]['path'])
     assert schema['$id'] == entry['id'], f'{key}: schema id drift'
-    Draft202012Validator.check_schema(schema)
-    errors = sorted(Draft202012Validator(schema).iter_errors(fixture), key=lambda e: list(e.path))
+    # The contract uses opaque version identifiers as $id values rather than URL
+    # bases. jsonschema 4.10 treats local #/$defs refs as relative URLs when that
+    # opaque $id is active. Validate the same schema body without using $id as a
+    # retrieval base; the original identifier is checked immediately above.
+    validation_schema = dict(schema)
+    validation_schema.pop('$id', None)
+    Draft202012Validator.check_schema(validation_schema)
+    errors = sorted(Draft202012Validator(validation_schema).iter_errors(fixture), key=lambda e: list(e.path))
     assert not errors, f"{key}: " + '; '.join(e.message for e in errors)
     missing = owner_failures(schema)
     assert not missing, f'{key}: fields without one semantic owner: {missing}'
-print(f'JSON Schema CR-001 interop PASS ({len(schemas)} schemas)')
+
+anti = load(fixture_set['antiFixturesPath'])
+by_id = {item['id']: item for item in anti['antiFixtures']}
+plausible = by_id['plausible-artifact-partial-evidence-as-full-closure']
+representative = by_id['representative-evidence-without-coverage-contract']
+assert plausible['mustReject'] is True
+assert plausible['value']['claimedClosure'] == 'full'
+assert plausible['value']['claim']['confidence'] > 0.9
+assert whole_has_unmet_obligations(plausible['value'])
+assert representative['mustReject'] is True
+assert representative['value']['claimedClosure'] == 'full'
+assert representative['value']['evidenceMode'] == 'representative'
+assert whole_has_unmet_obligations(representative['value'])
+assert not representative['value']['samplingSufficiencyDeclared'] or not representative['value']['coverageConditionEvidenced']
+
+print(f'JSON Schema CR-001 interop PASS ({len(schemas)} schemas; whole-relative anti-fixtures present)')
