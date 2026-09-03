@@ -66,7 +66,9 @@ pub fn execute_cli(args: &[String], stdin_override: Option<&str>) -> Result<Stri
         Some("build") => build_command(&args[1..], json),
         Some("action") => action_command(&args[1..], json, stdin_override),
         Some("verify") => verify_command(&args[1..], json),
-        Some(command) => Err(CliError(format!("unknown command `{command}`; run `factory help`"))),
+        Some(command) => Err(CliError(format!(
+            "unknown command `{command}`; run `factory help`"
+        ))),
     }
 }
 
@@ -114,7 +116,9 @@ fn render_capabilities(json: bool) -> Result<String, CliError> {
 }
 
 fn build_command(args: &[String], json: bool) -> Result<String, CliError> {
-    let operation = args.first().ok_or_else(|| CliError("missing build operation".into()))?;
+    let operation = args
+        .first()
+        .ok_or_else(|| CliError("missing build operation".into()))?;
     let (state_path, selection) = selection_from_args(&args[1..])?;
     let mut provider = FactoryBuildFileProvider::open(state_path, selection)?;
     let snapshot = match operation.as_str() {
@@ -149,7 +153,9 @@ fn action_command(
     json: bool,
     stdin_override: Option<&str>,
 ) -> Result<String, CliError> {
-    let operation = args.first().ok_or_else(|| CliError("missing action operation".into()))?;
+    let operation = args
+        .first()
+        .ok_or_else(|| CliError("missing action operation".into()))?;
     let (state_path, selection) = selection_from_args(&args[1..])?;
     let mut provider = FactoryBuildFileProvider::open(state_path, selection)?;
 
@@ -226,9 +232,7 @@ fn verify_command(args: &[String], json: bool) -> Result<String, CliError> {
 
 fn selection_from_args(args: &[String]) -> Result<(String, FactoryBuildSelection), CliError> {
     if args.len() < 3 {
-        return Err(CliError(
-            "expected <state> <project-ref> <run-ref>".into(),
-        ));
+        return Err(CliError("expected <state> <project-ref> <run-ref>".into()));
     }
     let project_ref = ProjectRef::from_str(&args[1])
         .map_err(|error| CliError(format!("invalid project-ref: {error}")))?;
@@ -310,7 +314,9 @@ mod tests {
         assert_eq!(value["contract"], FACTORY_CLI_CONTRACT);
         assert_eq!(value["product"], "software-factory");
         let contracts = value["nativeContracts"].as_array().unwrap();
-        assert!(contracts.iter().any(|value| value == FACTORY_BUILD_VIEW_CONTRACT));
+        assert!(contracts
+            .iter()
+            .any(|value| value == FACTORY_BUILD_VIEW_CONTRACT));
         assert!(contracts
             .iter()
             .any(|value| value == FACTORY_ACTION_PROJECTION_CONTRACT));
