@@ -37,7 +37,10 @@ fn cli_snapshot_refresh_and_action_list_are_the_native_provider_reading() {
         "--json",
     ]);
     assert_eq!(snapshot["contract"], "factory.build-view/v1");
-    assert_eq!(snapshot["providerContract"], "factory.build-view-provider/v1");
+    assert_eq!(
+        snapshot["providerContract"],
+        "factory.build-view-provider/v1"
+    );
     assert_eq!(snapshot, refresh);
 
     let actions = cli_json(&[
@@ -102,16 +105,29 @@ fn cli_invoke_matches_headless_projection_and_fresh_provider_observes_the_mutati
     let headless_receipt: Value = serde_json::from_slice(&output.stdout).unwrap();
 
     assert_eq!(cli_receipt, headless_receipt);
-    assert_eq!(cli_receipt["caller"]["callerRef"], "agent:factory-cli-acceptance");
+    assert_eq!(
+        cli_receipt["caller"]["callerRef"],
+        "agent:factory-cli-acceptance"
+    );
     assert_eq!(
         cli_receipt["caller"]["lineage"],
         json!(["agency:acceptance", "agent:factory-cli-acceptance"])
     );
-    assert_eq!(cli_receipt["authorityRef"], "authority:factory-cli-acceptance");
-    assert_eq!(cli_receipt["nativeResult"]["actionRef"], REQUEST_MORE_EVIDENCE_ACTION_REF);
+    assert_eq!(
+        cli_receipt["authorityRef"],
+        "authority:factory-cli-acceptance"
+    );
+    assert_eq!(
+        cli_receipt["nativeResult"]["actionRef"],
+        REQUEST_MORE_EVIDENCE_ACTION_REF
+    );
     assert!(
-        cli_receipt["nativeResult"]["nextRevision"].as_u64().unwrap()
-            > cli_receipt["nativeResult"]["previousRevision"].as_u64().unwrap()
+        cli_receipt["nativeResult"]["nextRevision"]
+            .as_u64()
+            .unwrap()
+            > cli_receipt["nativeResult"]["previousRevision"]
+                .as_u64()
+                .unwrap()
     );
 
     let selection = selection();
@@ -120,7 +136,9 @@ fn cli_invoke_matches_headless_projection_and_fresh_provider_observes_the_mutati
     assert_eq!(persisted.view.human_requests.len(), 1);
     assert_eq!(
         persisted.revision,
-        cli_receipt["nativeResult"]["nextRevision"].as_u64().unwrap()
+        cli_receipt["nativeResult"]["nextRevision"]
+            .as_u64()
+            .unwrap()
     );
     assert_eq!(
         persisted.view.human_requests[0].human_request_ref,
@@ -151,7 +169,11 @@ fn cli_retains_native_projection_and_provider_errors() {
         Some(&serde_json::to_string(&bad_lineage).unwrap()),
     )
     .unwrap_err();
-    assert!(error.to_string().contains("caller lineage must terminate at caller_ref"));
+    assert!(
+        error
+            .to_string()
+            .contains("caller lineage must terminate at caller_ref")
+    );
 
     let mut wrong_owner = projected_request();
     wrong_owner["authority"]["nativeOwner"] = json!("not-factory");
