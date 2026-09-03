@@ -58,6 +58,12 @@ fn string_set(value: &Value) -> BTreeSet<String> {
     value.as_array().unwrap().iter().map(|v| v.as_str().unwrap().to_owned()).collect()
 }
 
+fn whole_has_unmet_obligations(value: &Value) -> bool {
+    let required = string_set(&value["operativeWhole"]["requiredObligations"]);
+    let satisfied = string_set(&value["operativeWhole"]["satisfiedObligations"]);
+    !required.is_subset(&satisfied)
+}
+
 fn anti_rejected(item: &Value) -> bool {
     let v = &item["value"];
     match s(item, "id") {
@@ -66,6 +72,18 @@ fn anti_rejected(item: &Value) -> bool {
         "model-as-agent" | "session-as-agent" => !kind_ref("agent", s(v, "agentRef")),
         "provider-as-project" => !kind_ref("project", s(v, "projectRef")),
         "stale-subject-state-evidence" => subject_key(&v["currentSubjectState"]) != subject_key(&v["evidenceSubjectState"]),
+        "plausible-artifact-partial-evidence-as-full-closure" => {
+            s(v, "claimedClosure") == "full"
+                && whole_has_unmet_obligations(v)
+                && v["claim"]["confidence"].as_f64().is_some_and(|confidence| confidence > 0.9)
+        }
+        "representative-evidence-without-coverage-contract" => {
+            s(v, "claimedClosure") == "full"
+                && s(v, "evidenceMode") == "representative"
+                && whole_has_unmet_obligations(v)
+                && (!v["samplingSufficiencyDeclared"].as_bool().unwrap_or(false)
+                    || !v["coverageConditionEvidenced"].as_bool().unwrap_or(false))
+        }
         _ => false,
     }
 }
@@ -129,7 +147,7 @@ fn main() {
     assert!(canonical_ref(s(&ql["qlComposition"], "targetRef")));
 
     let anti = load(&root, s(&fixture_set, "antiFixturesPath"));
-    let expected: BTreeSet<&str> = ["action-as-capability-identity-collapse","binding-as-ref","model-as-agent","session-as-agent","provider-as-project","stale-subject-state-evidence"].into_iter().collect();
+    let expected: BTreeSet<&str> = ["action-as-capability-identity-collapse","binding-as-ref","model-as-agent","session-as-agent","provider-as-project","stale-subject-state-evidence","plausible-artifact-partial-evidence-as-full-closure","representative-evidence-without-coverage-contract"].into_iter().collect();
     let items = anti["antiFixtures"].as_array().unwrap(); assert_eq!(items.iter().map(|i| s(i, "id")).collect::<BTreeSet<_>>(), expected);
     for item in items { assert_eq!(item["mustReject"].as_bool(), Some(true)); assert!(anti_rejected(item), "anti fixture accepted: {}", s(item, "id")); }
     println!("Rust CR-001 interop PASS ({} schema sections, {} anti-fixtures)", schemas.len(), items.len());
