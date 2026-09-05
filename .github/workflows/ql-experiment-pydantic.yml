@@ -2,7 +2,7 @@ name: QL Experiment Pydantic AI
 
 on:
   push:
-    branches: [ql/experiment-pydantic-ai]
+    branches: [main]
   pull_request:
 
 permissions:

@@ -3,7 +3,7 @@ name: QL Runtime Foundation
 on:
   push:
     branches:
-      - ql/runtime-foundation
+      - main
     paths:
       - 'ql-agent-experiments/foundation/**'
       - '.github/workflows/ql-runtime-foundation.yml'

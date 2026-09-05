@@ -2,7 +2,7 @@ name: QL Experiment Pi
 
 on:
   push:
-    branches: [ql/experiment-pi]
+    branches: [main]
   pull_request:
 
 permissions:

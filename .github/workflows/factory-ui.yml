@@ -7,7 +7,7 @@ on:
       - '.github/workflows/factory-ui.yml'
   push:
     branches:
-      - agent/factory-build-sssf-surface
+      - main
     paths:
       - 'factory-ui/**'
       - '.github/workflows/factory-ui.yml'

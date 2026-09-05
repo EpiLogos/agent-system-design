@@ -3,7 +3,7 @@ name: QL Experiment Native
 on:
   push:
     branches:
-      - ql/experiment-native
+      - main
   pull_request:
 
 permissions:
