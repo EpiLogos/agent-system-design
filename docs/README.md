@@ -10,6 +10,8 @@ This is the working documentation surface for the QL Software Factory.
 - `QL-SOFTWARE-FACTORY-WORKCELL-MODULE-SPEC.md` — Workcell canonical companion.
 - `QL-SOFTWARE-FACTORY-DEEP-QL-INTEGRATION-FOUNDATIONS.md` — deep QL integration foundations.
 - `EXECUTION-INTELLIGENCE-INTEGRATION.md` — current-design cross-map amendment making the situated execution seam explicit; subordinate to the Constitutional Index.
+- `RUN-CLOSURE-VERIFICATION-ALIGNMENT.md` — canonical clarification of Run, Closure, Gate, causal disclosure, verification-oriented Runs, and the cross-product primitive seam.
+- `ql-mef-module/` — authoritative target design for the standalone executable QL kernel, complete MEF manifold, provider/service seam, client adapters, NoQL modularity and development programme. It is subordinate to QL canon and distinct from the experimental QL-native Loop Runtime.
 - `wayfinders/` — harmonised architectural Claim-sets.
 
 ## `program/`
